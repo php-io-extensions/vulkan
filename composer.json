@@ -1,0 +1,31 @@
+{
+    "name": "php-io-extensions/vulkan",
+    "type": "php-ext",
+    "description": "PHP-Controllable Vulkan Rendering Extension",
+    "license": "MIT",
+    "version": "0.7.0",
+    "authors": [
+        {
+            "name": "Project Saturn Studios, LLC",
+            "email": "info@projectsaturnstudios.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "php-ext": {
+        "extension-name": "vulkan",
+        "priority": 30,
+        "build-path": "ext",
+        "support-zts": true,
+        "support-nts": true,
+        "os-families-exclude": ["windows"],
+        "configure-options": [
+            {
+                "name": "enable-vulkan",
+                "description": "Enable the vulkan extension",
+                "needs-value": false
+            }
+        ]
+    }
+}
