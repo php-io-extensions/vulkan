@@ -32,7 +32,7 @@ sources:
 |------|--------|
 | Package | `php-io-extensions/vulkan` |
 | Extension name | `vulkan` |
-| Version | `0.7.0` |
+| Version | `0.7.1` |
 | PHP | `>= 8.2` |
 | OS | Linux + Darwin; Windows excluded (`os-families-exclude: ["windows"]`) |
 | Namespace | `Vulkan\Vk\*` |
@@ -60,7 +60,7 @@ Demo (sibling style): `examples/proof_menu.php` — glfw window + clear/menu qui
 
 # Public namespace
 
-Zephir classes live under `Vulkan\Vk\` (`vulkan/vk/*.zep`). IDE stubs path (when generated): `ide/0.7.0/Vulkan/Vk/`.
+Zephir classes live under `Vulkan\Vk\` (`vulkan/vk/*.zep`). IDE stubs path (when generated): `ide/0.7.1/Vulkan/Vk/`.
 
 See [Stack segmentation](/orientation/stack-segmentation.md) and [Layered stack](/architecture/stack.md).
 

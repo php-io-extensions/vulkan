@@ -33,8 +33,12 @@ sources:
 # Lifecycle
 
 1. `Vk::createSwapchain(...)` → presenter `fd` + schema fields.
-2. Loop `Vk::presentFrame($swapchain, …)`; on out-of-date, `resizeSwapchain` / recreate as needed.
+2. Loop `Vk::presentFrame($swapchain, …)` / `presentRgba8`; on out-of-date, `resizeSwapchain` / recreate as needed.
 3. `Vk::destroySwapchain($swapchain)` zeros `fd` and schema ints.
+
+# Present mode
+
+`php_vk_swapchain_build` prefers **MAILBOX → IMMEDIATE → FIFO**. Hard FIFO alone half-rates PHP sketch loops when a frame exceeds one refresh (~30fps @60Hz); sketch pacing owns the 60fps budget.
 
 Presenter owns images, views, render pass, framebuffers, command pool/buffers, and sync objects in C.[^api-h]
 

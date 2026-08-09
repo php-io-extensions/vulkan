@@ -1,5 +1,6 @@
 #include "vulkan-api.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -411,6 +412,34 @@ static int php_vk_swapchain_build(php_vk_swapchain *sc, uint32_t width, uint32_t
 		image_count = PHP_VK_MAX_IMAGES;
 	}
 
+	/* Prefer uncapped present (MAILBOX → IMMEDIATE → FIFO). FIFO VSync half-rates
+	 * PHP sketch loops when a frame exceeds one refresh (~30fps @60Hz). Sketch
+	 * FramePaceNode owns the 60fps budget (same rationale as cuda-gfx swapInterval(0)). */
+	VkPresentModeKHR present_mode = VK_PRESENT_MODE_FIFO_KHR;
+	uint32_t mode_count = 0;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(sc->physical, sc->surface, &mode_count, NULL);
+	if (mode_count > 0) {
+		VkPresentModeKHR *modes = (VkPresentModeKHR *) calloc(mode_count, sizeof(VkPresentModeKHR));
+		if (modes) {
+			vkGetPhysicalDeviceSurfacePresentModesKHR(sc->physical, sc->surface, &mode_count, modes);
+			int has_mailbox = 0;
+			int has_immediate = 0;
+			for (uint32_t i = 0; i < mode_count; i++) {
+				if (modes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
+					has_mailbox = 1;
+				} else if (modes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+					has_immediate = 1;
+				}
+			}
+			if (has_mailbox) {
+				present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
+			} else if (has_immediate) {
+				present_mode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+			}
+			free(modes);
+		}
+	}
+
 	VkSwapchainCreateInfoKHR sci;
 	memset(&sci, 0, sizeof(sci));
 	sci.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -424,7 +453,7 @@ static int php_vk_swapchain_build(php_vk_swapchain *sc, uint32_t width, uint32_t
 	sci.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	sci.preTransform = caps.currentTransform;
 	sci.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	sci.presentMode = VK_PRESENT_MODE_FIFO_KHR;
+	sci.presentMode = present_mode;
 	sci.clipped = VK_TRUE;
 	sci.oldSwapchain = VK_NULL_HANDLE;
 
@@ -847,6 +876,169 @@ int php_vk_swapchain_frame(
 	}
 	if (draw_inner) {
 		php_vk_clear_rect(cmd, inner_x, inner_y, inner_w, inner_h, inner_r, inner_g, inner_b, inner_a, sc->extent.width, sc->extent.height);
+	}
+
+	vkCmdEndRenderPass(cmd);
+	vkEndCommandBuffer(cmd);
+
+	VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	VkSubmitInfo submit;
+	memset(&submit, 0, sizeof(submit));
+	submit.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submit.waitSemaphoreCount = 1;
+	submit.pWaitSemaphores = &sc->image_available;
+	submit.pWaitDstStageMask = &wait_stage;
+	submit.commandBufferCount = 1;
+	submit.pCommandBuffers = &cmd;
+	submit.signalSemaphoreCount = 1;
+	submit.pSignalSemaphores = &sc->render_finished;
+
+	r = vkQueueSubmit(sc->queue, 1, &submit, sc->in_flight);
+	if (r != VK_SUCCESS) {
+		php_vk_set_errorf("vkQueueSubmit failed: %d", (int) r);
+		return (int) r;
+	}
+
+	VkPresentInfoKHR present;
+	memset(&present, 0, sizeof(present));
+	present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	present.waitSemaphoreCount = 1;
+	present.pWaitSemaphores = &sc->render_finished;
+	present.swapchainCount = 1;
+	present.pSwapchains = &sc->swapchain;
+	present.pImageIndices = &image_index;
+
+	r = vkQueuePresentKHR(sc->queue, &present);
+	if (r == VK_ERROR_OUT_OF_DATE_KHR || r == VK_SUBOPTIMAL_KHR) {
+		return (int) r;
+	}
+	if (r != VK_SUCCESS) {
+		php_vk_set_errorf("vkQueuePresentKHR failed: %d", (int) r);
+		return (int) r;
+	}
+	return 0;
+}
+
+int php_vk_swapchain_present_rgba8(
+	uintptr_t swapchain,
+	const uint8_t *pixels,
+	uint32_t width,
+	uint32_t height,
+	float scale_x,
+	float scale_y,
+	float clear_r,
+	float clear_g,
+	float clear_b,
+	float clear_a
+) {
+	php_vk_swapchain *sc = (php_vk_swapchain *) swapchain;
+	if (!sc || !sc->device || !pixels || width == 0 || height == 0) {
+		php_vk_set_error("present_rgba8: bad args");
+		return -1;
+	}
+	if (scale_x <= 0.0f) {
+		scale_x = 1.0f;
+	}
+	if (scale_y <= 0.0f) {
+		scale_y = 1.0f;
+	}
+
+	uint8_t clear_ru = (uint8_t) lroundf(clear_r * 255.0f);
+	uint8_t clear_gu = (uint8_t) lroundf(clear_g * 255.0f);
+	uint8_t clear_bu = (uint8_t) lroundf(clear_b * 255.0f);
+	uint8_t clear_au = (uint8_t) lroundf(clear_a * 255.0f);
+
+	vkWaitForFences(sc->device, 1, &sc->in_flight, VK_TRUE, UINT64_MAX);
+	vkResetFences(sc->device, 1, &sc->in_flight);
+
+	uint32_t image_index = 0;
+	VkResult r = vkAcquireNextImageKHR(
+		sc->device,
+		sc->swapchain,
+		UINT64_MAX,
+		sc->image_available,
+		VK_NULL_HANDLE,
+		&image_index
+	);
+	if (r == VK_ERROR_OUT_OF_DATE_KHR) {
+		return (int) r;
+	}
+	if (r != VK_SUCCESS && r != VK_SUBOPTIMAL_KHR) {
+		php_vk_set_errorf("vkAcquireNextImageKHR failed: %d", (int) r);
+		return (int) r;
+	}
+
+	VkCommandBuffer cmd = sc->command_buffers[image_index];
+	vkResetCommandBuffer(cmd, 0);
+
+	VkCommandBufferBeginInfo begin;
+	memset(&begin, 0, sizeof(begin));
+	begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	vkBeginCommandBuffer(cmd, &begin);
+
+	VkClearValue clear_value;
+	memset(&clear_value, 0, sizeof(clear_value));
+	clear_value.color.float32[0] = clear_r;
+	clear_value.color.float32[1] = clear_g;
+	clear_value.color.float32[2] = clear_b;
+	clear_value.color.float32[3] = clear_a;
+
+	VkRenderPassBeginInfo rpbi;
+	memset(&rpbi, 0, sizeof(rpbi));
+	rpbi.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	rpbi.renderPass = sc->render_pass;
+	rpbi.framebuffer = sc->framebuffers[image_index];
+	rpbi.renderArea.offset.x = 0;
+	rpbi.renderArea.offset.y = 0;
+	rpbi.renderArea.extent = sc->extent;
+	rpbi.clearValueCount = 1;
+	rpbi.pClearValues = &clear_value;
+
+	vkCmdBeginRenderPass(cmd, &rpbi, VK_SUBPASS_CONTENTS_INLINE);
+
+	for (uint32_t y = 0; y < height; y++) {
+		const uint8_t *row = pixels + ((size_t) y * (size_t) width * 4u);
+		uint32_t x = 0;
+		while (x < width) {
+			const uint8_t *p = row + ((size_t) x * 4u);
+			uint8_t r8 = p[0], g8 = p[1], b8 = p[2], a8 = p[3];
+			if (r8 == clear_ru && g8 == clear_gu && b8 == clear_bu && a8 == clear_au) {
+				x++;
+				continue;
+			}
+			uint32_t x0 = x;
+			x++;
+			while (x < width) {
+				const uint8_t *q = row + ((size_t) x * 4u);
+				if (q[0] != r8 || q[1] != g8 || q[2] != b8 || q[3] != a8) {
+					break;
+				}
+				x++;
+			}
+			int rx = (int) lroundf((float) x0 * scale_x);
+			int ry = (int) lroundf((float) y * scale_y);
+			int rw = (int) lroundf((float) (x - x0) * scale_x);
+			int rh = (int) lroundf(scale_y);
+			if (rw < 1) {
+				rw = 1;
+			}
+			if (rh < 1) {
+				rh = 1;
+			}
+			php_vk_clear_rect(
+				cmd,
+				rx,
+				ry,
+				rw,
+				rh,
+				(float) r8 / 255.0f,
+				(float) g8 / 255.0f,
+				(float) b8 / 255.0f,
+				(float) a8 / 255.0f,
+				sc->extent.width,
+				sc->extent.height
+			);
+		}
 	}
 
 	vkCmdEndRenderPass(cmd);

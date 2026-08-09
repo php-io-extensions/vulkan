@@ -39,7 +39,7 @@ php -n -d extension="$(pwd)/modules/vulkan.so" --ri vulkan
 
 3. Run demo (needs glfw peer) — see [demo loop](/playbooks/demo-loop.md).
 
-4. Commit regenerable artifacts that belong in git (`ext/` sources, `config.m4`, `ide/0.7.0/` stubs) — not phpize junk.
+4. Commit regenerable artifacts that belong in git (`ext/` sources, `config.m4`, `ide/0.7.1/` stubs) — not phpize junk.
 
 5. Update `.okf` + `log.md` if the public surface changed.
 

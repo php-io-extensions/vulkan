@@ -401,4 +401,46 @@ class Vk
         }%
         return result;
     }
+
+    /**
+     * Present one frame from a packed RGBA8 buffer (width*height*4 bytes).
+     * scaleX/scaleY map logical pixels to framebuffer pixels (Retina).
+     * @return 0 success; OUT_OF_DATE / SUBOPTIMAL may occur
+     */
+    public static function presentRgba8(
+        <VkSwapchain> swapchain,
+        string pixels,
+        int width,
+        int height,
+        float scaleX = 1.0,
+        float scaleY = 1.0,
+        float clearR = 0.0,
+        float clearG = 0.0,
+        float clearB = 0.0,
+        float clearA = 1.0
+    ) -> int {
+        int result = -1;
+        int fd = 0;
+        let fd = (int) swapchain->fd;
+        %{
+            size_t need = (size_t) width * (size_t) height * 4u;
+            if (width <= 0 || height <= 0 || Z_STRLEN(pixels) < need) {
+                result = -1;
+            } else {
+                result = (zend_long) php_vk_swapchain_present_rgba8(
+                    (uintptr_t) fd,
+                    (const uint8_t *) Z_STRVAL(pixels),
+                    (uint32_t) width,
+                    (uint32_t) height,
+                    (float) scaleX,
+                    (float) scaleY,
+                    (float) clearR,
+                    (float) clearG,
+                    (float) clearB,
+                    (float) clearA
+                );
+            }
+        }%
+        return result;
+    }
 }

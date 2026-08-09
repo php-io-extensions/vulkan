@@ -3,7 +3,7 @@
     "name": "vulkan",
     "description": "PHP-Controllable Vulkan Rendering Extension",
     "author": "Project Saturn Studios, LLC",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "extra-sources": [
         "src/vulkan-api.c"
     ],

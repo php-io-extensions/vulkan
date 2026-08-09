@@ -10,4 +10,6 @@
 * **Packaging**: installers landed; `ide/0.5.0` stubs generated; `scripts/prepare-ext.sh` leaves deploy-ready `ext/` (no Makefile/configure/modules).
 
 ## 2026-08-09
-* **Version bump**: Package/docs line promoted to **0.7.0 / 0.7.x** for publish alignment with metal/open-gl.
+* **Version bump**: Package → **`0.7.1`** (`composer.json`, `config.json`, `PHP_VULKAN_VERSION`, stubs `ide/0.7.1/`). Ready to push before publish.
+* **Present mode**: `createSwapchain` / rebuild prefers MAILBOX → IMMEDIATE → FIFO (was hard FIFO). Avoids ~30fps half-rate with tubes MetalCanvas when frames >16.6ms; sketch `FramePaceNode` paces. Sync `src/vulkan-api.c` + `ext/src/vulkan-api.c`.
+* **Version bump**: Package/docs line promoted to **0.7.0 / 0.7.x** for publish alignment with metal/open-gl. (Superseded by 0.7.1 above.)

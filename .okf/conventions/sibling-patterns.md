@@ -29,9 +29,9 @@ sources:
 | PIE `type: php-ext`, `build-path: ext` | siblings | Same layout in `composer.json`[^composer] |
 | `prepare-ext.sh` + REGISTER fixup | open-gl / metal | Zephir generate → portable `ext/`[^prepare] |
 | Windowing as **peer** | open-gl | glfw creates surface; this package wraps it |
-| Version `0.7.0`, PHP ≥ 8.2 | open-gl | Aligned release |
+| Version `0.7.1`, PHP ≥ 8.2 | open-gl | Aligned release |
 | Windows excluded | glfw / sdl3 / open-gl | `os-families-exclude: ["windows"]` |
-| IDE stubs path | siblings | `ide/0.7.0/Vulkan/Vk/` |
+| IDE stubs path | siblings | `ide/0.7.1/Vulkan/Vk/` |
 
 # Not borrowed
 

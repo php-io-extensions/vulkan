@@ -17,6 +17,7 @@ PHP_METHOD(Vulkan_Vk_Vk, createSwapchain);
 PHP_METHOD(Vulkan_Vk_Vk, destroySwapchain);
 PHP_METHOD(Vulkan_Vk_Vk, resizeSwapchain);
 PHP_METHOD(Vulkan_Vk_Vk, presentFrame);
+PHP_METHOD(Vulkan_Vk_Vk, presentRgba8);
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_vk_vk_lasterror, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -121,6 +122,19 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_vk_vk_presentframe, 0, 4,
 	ZEND_ARG_TYPE_INFO(0, accentA, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_vk_vk_presentrgba8, 0, 4, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, swapchain, Vulkan\\Vk\\VkSwapchain, 0)
+	ZEND_ARG_TYPE_INFO(0, pixels, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, scaleX, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, scaleY, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, clearR, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, clearG, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, clearB, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, clearA, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
 ZEPHIR_INIT_FUNCS(vulkan_vk_vk_method_entry) {
 	PHP_ME(Vulkan_Vk_Vk, lastError, arginfo_vulkan_vk_vk_lasterror, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Vulkan_Vk_Vk, createInstance, arginfo_vulkan_vk_vk_createinstance, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -136,5 +150,6 @@ ZEPHIR_INIT_FUNCS(vulkan_vk_vk_method_entry) {
 	PHP_ME(Vulkan_Vk_Vk, destroySwapchain, arginfo_vulkan_vk_vk_destroyswapchain, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Vulkan_Vk_Vk, resizeSwapchain, arginfo_vulkan_vk_vk_resizeswapchain, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Vulkan_Vk_Vk, presentFrame, arginfo_vulkan_vk_vk_presentframe, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Vk_Vk, presentRgba8, arginfo_vulkan_vk_vk_presentrgba8, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_FE_END
 };

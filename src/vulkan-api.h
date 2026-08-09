@@ -99,6 +99,25 @@ int php_vk_swapchain_frame(
 	float accent_a
 );
 
+/**
+ * Acquire → clear → paint packed RGBA8 pixels as horizontal clearAttachment runs → present.
+ * pixels is width*height*4 bytes (R,G,B,A). Pixels matching clear are skipped (bg already cleared).
+ * Coordinates are logical; scale_x/scale_y map to FB pixels.
+ * @return 0 on success, VkResult on failure
+ */
+int php_vk_swapchain_present_rgba8(
+	uintptr_t swapchain,
+	const uint8_t *pixels,
+	uint32_t width,
+	uint32_t height,
+	float scale_x,
+	float scale_y,
+	float clear_r,
+	float clear_g,
+	float clear_b,
+	float clear_a
+);
+
 uint32_t php_vk_swapchain_width(uintptr_t swapchain);
 uint32_t php_vk_swapchain_height(uintptr_t swapchain);
 uint32_t php_vk_swapchain_image_count(uintptr_t swapchain);

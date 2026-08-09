@@ -167,7 +167,7 @@ PHP_METHOD(Vulkan_Vk_Vk, destroyInstance)
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1);
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_OBJECT_OF_CLASS(instance, vulkan_vk_vkinstance_ce)
+		Z_PARAM_OBJECT_OF_CLASS(instance, zephir_get_internal_ce(SL("vulkan\\vk\\vkinstance")))
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
 	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
@@ -201,7 +201,7 @@ PHP_METHOD(Vulkan_Vk_Vk, enumeratePhysicalDevices)
 	ZVAL_UNDEF(&result);
 	ZVAL_UNDEF(&name);
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_OBJECT_OF_CLASS(instance, vulkan_vk_vkinstance_ce)
+		Z_PARAM_OBJECT_OF_CLASS(instance, zephir_get_internal_ce(SL("vulkan\\vk\\vkinstance")))
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
 	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
@@ -277,8 +277,8 @@ PHP_METHOD(Vulkan_Vk_Vk, findGraphicsPresentQueue)
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1);
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_OBJECT_OF_CLASS(physical, vulkan_vk_vkphysicaldevice_ce)
-		Z_PARAM_OBJECT_OF_CLASS(surface, vulkan_vk_vksurface_ce)
+		Z_PARAM_OBJECT_OF_CLASS(physical, zephir_get_internal_ce(SL("vulkan\\vk\\vkphysicaldevice")))
+		Z_PARAM_OBJECT_OF_CLASS(surface, zephir_get_internal_ce(SL("vulkan\\vk\\vksurface")))
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
 	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
@@ -309,7 +309,7 @@ PHP_METHOD(Vulkan_Vk_Vk, createDevice)
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1);
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_OBJECT_OF_CLASS(physical, vulkan_vk_vkphysicaldevice_ce)
+		Z_PARAM_OBJECT_OF_CLASS(physical, zephir_get_internal_ce(SL("vulkan\\vk\\vkphysicaldevice")))
 		Z_PARAM_LONG(queueFamily)
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
@@ -349,7 +349,7 @@ PHP_METHOD(Vulkan_Vk_Vk, destroyDevice)
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1);
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_OBJECT_OF_CLASS(device, vulkan_vk_vkdevice_ce)
+		Z_PARAM_OBJECT_OF_CLASS(device, zephir_get_internal_ce(SL("vulkan\\vk\\vkdevice")))
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
 	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
@@ -382,7 +382,7 @@ PHP_METHOD(Vulkan_Vk_Vk, getDeviceQueue)
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1);
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_OBJECT_OF_CLASS(device, vulkan_vk_vkdevice_ce)
+		Z_PARAM_OBJECT_OF_CLASS(device, zephir_get_internal_ce(SL("vulkan\\vk\\vkdevice")))
 		Z_PARAM_LONG(queueFamily)
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
@@ -454,8 +454,8 @@ PHP_METHOD(Vulkan_Vk_Vk, destroySurface)
 	ZVAL_UNDEF(&_1);
 	ZVAL_UNDEF(&_2);
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_OBJECT_OF_CLASS(instance, vulkan_vk_vkinstance_ce)
-		Z_PARAM_OBJECT_OF_CLASS(surface, vulkan_vk_vksurface_ce)
+		Z_PARAM_OBJECT_OF_CLASS(instance, zephir_get_internal_ce(SL("vulkan\\vk\\vkinstance")))
+		Z_PARAM_OBJECT_OF_CLASS(surface, zephir_get_internal_ce(SL("vulkan\\vk\\vksurface")))
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
 	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
@@ -497,11 +497,11 @@ PHP_METHOD(Vulkan_Vk_Vk, createSwapchain)
 	ZVAL_UNDEF(&_4);
 	ZVAL_UNDEF(&_5);
 	ZEND_PARSE_PARAMETERS_START(7, 7)
-		Z_PARAM_OBJECT_OF_CLASS(instance, vulkan_vk_vkinstance_ce)
-		Z_PARAM_OBJECT_OF_CLASS(physical, vulkan_vk_vkphysicaldevice_ce)
-		Z_PARAM_OBJECT_OF_CLASS(device, vulkan_vk_vkdevice_ce)
-		Z_PARAM_OBJECT_OF_CLASS(queue, vulkan_vk_vkqueue_ce)
-		Z_PARAM_OBJECT_OF_CLASS(surface, vulkan_vk_vksurface_ce)
+		Z_PARAM_OBJECT_OF_CLASS(instance, zephir_get_internal_ce(SL("vulkan\\vk\\vkinstance")))
+		Z_PARAM_OBJECT_OF_CLASS(physical, zephir_get_internal_ce(SL("vulkan\\vk\\vkphysicaldevice")))
+		Z_PARAM_OBJECT_OF_CLASS(device, zephir_get_internal_ce(SL("vulkan\\vk\\vkdevice")))
+		Z_PARAM_OBJECT_OF_CLASS(queue, zephir_get_internal_ce(SL("vulkan\\vk\\vkqueue")))
+		Z_PARAM_OBJECT_OF_CLASS(surface, zephir_get_internal_ce(SL("vulkan\\vk\\vksurface")))
 		Z_PARAM_LONG(width)
 		Z_PARAM_LONG(height)
 	ZEND_PARSE_PARAMETERS_END();
@@ -585,7 +585,7 @@ PHP_METHOD(Vulkan_Vk_Vk, destroySwapchain)
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1);
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_OBJECT_OF_CLASS(swapchain, vulkan_vk_vkswapchain_ce)
+		Z_PARAM_OBJECT_OF_CLASS(swapchain, zephir_get_internal_ce(SL("vulkan\\vk\\vkswapchain")))
 	ZEND_PARSE_PARAMETERS_END();
 	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
 	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
@@ -626,7 +626,7 @@ PHP_METHOD(Vulkan_Vk_Vk, resizeSwapchain)
 	ZVAL_UNDEF(&_0);
 	ZVAL_UNDEF(&_1$$3);
 	ZEND_PARSE_PARAMETERS_START(3, 3)
-		Z_PARAM_OBJECT_OF_CLASS(swapchain, vulkan_vk_vkswapchain_ce)
+		Z_PARAM_OBJECT_OF_CLASS(swapchain, zephir_get_internal_ce(SL("vulkan\\vk\\vkswapchain")))
 		Z_PARAM_LONG(width)
 		Z_PARAM_LONG(height)
 	ZEND_PARSE_PARAMETERS_END();
@@ -684,7 +684,7 @@ PHP_METHOD(Vulkan_Vk_Vk, presentFrame)
 	ZVAL_UNDEF(&swapchain_sub);
 	ZVAL_UNDEF(&_0);
 	ZEND_PARSE_PARAMETERS_START(4, 32)
-		Z_PARAM_OBJECT_OF_CLASS(swapchain, vulkan_vk_vkswapchain_ce)
+		Z_PARAM_OBJECT_OF_CLASS(swapchain, zephir_get_internal_ce(SL("vulkan\\vk\\vkswapchain")))
 		Z_PARAM_ZVAL(clearR)
 		Z_PARAM_ZVAL(clearG)
 		Z_PARAM_ZVAL(clearB)
@@ -901,6 +901,96 @@ PHP_METHOD(Vulkan_Vk_Vk, presentFrame)
                 (float) accentB,
                 (float) accentA
             );
+        
+	RETURN_MM_LONG(result);
+}
+
+/**
+ * Present one frame from a packed RGBA8 buffer (width*height*4 bytes).
+ * scaleX/scaleY map logical pixels to framebuffer pixels (Retina).
+ * @return 0 success; OUT_OF_DATE / SUBOPTIMAL may occur
+ */
+PHP_METHOD(Vulkan_Vk_Vk, presentRgba8)
+{
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+	double scaleX, scaleY, clearR, clearG, clearB, clearA;
+	zend_long width, height, result, fd;
+	zval pixels;
+	zval *swapchain, swapchain_sub, *pixels_param = NULL, *width_param = NULL, *height_param = NULL, *scaleX_param = NULL, *scaleY_param = NULL, *clearR_param = NULL, *clearG_param = NULL, *clearB_param = NULL, *clearA_param = NULL, _0;
+
+	ZVAL_UNDEF(&swapchain_sub);
+	ZVAL_UNDEF(&_0);
+	ZVAL_UNDEF(&pixels);
+	ZEND_PARSE_PARAMETERS_START(4, 10)
+		Z_PARAM_OBJECT_OF_CLASS(swapchain, zephir_get_internal_ce(SL("vulkan\\vk\\vkswapchain")))
+		Z_PARAM_STR(pixels)
+		Z_PARAM_LONG(width)
+		Z_PARAM_LONG(height)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_ZVAL(scaleX)
+		Z_PARAM_ZVAL(scaleY)
+		Z_PARAM_ZVAL(clearR)
+		Z_PARAM_ZVAL(clearG)
+		Z_PARAM_ZVAL(clearB)
+		Z_PARAM_ZVAL(clearA)
+	ZEND_PARSE_PARAMETERS_END();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+	zephir_fetch_params(1, 4, 6, &swapchain, &pixels_param, &width_param, &height_param, &scaleX_param, &scaleY_param, &clearR_param, &clearG_param, &clearB_param, &clearA_param);
+	zephir_get_strval(&pixels, pixels_param);
+	if (!scaleX_param) {
+		scaleX = 1.0;
+	} else {
+		scaleX = zephir_get_doubleval(scaleX_param);
+	}
+	if (!scaleY_param) {
+		scaleY = 1.0;
+	} else {
+		scaleY = zephir_get_doubleval(scaleY_param);
+	}
+	if (!clearR_param) {
+		clearR = 0.0;
+	} else {
+		clearR = zephir_get_doubleval(clearR_param);
+	}
+	if (!clearG_param) {
+		clearG = 0.0;
+	} else {
+		clearG = zephir_get_doubleval(clearG_param);
+	}
+	if (!clearB_param) {
+		clearB = 0.0;
+	} else {
+		clearB = zephir_get_doubleval(clearB_param);
+	}
+	if (!clearA_param) {
+		clearA = 1.0;
+	} else {
+		clearA = zephir_get_doubleval(clearA_param);
+	}
+	result = -1;
+	fd = 0;
+	zephir_memory_observe(&_0);
+	zephir_read_property(&_0, swapchain, ZEND_STRL("fd"), PH_NOISY_CC);
+	fd = zephir_get_intval(&_0);
+	
+            size_t need = (size_t) width * (size_t) height * 4u;
+            if (width <= 0 || height <= 0 || Z_STRLEN(pixels) < need) {
+                result = -1;
+            } else {
+                result = (zend_long) php_vk_swapchain_present_rgba8(
+                    (uintptr_t) fd,
+                    (const uint8_t *) Z_STRVAL(pixels),
+                    (uint32_t) width,
+                    (uint32_t) height,
+                    (float) scaleX,
+                    (float) scaleY,
+                    (float) clearR,
+                    (float) clearG,
+                    (float) clearB,
+                    (float) clearA
+                );
+            }
         
 	RETURN_MM_LONG(result);
 }
