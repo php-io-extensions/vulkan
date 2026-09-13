@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR);
+
+PHP_METHOD(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, pack);
+PHP_METHOD(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, packInto);
+PHP_METHOD(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, unpack);
+PHP_METHOD(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_method_entry) {
+	PHP_ME(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, pack, arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, packInto, arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, unpack, arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkSurfaceFormatKHR_VkSurfaceFormatKHR, size, arginfo_vulkan_struct_vksurfaceformatkhr_vksurfaceformatkhr_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

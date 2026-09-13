@@ -1,17 +1,41 @@
 #!/bin/bash
-
-# macOS installer for the Vulkan Zephir extension.
-# - Verifies Vulkan loader (pkg-config) + MoltenVK ICD when present
-# - Builds via scripts/prepare-ext.sh + phpize/configure/make
-# - Installs .so and enables for detected SAPIs
-# - Finds zephir automatically or respects $ZEPHIR_BIN
+#
+# macOS installer for the vulkan Zephir extension.
+#
+# The extension itself is dual-platform (see build-linux.sh for the Debian
+# side); only this installer is Darwin-specific.
+#
+#   prepare-ext → phpize → configure --enable-vulkan → make
+#   → cp → xattr -cr + codesign --force --sign -
+#   → 30-vulkan.ini → php -m / php --ri vulkan
+#
+# A copied Mach-O is SIGKILLed on Apple Silicon unless it is ad-hoc
+# re-signed after cp. Respects $ZEPHIR_BIN.
 
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXTENSION_NAME="vulkan"
-BUILD_SO="${SCRIPT_DIR}/ext/modules/${EXTENSION_NAME}.so"
+# config.json is the single source of truth: zephir generates ext/php_vulkan.h
+# from it. composer.json is the one copy nothing generates, so it is asserted
+# against config.json rather than trusted.
+EXPECTED_VERSION="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${SCRIPT_DIR}/config.json" | head -1)"
+COMPOSER_VERSION="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${SCRIPT_DIR}/composer.json" | head -1)"
 LOG_FILE="${SCRIPT_DIR}/build.log"
+BUILD_ROOT="${SCRIPT_DIR}"
+BUILD_TMP=""
+
+cleanup_build_tmp() {
+    if [ -n "${BUILD_TMP}" ] && [ -d "${BUILD_TMP}" ]; then
+        rm -rf "${BUILD_TMP}"
+    fi
+}
+trap cleanup_build_tmp EXIT
+
+if [ "$(uname -s)" != "Darwin" ]; then
+    echo "❌ vulkan is macOS (Darwin) only."
+    exit 1
+fi
 
 if [ "${EUID:-$(id -u)}" -ne 0 ]; then
     SUDO="sudo"
@@ -19,30 +43,19 @@ else
     SUDO=""
 fi
 
-die() {
-    echo ""
-    echo "❌ $*"
-    exit 1
-}
+die()  { echo ""; echo "❌ $*"; exit 1; }
+step() { echo "$*"; }
+ok()   { echo "   ✓ $*"; }
+
+if [ -z "${EXPECTED_VERSION}" ]; then
+    die "Could not read \"version\" from config.json"
+fi
+if [ "${COMPOSER_VERSION}" != "${EXPECTED_VERSION}" ]; then
+    die "Version mismatch: config.json is ${EXPECTED_VERSION}, composer.json is ${COMPOSER_VERSION}"
+fi
 
 require_cmd() {
-    local cmd="$1"
-    command -v "$cmd" >/dev/null 2>&1 || die "Required command not found: $cmd"
-}
-
-header() {
-    echo "=========================================="
-    echo "Vulkan Extension Installer (macOS)"
-    echo "=========================================="
-    echo ""
-}
-
-step() {
-    echo "$*"
-}
-
-ok() {
-    echo "   ✓ $*"
+    command -v "$1" >/dev/null 2>&1 || die "Required command not found: $1"
 }
 
 show_failure_logs() {
@@ -54,47 +67,17 @@ show_failure_logs() {
         echo "---- Last 80 lines of ${LOG_FILE} ----"
         tail -80 "$LOG_FILE" || true
     fi
-    if [ -f "${SCRIPT_DIR}/compile-errors.log" ]; then
-        echo ""
-        echo "---- Last 120 lines of compile-errors.log ----"
-        tail -120 "${SCRIPT_DIR}/compile-errors.log" || true
-    fi
 }
 
-ensure_vulkan_macos() {
-    step "🖼️  Verifying Vulkan loader + MoltenVK..."
-
-    export PKG_CONFIG_PATH="/opt/homebrew/lib/pkgconfig:/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
-
-    if ! command -v pkg-config >/dev/null 2>&1; then
-        die "pkg-config is required."
-    fi
-    if ! pkg-config --exists vulkan; then
-        die "pkg-config vulkan not found. brew install vulkan-headers vulkan-loader molten-vk"
-    fi
-    ok "vulkan pkg-config: $(pkg-config --modversion vulkan)"
-
-    if [ -f /opt/homebrew/etc/vulkan/icd.d/MoltenVK_icd.json ]; then
-        export VK_ICD_FILENAMES=/opt/homebrew/etc/vulkan/icd.d/MoltenVK_icd.json
-        export VK_DRIVER_FILES="$VK_ICD_FILENAMES"
-        ok "MoltenVK ICD: $VK_ICD_FILENAMES"
-    elif [ -f /usr/local/etc/vulkan/icd.d/MoltenVK_icd.json ]; then
-        export VK_ICD_FILENAMES=/usr/local/etc/vulkan/icd.d/MoltenVK_icd.json
-        export VK_DRIVER_FILES="$VK_ICD_FILENAMES"
-        ok "MoltenVK ICD: $VK_ICD_FILENAMES"
-    else
-        echo "   ⚠️  MoltenVK ICD JSON not found; createInstance may fail without VK_ICD_FILENAMES"
-    fi
-}
-
-header
+echo "=========================================="
+echo " Vulkan Extension Installer (macOS)"
+echo "=========================================="
+echo ""
 
 step "🔎 Preflight checks..."
 require_cmd php
-require_cmd php-config
-require_cmd phpize
 require_cmd make
-require_cmd python3
+require_cmd codesign
 
 if [ -n "${ZEPHIR_BIN:-}" ]; then
     ZEPHIR="$ZEPHIR_BIN"
@@ -105,43 +88,79 @@ elif [ -x "$HOME/.composer/vendor/bin/zephir" ]; then
 elif [ -x "$HOME/.config/composer/vendor/bin/zephir" ]; then
     ZEPHIR="$HOME/.config/composer/vendor/bin/zephir"
 else
-    die "Zephir not found. Install via composer (composer global require phalcon/zephir) or set ZEPHIR_BIN."
+    die "Zephir not found. Install via: composer global require phalcon/zephir  (or set ZEPHIR_BIN)"
 fi
 ok "Found zephir: $ZEPHIR"
 export ZEPHIR_BIN="$ZEPHIR"
 
-ensure_vulkan_macos
+step "🌋 Verifying the Vulkan loader and MoltenVK (Homebrew)..."
+command -v brew >/dev/null 2>&1 || die "Homebrew is required: ext-vulkan links the loader and MoltenVK is the ICD"
+for pkg in vulkan-headers vulkan-loader molten-vk; do
+    brew --prefix "$pkg" >/dev/null 2>&1 \
+        || die "brew install ${pkg}  (ext-vulkan links the loader; MoltenVK is the ICD)"
+    ok "${pkg} $(brew list --versions "$pkg" | awk '{print $2}')"
+done
+[ -f /opt/homebrew/etc/vulkan/icd.d/MoltenVK_icd.json ] \
+    || die "MoltenVK ICD manifest not found under /opt/homebrew/etc/vulkan/icd.d"
+ok "MoltenVK ICD manifest present"
+[ -f /opt/homebrew/lib/libvulkan.1.dylib ] \
+    || die "/opt/homebrew/lib/libvulkan.1.dylib not found; brew install vulkan-loader"
+ok "libvulkan.1.dylib present"
 
 PHP_VER_MM="$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')"
-PHP_VER_NN="$(php -r 'echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;')"
-
 PHP_BIN_REAL="$(php -r 'echo PHP_BINARY;' 2>/dev/null)"
 PHP_BIN_DIR="$(dirname "$PHP_BIN_REAL")"
-RESOLVED_PHP_CONFIG="${PHP_BIN_DIR}/php-config"
+_PHP_VER_NODOT="${PHP_VER_MM//./}"
 
-if [ -x "$RESOLVED_PHP_CONFIG" ]; then
-    PHP_EXT_DIR="$("$RESOLVED_PHP_CONFIG" --extension-dir)"
-elif command -v php-config >/dev/null 2>&1; then
-    PHP_EXT_DIR="$(php-config --extension-dir)"
-else
-    die "Could not locate php-config."
-fi
+# php-config / phpize next to the PHP binary first (Herd, asdf, versioned names).
+# Autoconf cannot handle whitespace in --with-php-config even when quoted.
+RESOLVED_PHP_CONFIG=""
+for _candidate in \
+    "${PHP_BIN_DIR}/php-config${_PHP_VER_NODOT}" \
+    "${PHP_BIN_DIR}/php-config" \
+    "$(command -v "php-config${_PHP_VER_NODOT}" 2>/dev/null || true)" \
+    "$(command -v php-config 2>/dev/null || true)"
+do
+    if [ -x "$_candidate" ]; then
+        RESOLVED_PHP_CONFIG="$_candidate"
+        break
+    fi
+done
+[ -n "$RESOLVED_PHP_CONFIG" ] || die "Could not locate php-config. Install php-dev or set PHP_CONFIG."
+
+RESOLVED_PHPIZE=""
+for _candidate in \
+    "${PHP_BIN_DIR}/phpize${_PHP_VER_NODOT}" \
+    "${PHP_BIN_DIR}/phpize" \
+    "$(command -v "phpize${_PHP_VER_NODOT}" 2>/dev/null || true)" \
+    "$(command -v phpize 2>/dev/null || true)"
+do
+    if [ -x "$_candidate" ]; then
+        RESOLVED_PHPIZE="$_candidate"
+        break
+    fi
+done
+[ -n "$RESOLVED_PHPIZE" ] || die "Could not locate phpize."
+
+PHP_EXT_DIR="$("$RESOLVED_PHP_CONFIG" --extension-dir)"
 [ -n "$PHP_EXT_DIR" ] || die "Could not determine PHP extension dir."
 
 CLI_SCAN_DIR="$(php --ini 2>/dev/null | awk -F': ' '/Scan for additional \.ini files in:/{print $2}' || true)"
-if [ -n "$CLI_SCAN_DIR" ] && [ -d "$CLI_SCAN_DIR" ] && ls "$CLI_SCAN_DIR"/*.so >/dev/null 2>&1; then
+if [ -n "$CLI_SCAN_DIR" ] && [ "$CLI_SCAN_DIR" != "(none)" ] && [ -d "$CLI_SCAN_DIR" ] && \
+   ls "$CLI_SCAN_DIR"/*.so >/dev/null 2>&1; then
     PHP_EXT_DIR="$CLI_SCAN_DIR"
 fi
 
-ok "PHP version: ${PHP_VER_MM}"
-ok "PHP binary: ${PHP_BIN_REAL}"
+ok "PHP version:   ${PHP_VER_MM}"
+ok "PHP binary:    ${PHP_BIN_REAL}"
+ok "php-config:    ${RESOLVED_PHP_CONFIG}"
 ok "Extension dir: ${PHP_EXT_DIR}"
 
-export CFLAGS="-Wno-error -Wno-error=incompatible-pointer-types -Wno-pointer-compare"
-export CPPFLAGS="${CPPFLAGS:-} -Wno-error -Wno-error=incompatible-pointer-types"
+export CFLAGS="${CFLAGS:-} -Wno-error -Wno-error=incompatible-pointer-types -Wno-pointer-compare"
+export CPPFLAGS="${CPPFLAGS:-} -Wno-error -Wno-error=incompatible-pointer-types -I/opt/homebrew/include"
 echo ""
 
-step "🧹 Preparing extension sources..."
+step "📦 prepare-ext (zephir generate, stage src/, patch config.m4)..."
 cd "${SCRIPT_DIR}"
 : >"$LOG_FILE"
 if ! bash "${SCRIPT_DIR}/scripts/prepare-ext.sh" >>"$LOG_FILE" 2>&1; then
@@ -151,17 +170,40 @@ fi
 ok "Sources prepared"
 echo ""
 
-step "🔨 Building extension..."
-cd "${SCRIPT_DIR}/ext"
-if ! phpize >>"$LOG_FILE" 2>&1; then
+# Homebrew phpize rejects whitespace in the build cwd ("vulkan copy", etc.).
+step "🔨 phpize / configure --enable-vulkan / make..."
+case "${SCRIPT_DIR}" in
+    *\ * | *$'\t'*)
+        BUILD_TMP="$(mktemp -d "${TMPDIR:-/tmp}/vulkan-ext-build.XXXXXX")"
+        case "${BUILD_TMP}" in
+            *\ * | *$'\t'*)
+                die "Temp build dir still contains whitespace: ${BUILD_TMP}. Set TMPDIR to a path without spaces."
+                ;;
+        esac
+        step "   Staging build in ${BUILD_TMP} (phpize forbids whitespace in source path)..."
+        if command -v rsync >/dev/null 2>&1; then
+            rsync -a --delete "${SCRIPT_DIR}/ext/" "${BUILD_TMP}/ext/"
+        else
+            rm -rf "${BUILD_TMP}/ext"
+            mkdir -p "${BUILD_TMP}/ext"
+            cp -R "${SCRIPT_DIR}/ext/." "${BUILD_TMP}/ext/"
+        fi
+        BUILD_ROOT="${BUILD_TMP}"
+        ok "Staged space-free build tree"
+        ;;
+esac
+
+BUILD_SO="${BUILD_ROOT}/ext/modules/${EXTENSION_NAME}.so"
+cd "${BUILD_ROOT}/ext"
+if ! "$RESOLVED_PHPIZE" >>"$LOG_FILE" 2>&1; then
     show_failure_logs
     die "phpize failed. See ${LOG_FILE}."
 fi
-if ! ./configure --enable-vulkan >>"$LOG_FILE" 2>&1; then
+if ! ./configure --enable-vulkan "--with-php-config=${RESOLVED_PHP_CONFIG}" >>"$LOG_FILE" 2>&1; then
     show_failure_logs
-    die "configure failed. See ${LOG_FILE}."
+    die "configure --enable-vulkan failed. See ${LOG_FILE}."
 fi
-if ! make -j1 >>"$LOG_FILE" 2>&1; then
+if ! make -j"$(sysctl -n hw.logicalcpu 2>/dev/null || echo 2)" >>"$LOG_FILE" 2>&1; then
     show_failure_logs
     die "make failed. See ${LOG_FILE}."
 fi
@@ -173,77 +215,80 @@ ok "Build complete"
 echo ""
 
 step "📦 Installing binary..."
+PHP_EXT_DIR="${PHP_EXT_DIR%/}"
 $SUDO mkdir -p "$PHP_EXT_DIR"
 $SUDO cp -f "$BUILD_SO" "${PHP_EXT_DIR}/${EXTENSION_NAME}.so"
 $SUDO chmod 755 "${PHP_EXT_DIR}/${EXTENSION_NAME}.so"
-ok "Copied to: ${PHP_EXT_DIR}/${EXTENSION_NAME}.so"
+# Copied Mach-O pages invalidate the linker-signed adhoc seal → SIGKILL.
+$SUDO xattr -cr "${PHP_EXT_DIR}/${EXTENSION_NAME}.so" 2>/dev/null || true
+$SUDO codesign --force --sign - "${PHP_EXT_DIR}/${EXTENSION_NAME}.so"
+sleep 2
+ok "Copied, xattr-cleared, and adhoc-signed: ${PHP_EXT_DIR}/${EXTENSION_NAME}.so"
 echo ""
 
-step "⚙️  Enabling extension..."
+step "⚙️  Enabling extension (30-vulkan.ini)..."
 declare -a CONF_DIR_CANDIDATES=()
 
-if [ -n "$CLI_SCAN_DIR" ] && [ "$CLI_SCAN_DIR" != "(none)" ] && [ -d "$CLI_SCAN_DIR" ]; then
+if [ -n "${CLI_SCAN_DIR:-}" ] && [ "$CLI_SCAN_DIR" != "(none)" ] && [ -d "$CLI_SCAN_DIR" ]; then
     CONF_DIR_CANDIDATES+=("$CLI_SCAN_DIR")
 fi
-
-for d in "/etc/php/${PHP_VER_MM}/cli/conf.d" "/etc/php/${PHP_VER_MM}/fpm/conf.d" "/etc/php/${PHP_VER_MM}/apache2/conf.d"; do
+for d in "/etc/php/${PHP_VER_MM}/cli/conf.d" "/etc/php/${PHP_VER_MM}/fpm/conf.d"; do
     [ -d "$d" ] && CONF_DIR_CANDIDATES+=("$d")
 done
-
-ALPINE_CONF="/etc/php${PHP_VER_NN}/conf.d"
-[ -d "$ALPINE_CONF" ] && CONF_DIR_CANDIDATES+=("$ALPINE_CONF")
 
 CONF_DIRS=()
 while IFS= read -r _line; do
     CONF_DIRS+=("$_line")
-done < <(printf "%s\n" "${CONF_DIR_CANDIDATES[@]}" | awk '!seen[$0]++')
+done < <(printf "%s\n" "${CONF_DIR_CANDIDATES[@]:-}" | awk '!seen[$0]++')
+
+[ "${#CONF_DIRS[@]}" -eq 0 ] && echo "   ⚠️  No conf.d directories found."
 
 INI_NAME="30-${EXTENSION_NAME}.ini"
 INI_CONTENT="extension=${PHP_EXT_DIR}/${EXTENSION_NAME}.so"
-
 for confd in "${CONF_DIRS[@]:-}"; do
+    confd="${confd%/}"
     INI_PATH="${confd}/${INI_NAME}"
     echo "$INI_CONTENT" | $SUDO tee "$INI_PATH" >/dev/null
     ok "Written: $INI_PATH"
 done
 echo ""
 
-step "🔍 Verifying installation (CLI)..."
-VERIFY_ERRORS="$("$PHP_BIN_REAL" -m 2>&1 >/dev/null || true)"
-if "$PHP_BIN_REAL" -m 2>/dev/null | grep -q "^${EXTENSION_NAME}$"; then
-    ok "Extension loaded successfully in CLI"
-    [ -n "$VERIFY_ERRORS" ] && echo "   ⚠️  PHP startup warnings: $VERIFY_ERRORS"
-else
+step "🔍 Verifying installation (php -m / php --ri vulkan)..."
+VERIFY_OUT="$("$PHP_BIN_REAL" -m 2>&1 || true)"
+if ! printf '%s\n' "$VERIFY_OUT" | grep -qx "${EXTENSION_NAME}"; then
     echo ""
     echo "   PHP binary used: $PHP_BIN_REAL"
     echo "   Extension dir:   $PHP_EXT_DIR"
     echo "   INI written to:  ${CLI_SCAN_DIR:-unknown}/${INI_NAME}"
-    [ -n "$VERIFY_ERRORS" ] && echo "   PHP stderr: $VERIFY_ERRORS"
-    die "Extension not detected in CLI. Check ${INI_NAME} placement and php --ini."
+    echo "   php -m output:"
+    printf '%s\n' "$VERIFY_OUT" | tail -40
+    die "Extension not detected in php -m. Check ${INI_NAME} placement and php --ini."
 fi
+ok "php -m lists ${EXTENSION_NAME}"
+
+RI_OUT="$("$PHP_BIN_REAL" --ri vulkan 2>&1)" || die "php --ri vulkan failed"
+if ! printf '%s\n' "$RI_OUT" | grep -qE "Version[[:space:]]*=>[[:space:]]*${EXPECTED_VERSION//./\\.}([[:space:]]|$)"; then
+    echo "$RI_OUT"
+    die "php --ri vulkan did not report version ${EXPECTED_VERSION} (from config.json); the installed .so is stale"
+fi
+ok "php --ri vulkan reports ${EXPECTED_VERSION}"
 echo ""
 
 step "=========================================="
-step "Extension Information (CLI)"
+step " Extension Information (CLI)"
 step "=========================================="
-"$PHP_BIN_REAL" --ri vulkan || true
+printf '%s\n' "$RI_OUT"
 echo ""
-
-step "🧼 Refreshing deploy-ready ext/ tree..."
-cd "${SCRIPT_DIR}"
-bash "${SCRIPT_DIR}/scripts/prepare-ext.sh" >>"$LOG_FILE" 2>&1 || true
-ok "ext/ cleaned for PIE"
 
 echo "✅ Installation complete!"
 echo ""
-echo "Demo (requires glfw; on Homebrew Darwin export DYLD_LIBRARY_PATH=/opt/homebrew/lib):"
-echo "  VULKAN_PROOF_SECONDS=3 php examples/proof_menu.php"
+echo "Proofs (no window, no display server):"
+echo "  php ${SCRIPT_DIR}/examples/proof_enumerate.php   # instance + physical devices"
+echo "  php ${SCRIPT_DIR}/examples/proof_headless.php    # offscreen triangle, byte-checked"
 echo ""
 echo "File locations:"
 echo "  • Binary: ${PHP_EXT_DIR}/${EXTENSION_NAME}.so"
-if [ "${#CONF_DIRS[@]}" -gt 0 ]; then
-    for d in "${CONF_DIRS[@]}"; do
-        echo "  • Config: ${d}/${INI_NAME}"
-    done
-fi
+for d in "${CONF_DIRS[@]:-}"; do
+    echo "  • Config: ${d%/}/${INI_NAME}"
+done
 echo ""

@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo);
+
+PHP_METHOD(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, pack);
+PHP_METHOD(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, packInto);
+PHP_METHOD(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, unpack);
+PHP_METHOD(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_method_entry) {
+	PHP_ME(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, pack, arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, packInto, arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, unpack, arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkCommandBufferSubmitInfo_VkCommandBufferSubmitInfo, size, arginfo_vulkan_struct_vkcommandbuffersubmitinfo_vkcommandbuffersubmitinfo_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

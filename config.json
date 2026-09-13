@@ -1,14 +1,40 @@
 {
     "namespace": "vulkan",
     "name": "vulkan",
-    "description": "PHP-Controllable Vulkan Rendering Extension",
+    "extension-name": "vulkan",
+    "description": "Vulkan 1.4 core plus WSI, Metal-interop and debug extensions bound 1:1 into PHP",
     "author": "Project Saturn Studios, LLC",
-    "version": "0.7.1",
+    "version": "0.8.0",
+    "extra-cflags": "-Wno-error=incompatible-pointer-types -Wno-deprecated-declarations",
+    "extra-libs": "",
     "extra-sources": [
-        "src/vulkan-api.c"
+        "src/phpvk-bridge.c",
+        "src/phpvk-registry.c",
+        "src/phpvk-support.c",
+        "src/vk-10.c",
+        "src/vk-11.c",
+        "src/vk-12.c",
+        "src/vk-13.c",
+        "src/vk-14.c",
+        "src/vk-ext-extdebugutils.c",
+        "src/vk-ext-extmetalobjects.c",
+        "src/vk-ext-extmetalsurface.c",
+        "src/vk-ext-khrsurface.c",
+        "src/vk-ext-khrswapchain.c",
+        "src/vk-ext-khrwaylandsurface.c",
+        "src/vk-ext-khrxcbsurface.c",
+        "src/vk-ext-khrxlibsurface.c",
+        "src/vk-struct-10.c",
+        "src/vk-struct-11.c",
+        "src/vk-struct-12.c",
+        "src/vk-struct-13.c",
+        "src/vk-struct-14.c",
+        "src/vk-struct-asserts.c",
+        "src/vk-struct-ext.c"
     ],
-    "extra-cflags": "-I/opt/homebrew/include -I/usr/local/include",
-    "extra-libs": "-L/opt/homebrew/lib -L/usr/local/lib -lvulkan",
+    "optimizer-dirs": [
+        "optimizers"
+    ],
     "stubs": {
         "path": "ide/%version%/%namespace%/",
         "stubs-run-after-generate": false
@@ -22,12 +48,12 @@
         "nonexistent-class": true
     },
     "optimizations": {
-        "call-gatherer-pass": false,
-        "check-invalid-reads": false,
-        "constant-folding": false,
-        "local-context-pass": false,
-        "static-constant-class-folding": false,
-        "static-type-inference": false,
-        "static-type-inference-second-pass": false
+        "call-gatherer-pass": true,
+        "check-invalid-reads": true,
+        "constant-folding": true,
+        "local-context-pass": true,
+        "static-constant-class-folding": true,
+        "static-type-inference": true,
+        "static-type-inference-second-pass": true
     }
 }

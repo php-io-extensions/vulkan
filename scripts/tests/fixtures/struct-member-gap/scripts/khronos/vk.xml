@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fixture stand-in: one struct with TWO members, of which the emitted fill
+     body writes only one. The member audit must fail naming the other. -->
+<registry>
+    <types>
+        <type category="handle" objtypeenum="VK_OBJECT_TYPE_INSTANCE"><type>VK_DEFINE_HANDLE</type>(<name>VkInstance</name>)</type>
+        <type category="enum" name="VkResult"/>
+        <type category="struct" name="VkFakeInfo">
+            <member><type>uint32_t</type> <name>value</name></member>
+            <member><type>uint32_t</type> <name>flags</name></member>
+        </type>
+    </types>
+    <commands>
+        <command>
+            <proto><type>VkResult</type> <name>vkFakeOne</name></proto>
+            <param><type>VkInstance</type> <name>instance</name></param>
+        </command>
+        <command>
+            <proto><type>void</type> <name>vkFakeTwo</name></proto>
+            <param><type>VkInstance</type> <name>instance</name></param>
+        </command>
+    </commands>
+    <feature api="vulkan" name="VK_VERSION_1_0" number="1.0">
+        <require>
+            <command name="vkFakeOne"/>
+            <command name="vkFakeTwo"/>
+            <type name="VkFakeInfo"/>
+        </require>
+    </feature>
+    <feature api="vulkan" name="VK_VERSION_1_1" number="1.1"><require/></feature>
+    <feature api="vulkan" name="VK_VERSION_1_2" number="1.2"><require/></feature>
+    <feature api="vulkan" name="VK_VERSION_1_3" number="1.3"><require/></feature>
+    <feature api="vulkan" name="VK_VERSION_1_4" number="1.4"><require/></feature>
+    <extensions>
+        <extension name="VK_KHR_surface" supported="vulkan"><require/></extension>
+        <extension name="VK_KHR_swapchain" supported="vulkan"><require/></extension>
+        <extension name="VK_KHR_wayland_surface" supported="vulkan"><require/></extension>
+        <extension name="VK_KHR_xcb_surface" supported="vulkan"><require/></extension>
+        <extension name="VK_KHR_xlib_surface" supported="vulkan"><require/></extension>
+        <extension name="VK_EXT_metal_surface" supported="vulkan"><require/></extension>
+        <extension name="VK_EXT_metal_objects" supported="vulkan"><require/></extension>
+        <extension name="VK_EXT_debug_utils" supported="vulkan"><require/></extension>
+        <extension name="VK_KHR_portability_enumeration" supported="vulkan"><require/></extension>
+        <extension name="VK_KHR_portability_subset" supported="vulkan"><require/></extension>
+        <extension name="VK_EXT_layer_settings" supported="vulkan"><require/></extension>
+    </extensions>
+</registry>

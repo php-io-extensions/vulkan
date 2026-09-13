@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo);
+
+PHP_METHOD(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, pack);
+PHP_METHOD(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, packInto);
+PHP_METHOD(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, unpack);
+PHP_METHOD(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_method_entry) {
+	PHP_ME(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, pack, arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, packInto, arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, unpack, arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkFenceCreateInfo_VkFenceCreateInfo, size, arginfo_vulkan_struct_vkfencecreateinfo_vkfencecreateinfo_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo);
+
+PHP_METHOD(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, pack);
+PHP_METHOD(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, packInto);
+PHP_METHOD(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, unpack);
+PHP_METHOD(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_method_entry) {
+	PHP_ME(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, pack, arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, packInto, arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, unpack, arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkPipelineCacheCreateInfo_VkPipelineCacheCreateInfo, size, arginfo_vulkan_struct_vkpipelinecachecreateinfo_vkpipelinecachecreateinfo_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

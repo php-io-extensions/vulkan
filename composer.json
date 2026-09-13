@@ -1,9 +1,9 @@
 {
     "name": "php-io-extensions/vulkan",
     "type": "php-ext",
-    "description": "PHP-Controllable Vulkan Rendering Extension",
+    "description": "Vulkan 1.4 core plus WSI, Metal-interop and debug extensions bound 1:1 into PHP (Zephir extension, macOS + Linux)",
     "license": "MIT",
-    "version": "0.7.1",
+    "version": "0.8.0",
     "authors": [
         {
             "name": "Project Saturn Studios, LLC",
@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=8.2"
+        "php": ">=8.4"
     },
     "php-ext": {
         "extension-name": "vulkan",
@@ -19,11 +19,11 @@
         "build-path": "ext",
         "support-zts": true,
         "support-nts": true,
-        "os-families-exclude": ["windows"],
+        "os-families": ["darwin", "linux"],
         "configure-options": [
             {
                 "name": "enable-vulkan",
-                "description": "Enable the vulkan extension",
+                "description": "Enable the vulkan extension (macOS + Linux)",
                 "needs-value": false
             }
         ]

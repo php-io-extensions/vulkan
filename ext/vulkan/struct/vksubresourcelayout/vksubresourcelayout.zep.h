@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vksubresourcelayout_vksubresourcelayout_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout);
+
+PHP_METHOD(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, pack);
+PHP_METHOD(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, packInto);
+PHP_METHOD(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, unpack);
+PHP_METHOD(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vksubresourcelayout_vksubresourcelayout_method_entry) {
+	PHP_ME(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, pack, arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, packInto, arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, unpack, arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkSubresourceLayout_VkSubresourceLayout, size, arginfo_vulkan_struct_vksubresourcelayout_vksubresourcelayout_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

@@ -2,65 +2,91 @@
 okf_version: "0.2"
 ---
 
-# php-io-extensions/vulkan
+# vulkan — knowledge bundle
 
-Cross-platform (Linux + macOS) PHP extension: Zephir static Vulkan bindings (`Vulkan\Vk\Vk`) plus thin data objects (`VkInstance`, `VkPhysicalDevice`, `VkDevice`, `VkQueue`, `VkSurface`, `VkSwapchain`) that store opaque handles in public `fd`. Window/surface creation belongs to peer `glfw` (like open-gl), not this package. Darwin uses the Vulkan loader + MoltenVK ICD — **not** the `metal` PHP extension.
+Faithful 1:1 binding of Vulkan 1.0 .. 1.4 core into PHP, plus the window-system,
+Metal-interop and debug extensions the Khronos registry defines, and a
+generated flat struct tier. One `.so` serves a Mac on MoltenVK and a Raspberry
+Pi 5 on Mesa, because every command is resolved at runtime.
 
-**Prefer** concepts with `status: stable` when present; content is currently `draft` pending Angel’s human verification of the OKF docs (implementation facts are grounded in shipped Zephir/C sources). Demo verified on Apple M1 Pro (MoltenVK) via `examples/proof_menu.php`; installers are in-tree.
+Read this index first, then open only the concepts the task needs.
 
-# Orientation
+- [binding-rules.md](/binding-rules.md) — the two tables (command parameters,
+  struct members) restated as law, the surface rule, and what "nothing
+  silently omitted" costs.
+- [bridge.md](/bridge.md) — the only glue: the three loader levels, the gate,
+  the byte buffers, and the C strings.
+- [struct-tier.md](/struct-tier.md) — `pack` / `packInto` / `unpack` / `size`,
+  the ownership rules, unions, the 64-bit wrap, and the layout-assert
+  contract. `status: stable` since Wave 1: the tier is member-audited,
+  layout-asserted on both platforms and round-tripped by
+  `scripts/tests/struct-guard.php`.
+- [toolchain.md](/toolchain.md) — registry → src → zep → `.so`, its guards,
+  and the Mac-generates / Pi-builds split.
+- [traps/index.md](/traps/index.md) — runtime-resolution-not-linking,
+  pointer-bits-only, no-window-in-ext, moltenvk-portability,
+  no-platform-dev-packages, loader-clamps-device-version,
+  no-null-cstring-parameter, memory-types-differ-per-driver.
+- [log.md](/log.md) — change log, one entry per wave; each says what was built,
+  what was measured on which box, and what was deliberately left undone.
 
-* [Package overview](orientation/overview.md) - What vulkan is, version targets, and what it deliberately is not
-* [Stack segmentation](orientation/stack-segmentation.md) - Boundaries vs glfw, open-gl, metal, and microscrap
+## Scope
 
-# Architecture
+Vulkan only, and only the parts that need native code. No window, no surface
+creation, no constants, no defaults, no `sType` filling, no extension
+enabling. Two proofs say so, and every opinion in both of them is in the
+*script*:
 
-* [Layered stack](architecture/stack.md) - Zephir → thin C ABI → Vulkan loader / MoltenVK
-* [Zephir static + fd objects](architecture/zephir-static-and-fd.md) - Static `Vk::*` + schema objects with public `fd`
-* [C ABI surface](architecture/c-abi.md) - Opaque `uintptr_t` handles and `php_vk_*` entry points
-* [Loader and Apple portability](architecture/loader-and-portability.md) - MoltenVK ICD env + portability extensions
+- `examples/proof_enumerate.php` — instance, physical devices, names and
+  versions, teardown. The quick start.
+- `examples/proof_headless.php` — a 64x64 offscreen triangle through a real
+  graphics pipeline and the vendored SPIR-V in `examples/shaders/`, byte-checked
+  at two pixels. No surface, no swapchain, no display server. This is the one
+  `scripts/pi-verify.sh` gates on.
 
-# Public PHP API
+**Bound (0.8.0, Waves 0-2):** 267 Vulkan commands and 368 structs and unions
+carrying 2296 members, measured from `scripts/khronos/vk.xml`
+(`VK_HEADER_VERSION` 357). Waves 1 and 2 added **no binding at all** — Wave 1
+added the proof that the struct tier is complete (`structs=368 members=2296`
+from `audit-registry.php`, 2664 `_Static_assert`s compiled on both boxes,
+`STRUCT_GUARD_OK structs=368` against the built `.so`), and Wave 2 added the
+proof that the surface as a whole draws a frame on two unrelated drivers.
 
-* [Vulkan\\Vk\\Vk](api/vk.md) - Static instance/device/swapchain/present entry points
-* [Vulkan\\Vk\\VkInstance](api/vkinstance.md) - Instance DTO (`fd`, `appName`)
-* [Vulkan\\Vk\\VkPhysicalDevice](api/vkphysicaldevice.md) - Physical device DTO (`fd`, name/ids)
-* [Vulkan\\Vk\\VkDevice](api/vkdevice.md) - Logical device DTO (`fd`, `queueFamily`)
-* [Vulkan\\Vk\\VkQueue](api/vkqueue.md) - Queue DTO (`fd`, `familyIndex`)
-* [Vulkan\\Vk\\VkSurface](api/vksurface.md) - Surface DTO (`fd`; usually from glfw)
-* [Vulkan\\Vk\\VkSwapchain](api/vkswapchain.md) - Presenter DTO (`fd`, size/format/images)
+| class | commands |
+|---|---:|
+| `Vulkan\VK\VK10\VK10` | 137 |
+| `Vulkan\VK\VK11\VK11` | 28 |
+| `Vulkan\VK\VK12\VK12` | 13 |
+| `Vulkan\VK\VK13\VK13` | 37 |
+| `Vulkan\VK\VK14\VK14` | 19 |
+| `Vulkan\Ext\KHRSurface\KHRSurface` | 5 |
+| `Vulkan\Ext\KHRSwapchain\KHRSwapchain` | 9 |
+| `Vulkan\Ext\KHRWaylandSurface\KHRWaylandSurface` | 2 |
+| `Vulkan\Ext\KHRXcbSurface\KHRXcbSurface` | 2 |
+| `Vulkan\Ext\KHRXlibSurface\KHRXlibSurface` | 2 |
+| `Vulkan\Ext\EXTMetalSurface\EXTMetalSurface` | 1 |
+| `Vulkan\Ext\EXTMetalObjects\EXTMetalObjects` | 1 |
+| `Vulkan\Ext\EXTDebugUtils\EXTDebugUtils` | 11 |
 
-# Build & packaging
+Plus `Vulkan\Struct\<Name>\<Name>` × 368 (4 methods each = 1472) and
+`Vulkan\Bridge\Bridge` × 12. **382 classes, 1751 static methods, 0 reserved.**
 
-* [Zephir + PIE install](build/zephir-and-pie.md) - prepare-ext, install-macos*.sh, install-debian-trixie.sh, PIE
-* [Committed ext/ notes](build/packaging-ext.md) - Portable config.m4, REGISTER fixup, strip phpize junk
+Core alone is 333 of the structs; `VK_KHR_portability_enumeration` (0),
+`VK_KHR_portability_subset` (2 structs) and `VK_EXT_layer_settings` (2
+structs) contribute structs but no command class, which is why they have no
+entry in the table above.
 
-# Conventions
+**Zero reservations.** The type table covers every command in scope today. The
+reservation mechanism exists and is proved able to fire —
+`scripts/tests/reserved-guard.php` injects a `PFN_vkVoidFunction` parameter
+into a scratch copy of the registry and checks the emitted `@reserved` line —
+but nothing in the committed tree uses it. A reservation appearing is news
+that belongs in [log.md](/log.md).
 
-* [Sibling patterns](conventions/sibling-patterns.md) - Patterns from open-gl / posi / sdl3 / glfw (not dependencies)
-* [fd ownership](conventions/fd-ownership.md) - Who creates/destroys handles behind `fd`
-* [No FFI](conventions/no-ffi.md) - Extension-only binding; no PHP FFI fallback
-* [Constants in microscrap](conventions/constants-microscrap.md) - No class constants; VK_* enums live elsewhere
+**Out of scope, permanently:** window or surface *creation* of any kind; every
+extension not listed (ray tracing, video, mesh shaders, …); Vulkan SC;
+MoltenVK's private API; constants and enums, which live in **jovian/vulkan**.
 
-# Traps
-
-* [No windowing here](traps/no-windowing.md) - Window/surface creation is glfw (wrapSurface)
-* [Metal is not a dependency](traps/metal-not-a-dependency.md) - MoltenVK ≠ php-io-extensions/metal
-* [MoltenVK ICD discovery](traps/moltenvk-icd.md) - VK_ICD_FILENAMES / php_vk_ensure_loader
-* [Apple portability extensions](traps/apple-portability.md) - enumeration + subset on Darwin
-* [REGISTER_CLASS truncation](traps/register-class-truncation.md) - Zephir 0.19 may truncate `Vulkan\Vk\*`
-
-# Playbooks
-
-* [Minimal demo loop](playbooks/demo-loop.md) - examples/proof_menu.php + glfw peer
-* [Regenerate committed ext/](playbooks/regenerate-ext.md) - Maintainer steps before tagging
-
-# Indexes
-
-* [Orientation](orientation/) — start here
-* [Architecture](architecture/)
-* [API](api/)
-* [Build](build/)
-* [Conventions](conventions/)
-* [Traps](traps/)
-* [Playbooks](playbooks/)
+Layering, verbatim house law: **ext-vulkan = Vulkan + unavoidable glue;
+jovian/vulkan = PHP projection, typed handles and constants; venusian =
+composition; surface = abstraction.**

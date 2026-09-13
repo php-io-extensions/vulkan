@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR);
+
+PHP_METHOD(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, pack);
+PHP_METHOD(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, packInto);
+PHP_METHOD(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, unpack);
+PHP_METHOD(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_method_entry) {
+	PHP_ME(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, pack, arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, packInto, arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, unpack, arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkAcquireNextImageInfoKHR_VkAcquireNextImageInfoKHR, size, arginfo_vulkan_struct_vkacquirenextimageinfokhr_vkacquirenextimageinfokhr_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

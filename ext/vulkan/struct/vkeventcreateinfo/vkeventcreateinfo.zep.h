@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo);
+
+PHP_METHOD(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, pack);
+PHP_METHOD(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, packInto);
+PHP_METHOD(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, unpack);
+PHP_METHOD(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_method_entry) {
+	PHP_ME(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, pack, arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, packInto, arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, unpack, arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkEventCreateInfo_VkEventCreateInfo, size, arginfo_vulkan_struct_vkeventcreateinfo_vkeventcreateinfo_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

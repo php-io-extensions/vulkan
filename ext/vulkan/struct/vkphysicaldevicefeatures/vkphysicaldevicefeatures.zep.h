@@ -1,0 +1,34 @@
+
+extern zend_class_entry *vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_ce;
+
+ZEPHIR_INIT_CLASS(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures);
+
+PHP_METHOD(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, pack);
+PHP_METHOD(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, packInto);
+PHP_METHOD(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, unpack);
+PHP_METHOD(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, size);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_pack, 0, 1, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_packinto, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+	ZEND_ARG_ARRAY_INFO(0, members, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_unpack, 0, 1, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, ptr, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_size, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_method_entry) {
+	PHP_ME(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, pack, arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_pack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, packInto, arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_packinto, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, unpack, arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_unpack, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Vulkan_Struct_VkPhysicalDeviceFeatures_VkPhysicalDeviceFeatures, size, arginfo_vulkan_struct_vkphysicaldevicefeatures_vkphysicaldevicefeatures_size, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

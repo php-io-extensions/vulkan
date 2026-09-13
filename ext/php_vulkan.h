@@ -11,11 +11,11 @@
 #include "kernel/globals.h"
 
 #define PHP_VULKAN_NAME        "vulkan"
-#define PHP_VULKAN_VERSION     "0.7.1"
+#define PHP_VULKAN_VERSION     "0.8.0"
 #define PHP_VULKAN_EXTNAME     "vulkan"
 #define PHP_VULKAN_AUTHOR      "Project Saturn Studios, LLC"
 #define PHP_VULKAN_ZEPVERSION  "0.19.0-$Id$"
-#define PHP_VULKAN_DESCRIPTION "PHP-Controllable Vulkan Rendering Extension"
+#define PHP_VULKAN_DESCRIPTION "Vulkan 1.4 core plus WSI, Metal-interop and debug extensions bound 1:1 into PHP"
 
 
 

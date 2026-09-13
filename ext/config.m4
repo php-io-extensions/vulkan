@@ -2,51 +2,452 @@ PHP_ARG_ENABLE(vulkan, whether to enable vulkan, [ --enable-vulkan   Enable Vulk
 
 if test "$PHP_VULKAN" = "yes"; then
 
-	dnl GCC 14+ promotes long-standing warnings to errors; Zephir-generated C
-	dnl trips some of them. Demote back to warnings.
-	CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types -Wno-error=int-conversion -Wno-error=implicit-function-declaration -Wno-error=implicit-int"
+	
 
-	AC_DEFINE(HAVE_VULKAN, 1, [Whether you have Vulkan])
-	vulkan_sources="vulkan.c kernel/main.c kernel/memory.c kernel/exception.c kernel/debug.c kernel/backtrace.c kernel/object.c kernel/array.c kernel/string.c kernel/fcall.c kernel/require.c kernel/file.c kernel/operators.c kernel/math.c kernel/concat.c kernel/variables.c kernel/filter.c kernel/iterator.c kernel/time.c kernel/exit.c vulkan/vk/vk.zep.c
-	vulkan/vk/vkdevice.zep.c
-	vulkan/vk/vkinstance.zep.c
-	vulkan/vk/vkphysicaldevice.zep.c
-	vulkan/vk/vkqueue.zep.c
-	vulkan/vk/vksurface.zep.c
-	vulkan/vk/vkswapchain.zep.c
-	src/vulkan-api.c "
-	PHP_NEW_EXTENSION(vulkan, $vulkan_sources, $ext_shared,, )
-	PHP_ADD_BUILD_DIR([$ext_builddir/kernel/])
-	for dir in "vulkan/vk" "src"; do
-		PHP_ADD_BUILD_DIR([$ext_builddir/$dir])
-	done
-
-	dnl Discover Vulkan via pkg-config when available; fall back to common prefixes.
-	VULKAN_CFLAGS=""
-	VULKAN_LIBS="-lvulkan"
-	if test -n "$PKG_CONFIG" || command -v pkg-config >/dev/null 2>&1; then
-		if test -z "$PKG_CONFIG"; then
-			PKG_CONFIG=pkg-config
-		fi
-		if $PKG_CONFIG --exists vulkan 2>/dev/null; then
-			VULKAN_CFLAGS=`$PKG_CONFIG --cflags vulkan 2>/dev/null`
-			VULKAN_LIBS=`$PKG_CONFIG --libs vulkan 2>/dev/null`
-		fi
+	if ! test "x" = "x"; then
+		PHP_EVAL_LIBLINE(, VULKAN_SHARED_LIBADD)
 	fi
 
-	PHP_EVAL_INCLINE($VULKAN_CFLAGS)
-	PHP_EVAL_LIBLINE($VULKAN_LIBS, VULKAN_SHARED_LIBADD)
+	dnl ---- PHPVK platform link flags ----
+	dnl Every Vulkan COMMAND is resolved at runtime by src/phpvk-bridge.c.
+	dnl The loader itself is a genuine link dependency all the same: the
+	dnl Bridge names vkGetInstanceProcAddr, and that one symbol is the whole
+	dnl seam. On Darwin the Homebrew loader is outside the default search
+	dnl path, so an rpath is baked in as well.
+	if test -n "$PKG_CONFIG" && $PKG_CONFIG --exists vulkan 2>/dev/null; then
+		VULKAN_SHARED_LIBADD="$VULKAN_SHARED_LIBADD `$PKG_CONFIG --libs vulkan`"
+		CPPFLAGS="$CPPFLAGS `$PKG_CONFIG --cflags vulkan`"
+	else
+		case $host_os in
+			darwin*)
+				VULKAN_SHARED_LIBADD="$VULKAN_SHARED_LIBADD -L/opt/homebrew/lib -lvulkan"
+				CPPFLAGS="$CPPFLAGS -I/opt/homebrew/include"
+				;;
+			*)
+				VULKAN_SHARED_LIBADD="$VULKAN_SHARED_LIBADD -lvulkan -ldl"
+				;;
+		esac
+	fi
+	case $host_os in
+		darwin*)
+			VULKAN_SHARED_LIBADD="$VULKAN_SHARED_LIBADD -Wl,-rpath,/opt/homebrew/lib"
+			CPPFLAGS="$CPPFLAGS -I/opt/homebrew/include"
+			;;
+		*)
+			VULKAN_SHARED_LIBADD="$VULKAN_SHARED_LIBADD -ldl"
+			;;
+	esac
 
-	dnl Extra search paths for Homebrew / local installs.
-	for prefix in /opt/homebrew /usr/local; do
-		if test -d "$prefix/include"; then
-			PHP_ADD_INCLUDE([$prefix/include])
-		fi
-		if test -d "$prefix/lib"; then
-			VULKAN_SHARED_LIBADD="$[]VULKAN_SHARED_LIBADD -L$prefix/lib"
-		fi
+	AC_DEFINE(HAVE_VULKAN, 1, [Whether you have Vulkan])
+	vulkan_sources="vulkan.c kernel/main.c kernel/memory.c kernel/exception.c kernel/debug.c kernel/backtrace.c kernel/object.c kernel/array.c kernel/string.c kernel/fcall.c kernel/require.c kernel/file.c kernel/operators.c kernel/math.c kernel/concat.c kernel/variables.c kernel/filter.c kernel/iterator.c kernel/time.c kernel/exit.c vulkan/bridge/bridge.zep.c
+	vulkan/ext/extdebugutils/extdebugutils.zep.c
+	vulkan/ext/extmetalobjects/extmetalobjects.zep.c
+	vulkan/ext/extmetalsurface/extmetalsurface.zep.c
+	vulkan/ext/khrsurface/khrsurface.zep.c
+	vulkan/ext/khrswapchain/khrswapchain.zep.c
+	vulkan/ext/khrwaylandsurface/khrwaylandsurface.zep.c
+	vulkan/ext/khrxcbsurface/khrxcbsurface.zep.c
+	vulkan/ext/khrxlibsurface/khrxlibsurface.zep.c
+	vulkan/struct/vkacquirenextimageinfokhr/vkacquirenextimageinfokhr.zep.c
+	vulkan/struct/vkallocationcallbacks/vkallocationcallbacks.zep.c
+	vulkan/struct/vkapplicationinfo/vkapplicationinfo.zep.c
+	vulkan/struct/vkattachmentdescription/vkattachmentdescription.zep.c
+	vulkan/struct/vkattachmentdescription2/vkattachmentdescription2.zep.c
+	vulkan/struct/vkattachmentdescriptionstencillayout/vkattachmentdescriptionstencillayout.zep.c
+	vulkan/struct/vkattachmentreference/vkattachmentreference.zep.c
+	vulkan/struct/vkattachmentreference2/vkattachmentreference2.zep.c
+	vulkan/struct/vkattachmentreferencestencillayout/vkattachmentreferencestencillayout.zep.c
+	vulkan/struct/vkbaseinstructure/vkbaseinstructure.zep.c
+	vulkan/struct/vkbaseoutstructure/vkbaseoutstructure.zep.c
+	vulkan/struct/vkbindbuffermemorydevicegroupinfo/vkbindbuffermemorydevicegroupinfo.zep.c
+	vulkan/struct/vkbindbuffermemoryinfo/vkbindbuffermemoryinfo.zep.c
+	vulkan/struct/vkbinddescriptorsetsinfo/vkbinddescriptorsetsinfo.zep.c
+	vulkan/struct/vkbindimagememorydevicegroupinfo/vkbindimagememorydevicegroupinfo.zep.c
+	vulkan/struct/vkbindimagememoryinfo/vkbindimagememoryinfo.zep.c
+	vulkan/struct/vkbindimagememoryswapchaininfokhr/vkbindimagememoryswapchaininfokhr.zep.c
+	vulkan/struct/vkbindimageplanememoryinfo/vkbindimageplanememoryinfo.zep.c
+	vulkan/struct/vkbindmemorystatus/vkbindmemorystatus.zep.c
+	vulkan/struct/vkbindsparseinfo/vkbindsparseinfo.zep.c
+	vulkan/struct/vkblitimageinfo2/vkblitimageinfo2.zep.c
+	vulkan/struct/vkbuffercopy/vkbuffercopy.zep.c
+	vulkan/struct/vkbuffercopy2/vkbuffercopy2.zep.c
+	vulkan/struct/vkbuffercreateinfo/vkbuffercreateinfo.zep.c
+	vulkan/struct/vkbufferdeviceaddressinfo/vkbufferdeviceaddressinfo.zep.c
+	vulkan/struct/vkbufferimagecopy/vkbufferimagecopy.zep.c
+	vulkan/struct/vkbufferimagecopy2/vkbufferimagecopy2.zep.c
+	vulkan/struct/vkbuffermemorybarrier/vkbuffermemorybarrier.zep.c
+	vulkan/struct/vkbuffermemorybarrier2/vkbuffermemorybarrier2.zep.c
+	vulkan/struct/vkbuffermemoryrequirementsinfo2/vkbuffermemoryrequirementsinfo2.zep.c
+	vulkan/struct/vkbufferopaquecaptureaddresscreateinfo/vkbufferopaquecaptureaddresscreateinfo.zep.c
+	vulkan/struct/vkbufferusageflags2createinfo/vkbufferusageflags2createinfo.zep.c
+	vulkan/struct/vkbufferviewcreateinfo/vkbufferviewcreateinfo.zep.c
+	vulkan/struct/vkclearattachment/vkclearattachment.zep.c
+	vulkan/struct/vkclearcolorvalue/vkclearcolorvalue.zep.c
+	vulkan/struct/vkcleardepthstencilvalue/vkcleardepthstencilvalue.zep.c
+	vulkan/struct/vkclearrect/vkclearrect.zep.c
+	vulkan/struct/vkclearvalue/vkclearvalue.zep.c
+	vulkan/struct/vkcommandbufferallocateinfo/vkcommandbufferallocateinfo.zep.c
+	vulkan/struct/vkcommandbufferbegininfo/vkcommandbufferbegininfo.zep.c
+	vulkan/struct/vkcommandbufferinheritanceinfo/vkcommandbufferinheritanceinfo.zep.c
+	vulkan/struct/vkcommandbufferinheritancerenderinginfo/vkcommandbufferinheritancerenderinginfo.zep.c
+	vulkan/struct/vkcommandbuffersubmitinfo/vkcommandbuffersubmitinfo.zep.c
+	vulkan/struct/vkcommandpoolcreateinfo/vkcommandpoolcreateinfo.zep.c
+	vulkan/struct/vkcomponentmapping/vkcomponentmapping.zep.c
+	vulkan/struct/vkcomputepipelinecreateinfo/vkcomputepipelinecreateinfo.zep.c
+	vulkan/struct/vkconformanceversion/vkconformanceversion.zep.c
+	vulkan/struct/vkcopybufferinfo2/vkcopybufferinfo2.zep.c
+	vulkan/struct/vkcopybuffertoimageinfo2/vkcopybuffertoimageinfo2.zep.c
+	vulkan/struct/vkcopydescriptorset/vkcopydescriptorset.zep.c
+	vulkan/struct/vkcopyimageinfo2/vkcopyimageinfo2.zep.c
+	vulkan/struct/vkcopyimagetobufferinfo2/vkcopyimagetobufferinfo2.zep.c
+	vulkan/struct/vkcopyimagetoimageinfo/vkcopyimagetoimageinfo.zep.c
+	vulkan/struct/vkcopyimagetomemoryinfo/vkcopyimagetomemoryinfo.zep.c
+	vulkan/struct/vkcopymemorytoimageinfo/vkcopymemorytoimageinfo.zep.c
+	vulkan/struct/vkdebugutilslabelext/vkdebugutilslabelext.zep.c
+	vulkan/struct/vkdebugutilsmessengercallbackdataext/vkdebugutilsmessengercallbackdataext.zep.c
+	vulkan/struct/vkdebugutilsmessengercreateinfoext/vkdebugutilsmessengercreateinfoext.zep.c
+	vulkan/struct/vkdebugutilsobjectnameinfoext/vkdebugutilsobjectnameinfoext.zep.c
+	vulkan/struct/vkdebugutilsobjecttaginfoext/vkdebugutilsobjecttaginfoext.zep.c
+	vulkan/struct/vkdependencyinfo/vkdependencyinfo.zep.c
+	vulkan/struct/vkdescriptorbufferinfo/vkdescriptorbufferinfo.zep.c
+	vulkan/struct/vkdescriptorimageinfo/vkdescriptorimageinfo.zep.c
+	vulkan/struct/vkdescriptorpoolcreateinfo/vkdescriptorpoolcreateinfo.zep.c
+	vulkan/struct/vkdescriptorpoolinlineuniformblockcreateinfo/vkdescriptorpoolinlineuniformblockcreateinfo.zep.c
+	vulkan/struct/vkdescriptorpoolsize/vkdescriptorpoolsize.zep.c
+	vulkan/struct/vkdescriptorsetallocateinfo/vkdescriptorsetallocateinfo.zep.c
+	vulkan/struct/vkdescriptorsetlayoutbinding/vkdescriptorsetlayoutbinding.zep.c
+	vulkan/struct/vkdescriptorsetlayoutbindingflagscreateinfo/vkdescriptorsetlayoutbindingflagscreateinfo.zep.c
+	vulkan/struct/vkdescriptorsetlayoutcreateinfo/vkdescriptorsetlayoutcreateinfo.zep.c
+	vulkan/struct/vkdescriptorsetlayoutsupport/vkdescriptorsetlayoutsupport.zep.c
+	vulkan/struct/vkdescriptorsetvariabledescriptorcountallocateinfo/vkdescriptorsetvariabledescriptorcountallocateinfo.zep.c
+	vulkan/struct/vkdescriptorsetvariabledescriptorcountlayoutsupport/vkdescriptorsetvariabledescriptorcountlayoutsupport.zep.c
+	vulkan/struct/vkdescriptorupdatetemplatecreateinfo/vkdescriptorupdatetemplatecreateinfo.zep.c
+	vulkan/struct/vkdescriptorupdatetemplateentry/vkdescriptorupdatetemplateentry.zep.c
+	vulkan/struct/vkdevicebuffermemoryrequirements/vkdevicebuffermemoryrequirements.zep.c
+	vulkan/struct/vkdevicecreateinfo/vkdevicecreateinfo.zep.c
+	vulkan/struct/vkdevicegroupbindsparseinfo/vkdevicegroupbindsparseinfo.zep.c
+	vulkan/struct/vkdevicegroupcommandbufferbegininfo/vkdevicegroupcommandbufferbegininfo.zep.c
+	vulkan/struct/vkdevicegroupdevicecreateinfo/vkdevicegroupdevicecreateinfo.zep.c
+	vulkan/struct/vkdevicegrouppresentcapabilitieskhr/vkdevicegrouppresentcapabilitieskhr.zep.c
+	vulkan/struct/vkdevicegrouppresentinfokhr/vkdevicegrouppresentinfokhr.zep.c
+	vulkan/struct/vkdevicegrouprenderpassbegininfo/vkdevicegrouprenderpassbegininfo.zep.c
+	vulkan/struct/vkdevicegroupsubmitinfo/vkdevicegroupsubmitinfo.zep.c
+	vulkan/struct/vkdevicegroupswapchaincreateinfokhr/vkdevicegroupswapchaincreateinfokhr.zep.c
+	vulkan/struct/vkdeviceimagememoryrequirements/vkdeviceimagememoryrequirements.zep.c
+	vulkan/struct/vkdeviceimagesubresourceinfo/vkdeviceimagesubresourceinfo.zep.c
+	vulkan/struct/vkdevicememoryopaquecaptureaddressinfo/vkdevicememoryopaquecaptureaddressinfo.zep.c
+	vulkan/struct/vkdeviceprivatedatacreateinfo/vkdeviceprivatedatacreateinfo.zep.c
+	vulkan/struct/vkdevicequeuecreateinfo/vkdevicequeuecreateinfo.zep.c
+	vulkan/struct/vkdevicequeueglobalprioritycreateinfo/vkdevicequeueglobalprioritycreateinfo.zep.c
+	vulkan/struct/vkdevicequeueinfo2/vkdevicequeueinfo2.zep.c
+	vulkan/struct/vkdispatchindirectcommand/vkdispatchindirectcommand.zep.c
+	vulkan/struct/vkdrawindexedindirectcommand/vkdrawindexedindirectcommand.zep.c
+	vulkan/struct/vkdrawindirectcommand/vkdrawindirectcommand.zep.c
+	vulkan/struct/vkeventcreateinfo/vkeventcreateinfo.zep.c
+	vulkan/struct/vkexportfencecreateinfo/vkexportfencecreateinfo.zep.c
+	vulkan/struct/vkexportmemoryallocateinfo/vkexportmemoryallocateinfo.zep.c
+	vulkan/struct/vkexportmetalbufferinfoext/vkexportmetalbufferinfoext.zep.c
+	vulkan/struct/vkexportmetalcommandqueueinfoext/vkexportmetalcommandqueueinfoext.zep.c
+	vulkan/struct/vkexportmetaldeviceinfoext/vkexportmetaldeviceinfoext.zep.c
+	vulkan/struct/vkexportmetaliosurfaceinfoext/vkexportmetaliosurfaceinfoext.zep.c
+	vulkan/struct/vkexportmetalobjectcreateinfoext/vkexportmetalobjectcreateinfoext.zep.c
+	vulkan/struct/vkexportmetalobjectsinfoext/vkexportmetalobjectsinfoext.zep.c
+	vulkan/struct/vkexportmetalsharedeventinfoext/vkexportmetalsharedeventinfoext.zep.c
+	vulkan/struct/vkexportmetaltextureinfoext/vkexportmetaltextureinfoext.zep.c
+	vulkan/struct/vkexportsemaphorecreateinfo/vkexportsemaphorecreateinfo.zep.c
+	vulkan/struct/vkextensionproperties/vkextensionproperties.zep.c
+	vulkan/struct/vkextent2d/vkextent2d.zep.c
+	vulkan/struct/vkextent3d/vkextent3d.zep.c
+	vulkan/struct/vkexternalbufferproperties/vkexternalbufferproperties.zep.c
+	vulkan/struct/vkexternalfenceproperties/vkexternalfenceproperties.zep.c
+	vulkan/struct/vkexternalimageformatproperties/vkexternalimageformatproperties.zep.c
+	vulkan/struct/vkexternalmemorybuffercreateinfo/vkexternalmemorybuffercreateinfo.zep.c
+	vulkan/struct/vkexternalmemoryimagecreateinfo/vkexternalmemoryimagecreateinfo.zep.c
+	vulkan/struct/vkexternalmemoryproperties/vkexternalmemoryproperties.zep.c
+	vulkan/struct/vkexternalsemaphoreproperties/vkexternalsemaphoreproperties.zep.c
+	vulkan/struct/vkfencecreateinfo/vkfencecreateinfo.zep.c
+	vulkan/struct/vkformatproperties/vkformatproperties.zep.c
+	vulkan/struct/vkformatproperties2/vkformatproperties2.zep.c
+	vulkan/struct/vkformatproperties3/vkformatproperties3.zep.c
+	vulkan/struct/vkframebufferattachmentimageinfo/vkframebufferattachmentimageinfo.zep.c
+	vulkan/struct/vkframebufferattachmentscreateinfo/vkframebufferattachmentscreateinfo.zep.c
+	vulkan/struct/vkframebuffercreateinfo/vkframebuffercreateinfo.zep.c
+	vulkan/struct/vkgraphicspipelinecreateinfo/vkgraphicspipelinecreateinfo.zep.c
+	vulkan/struct/vkhostimagecopydeviceperformancequery/vkhostimagecopydeviceperformancequery.zep.c
+	vulkan/struct/vkhostimagelayouttransitioninfo/vkhostimagelayouttransitioninfo.zep.c
+	vulkan/struct/vkimageblit/vkimageblit.zep.c
+	vulkan/struct/vkimageblit2/vkimageblit2.zep.c
+	vulkan/struct/vkimagecopy/vkimagecopy.zep.c
+	vulkan/struct/vkimagecopy2/vkimagecopy2.zep.c
+	vulkan/struct/vkimagecreateinfo/vkimagecreateinfo.zep.c
+	vulkan/struct/vkimageformatlistcreateinfo/vkimageformatlistcreateinfo.zep.c
+	vulkan/struct/vkimageformatproperties/vkimageformatproperties.zep.c
+	vulkan/struct/vkimageformatproperties2/vkimageformatproperties2.zep.c
+	vulkan/struct/vkimagememorybarrier/vkimagememorybarrier.zep.c
+	vulkan/struct/vkimagememorybarrier2/vkimagememorybarrier2.zep.c
+	vulkan/struct/vkimagememoryrequirementsinfo2/vkimagememoryrequirementsinfo2.zep.c
+	vulkan/struct/vkimageplanememoryrequirementsinfo/vkimageplanememoryrequirementsinfo.zep.c
+	vulkan/struct/vkimageresolve/vkimageresolve.zep.c
+	vulkan/struct/vkimageresolve2/vkimageresolve2.zep.c
+	vulkan/struct/vkimagesparsememoryrequirementsinfo2/vkimagesparsememoryrequirementsinfo2.zep.c
+	vulkan/struct/vkimagestencilusagecreateinfo/vkimagestencilusagecreateinfo.zep.c
+	vulkan/struct/vkimagesubresource/vkimagesubresource.zep.c
+	vulkan/struct/vkimagesubresource2/vkimagesubresource2.zep.c
+	vulkan/struct/vkimagesubresourcelayers/vkimagesubresourcelayers.zep.c
+	vulkan/struct/vkimagesubresourcerange/vkimagesubresourcerange.zep.c
+	vulkan/struct/vkimageswapchaincreateinfokhr/vkimageswapchaincreateinfokhr.zep.c
+	vulkan/struct/vkimagetomemorycopy/vkimagetomemorycopy.zep.c
+	vulkan/struct/vkimageviewcreateinfo/vkimageviewcreateinfo.zep.c
+	vulkan/struct/vkimageviewusagecreateinfo/vkimageviewusagecreateinfo.zep.c
+	vulkan/struct/vkimportmetalbufferinfoext/vkimportmetalbufferinfoext.zep.c
+	vulkan/struct/vkimportmetaliosurfaceinfoext/vkimportmetaliosurfaceinfoext.zep.c
+	vulkan/struct/vkimportmetalsharedeventinfoext/vkimportmetalsharedeventinfoext.zep.c
+	vulkan/struct/vkimportmetaltextureinfoext/vkimportmetaltextureinfoext.zep.c
+	vulkan/struct/vkinputattachmentaspectreference/vkinputattachmentaspectreference.zep.c
+	vulkan/struct/vkinstancecreateinfo/vkinstancecreateinfo.zep.c
+	vulkan/struct/vklayerproperties/vklayerproperties.zep.c
+	vulkan/struct/vklayersettingext/vklayersettingext.zep.c
+	vulkan/struct/vklayersettingscreateinfoext/vklayersettingscreateinfoext.zep.c
+	vulkan/struct/vkmappedmemoryrange/vkmappedmemoryrange.zep.c
+	vulkan/struct/vkmemoryallocateflagsinfo/vkmemoryallocateflagsinfo.zep.c
+	vulkan/struct/vkmemoryallocateinfo/vkmemoryallocateinfo.zep.c
+	vulkan/struct/vkmemorybarrier/vkmemorybarrier.zep.c
+	vulkan/struct/vkmemorybarrier2/vkmemorybarrier2.zep.c
+	vulkan/struct/vkmemorydedicatedallocateinfo/vkmemorydedicatedallocateinfo.zep.c
+	vulkan/struct/vkmemorydedicatedrequirements/vkmemorydedicatedrequirements.zep.c
+	vulkan/struct/vkmemoryheap/vkmemoryheap.zep.c
+	vulkan/struct/vkmemorymapinfo/vkmemorymapinfo.zep.c
+	vulkan/struct/vkmemoryopaquecaptureaddressallocateinfo/vkmemoryopaquecaptureaddressallocateinfo.zep.c
+	vulkan/struct/vkmemoryrequirements/vkmemoryrequirements.zep.c
+	vulkan/struct/vkmemoryrequirements2/vkmemoryrequirements2.zep.c
+	vulkan/struct/vkmemorytoimagecopy/vkmemorytoimagecopy.zep.c
+	vulkan/struct/vkmemorytype/vkmemorytype.zep.c
+	vulkan/struct/vkmemoryunmapinfo/vkmemoryunmapinfo.zep.c
+	vulkan/struct/vkmetalsurfacecreateinfoext/vkmetalsurfacecreateinfoext.zep.c
+	vulkan/struct/vkoffset2d/vkoffset2d.zep.c
+	vulkan/struct/vkoffset3d/vkoffset3d.zep.c
+	vulkan/struct/vkphysicaldevice16bitstoragefeatures/vkphysicaldevice16bitstoragefeatures.zep.c
+	vulkan/struct/vkphysicaldevice8bitstoragefeatures/vkphysicaldevice8bitstoragefeatures.zep.c
+	vulkan/struct/vkphysicaldevicebufferdeviceaddressfeatures/vkphysicaldevicebufferdeviceaddressfeatures.zep.c
+	vulkan/struct/vkphysicaldevicedepthstencilresolveproperties/vkphysicaldevicedepthstencilresolveproperties.zep.c
+	vulkan/struct/vkphysicaldevicedescriptorindexingfeatures/vkphysicaldevicedescriptorindexingfeatures.zep.c
+	vulkan/struct/vkphysicaldevicedescriptorindexingproperties/vkphysicaldevicedescriptorindexingproperties.zep.c
+	vulkan/struct/vkphysicaldevicedriverproperties/vkphysicaldevicedriverproperties.zep.c
+	vulkan/struct/vkphysicaldevicedynamicrenderingfeatures/vkphysicaldevicedynamicrenderingfeatures.zep.c
+	vulkan/struct/vkphysicaldevicedynamicrenderinglocalreadfeatures/vkphysicaldevicedynamicrenderinglocalreadfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceexternalbufferinfo/vkphysicaldeviceexternalbufferinfo.zep.c
+	vulkan/struct/vkphysicaldeviceexternalfenceinfo/vkphysicaldeviceexternalfenceinfo.zep.c
+	vulkan/struct/vkphysicaldeviceexternalimageformatinfo/vkphysicaldeviceexternalimageformatinfo.zep.c
+	vulkan/struct/vkphysicaldeviceexternalsemaphoreinfo/vkphysicaldeviceexternalsemaphoreinfo.zep.c
+	vulkan/struct/vkphysicaldevicefeatures/vkphysicaldevicefeatures.zep.c
+	vulkan/struct/vkphysicaldevicefeatures2/vkphysicaldevicefeatures2.zep.c
+	vulkan/struct/vkphysicaldevicefloatcontrolsproperties/vkphysicaldevicefloatcontrolsproperties.zep.c
+	vulkan/struct/vkphysicaldeviceglobalpriorityqueryfeatures/vkphysicaldeviceglobalpriorityqueryfeatures.zep.c
+	vulkan/struct/vkphysicaldevicegroupproperties/vkphysicaldevicegroupproperties.zep.c
+	vulkan/struct/vkphysicaldevicehostimagecopyfeatures/vkphysicaldevicehostimagecopyfeatures.zep.c
+	vulkan/struct/vkphysicaldevicehostimagecopyproperties/vkphysicaldevicehostimagecopyproperties.zep.c
+	vulkan/struct/vkphysicaldevicehostqueryresetfeatures/vkphysicaldevicehostqueryresetfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceidproperties/vkphysicaldeviceidproperties.zep.c
+	vulkan/struct/vkphysicaldeviceimageformatinfo2/vkphysicaldeviceimageformatinfo2.zep.c
+	vulkan/struct/vkphysicaldeviceimagelessframebufferfeatures/vkphysicaldeviceimagelessframebufferfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceimagerobustnessfeatures/vkphysicaldeviceimagerobustnessfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceindextypeuint8features/vkphysicaldeviceindextypeuint8features.zep.c
+	vulkan/struct/vkphysicaldeviceinlineuniformblockfeatures/vkphysicaldeviceinlineuniformblockfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceinlineuniformblockproperties/vkphysicaldeviceinlineuniformblockproperties.zep.c
+	vulkan/struct/vkphysicaldevicelimits/vkphysicaldevicelimits.zep.c
+	vulkan/struct/vkphysicaldevicelinerasterizationfeatures/vkphysicaldevicelinerasterizationfeatures.zep.c
+	vulkan/struct/vkphysicaldevicelinerasterizationproperties/vkphysicaldevicelinerasterizationproperties.zep.c
+	vulkan/struct/vkphysicaldevicemaintenance3properties/vkphysicaldevicemaintenance3properties.zep.c
+	vulkan/struct/vkphysicaldevicemaintenance4features/vkphysicaldevicemaintenance4features.zep.c
+	vulkan/struct/vkphysicaldevicemaintenance4properties/vkphysicaldevicemaintenance4properties.zep.c
+	vulkan/struct/vkphysicaldevicemaintenance5features/vkphysicaldevicemaintenance5features.zep.c
+	vulkan/struct/vkphysicaldevicemaintenance5properties/vkphysicaldevicemaintenance5properties.zep.c
+	vulkan/struct/vkphysicaldevicemaintenance6features/vkphysicaldevicemaintenance6features.zep.c
+	vulkan/struct/vkphysicaldevicemaintenance6properties/vkphysicaldevicemaintenance6properties.zep.c
+	vulkan/struct/vkphysicaldevicememoryproperties/vkphysicaldevicememoryproperties.zep.c
+	vulkan/struct/vkphysicaldevicememoryproperties2/vkphysicaldevicememoryproperties2.zep.c
+	vulkan/struct/vkphysicaldevicemultiviewfeatures/vkphysicaldevicemultiviewfeatures.zep.c
+	vulkan/struct/vkphysicaldevicemultiviewproperties/vkphysicaldevicemultiviewproperties.zep.c
+	vulkan/struct/vkphysicaldevicepipelinecreationcachecontrolfeatures/vkphysicaldevicepipelinecreationcachecontrolfeatures.zep.c
+	vulkan/struct/vkphysicaldevicepipelineprotectedaccessfeatures/vkphysicaldevicepipelineprotectedaccessfeatures.zep.c
+	vulkan/struct/vkphysicaldevicepipelinerobustnessfeatures/vkphysicaldevicepipelinerobustnessfeatures.zep.c
+	vulkan/struct/vkphysicaldevicepipelinerobustnessproperties/vkphysicaldevicepipelinerobustnessproperties.zep.c
+	vulkan/struct/vkphysicaldevicepointclippingproperties/vkphysicaldevicepointclippingproperties.zep.c
+	vulkan/struct/vkphysicaldeviceportabilitysubsetfeatureskhr/vkphysicaldeviceportabilitysubsetfeatureskhr.zep.c
+	vulkan/struct/vkphysicaldeviceportabilitysubsetpropertieskhr/vkphysicaldeviceportabilitysubsetpropertieskhr.zep.c
+	vulkan/struct/vkphysicaldeviceprivatedatafeatures/vkphysicaldeviceprivatedatafeatures.zep.c
+	vulkan/struct/vkphysicaldeviceproperties/vkphysicaldeviceproperties.zep.c
+	vulkan/struct/vkphysicaldeviceproperties2/vkphysicaldeviceproperties2.zep.c
+	vulkan/struct/vkphysicaldeviceprotectedmemoryfeatures/vkphysicaldeviceprotectedmemoryfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceprotectedmemoryproperties/vkphysicaldeviceprotectedmemoryproperties.zep.c
+	vulkan/struct/vkphysicaldevicepushdescriptorproperties/vkphysicaldevicepushdescriptorproperties.zep.c
+	vulkan/struct/vkphysicaldevicesamplerfilterminmaxproperties/vkphysicaldevicesamplerfilterminmaxproperties.zep.c
+	vulkan/struct/vkphysicaldevicesamplerycbcrconversionfeatures/vkphysicaldevicesamplerycbcrconversionfeatures.zep.c
+	vulkan/struct/vkphysicaldevicescalarblocklayoutfeatures/vkphysicaldevicescalarblocklayoutfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceseparatedepthstencillayoutsfeatures/vkphysicaldeviceseparatedepthstencillayoutsfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceshaderatomicint64features/vkphysicaldeviceshaderatomicint64features.zep.c
+	vulkan/struct/vkphysicaldeviceshaderdemotetohelperinvocationfeatures/vkphysicaldeviceshaderdemotetohelperinvocationfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceshaderdrawparametersfeatures/vkphysicaldeviceshaderdrawparametersfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceshaderexpectassumefeatures/vkphysicaldeviceshaderexpectassumefeatures.zep.c
+	vulkan/struct/vkphysicaldeviceshaderfloat16int8features/vkphysicaldeviceshaderfloat16int8features.zep.c
+	vulkan/struct/vkphysicaldeviceshaderfloatcontrols2features/vkphysicaldeviceshaderfloatcontrols2features.zep.c
+	vulkan/struct/vkphysicaldeviceshaderintegerdotproductfeatures/vkphysicaldeviceshaderintegerdotproductfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceshaderintegerdotproductproperties/vkphysicaldeviceshaderintegerdotproductproperties.zep.c
+	vulkan/struct/vkphysicaldeviceshadersubgroupextendedtypesfeatures/vkphysicaldeviceshadersubgroupextendedtypesfeatures.zep.c
+	vulkan/struct/vkphysicaldeviceshadersubgrouprotatefeatures/vkphysicaldeviceshadersubgrouprotatefeatures.zep.c
+	vulkan/struct/vkphysicaldeviceshaderterminateinvocationfeatures/vkphysicaldeviceshaderterminateinvocationfeatures.zep.c
+	vulkan/struct/vkphysicaldevicesparseimageformatinfo2/vkphysicaldevicesparseimageformatinfo2.zep.c
+	vulkan/struct/vkphysicaldevicesparseproperties/vkphysicaldevicesparseproperties.zep.c
+	vulkan/struct/vkphysicaldevicesubgroupproperties/vkphysicaldevicesubgroupproperties.zep.c
+	vulkan/struct/vkphysicaldevicesubgroupsizecontrolfeatures/vkphysicaldevicesubgroupsizecontrolfeatures.zep.c
+	vulkan/struct/vkphysicaldevicesubgroupsizecontrolproperties/vkphysicaldevicesubgroupsizecontrolproperties.zep.c
+	vulkan/struct/vkphysicaldevicesynchronization2features/vkphysicaldevicesynchronization2features.zep.c
+	vulkan/struct/vkphysicaldevicetexelbufferalignmentproperties/vkphysicaldevicetexelbufferalignmentproperties.zep.c
+	vulkan/struct/vkphysicaldevicetexturecompressionastchdrfeatures/vkphysicaldevicetexturecompressionastchdrfeatures.zep.c
+	vulkan/struct/vkphysicaldevicetimelinesemaphorefeatures/vkphysicaldevicetimelinesemaphorefeatures.zep.c
+	vulkan/struct/vkphysicaldevicetimelinesemaphoreproperties/vkphysicaldevicetimelinesemaphoreproperties.zep.c
+	vulkan/struct/vkphysicaldevicetoolproperties/vkphysicaldevicetoolproperties.zep.c
+	vulkan/struct/vkphysicaldeviceuniformbufferstandardlayoutfeatures/vkphysicaldeviceuniformbufferstandardlayoutfeatures.zep.c
+	vulkan/struct/vkphysicaldevicevariablepointersfeatures/vkphysicaldevicevariablepointersfeatures.zep.c
+	vulkan/struct/vkphysicaldevicevertexattributedivisorfeatures/vkphysicaldevicevertexattributedivisorfeatures.zep.c
+	vulkan/struct/vkphysicaldevicevertexattributedivisorproperties/vkphysicaldevicevertexattributedivisorproperties.zep.c
+	vulkan/struct/vkphysicaldevicevulkan11features/vkphysicaldevicevulkan11features.zep.c
+	vulkan/struct/vkphysicaldevicevulkan11properties/vkphysicaldevicevulkan11properties.zep.c
+	vulkan/struct/vkphysicaldevicevulkan12features/vkphysicaldevicevulkan12features.zep.c
+	vulkan/struct/vkphysicaldevicevulkan12properties/vkphysicaldevicevulkan12properties.zep.c
+	vulkan/struct/vkphysicaldevicevulkan13features/vkphysicaldevicevulkan13features.zep.c
+	vulkan/struct/vkphysicaldevicevulkan13properties/vkphysicaldevicevulkan13properties.zep.c
+	vulkan/struct/vkphysicaldevicevulkan14features/vkphysicaldevicevulkan14features.zep.c
+	vulkan/struct/vkphysicaldevicevulkan14properties/vkphysicaldevicevulkan14properties.zep.c
+	vulkan/struct/vkphysicaldevicevulkanmemorymodelfeatures/vkphysicaldevicevulkanmemorymodelfeatures.zep.c
+	vulkan/struct/vkphysicaldevicezeroinitializeworkgroupmemoryfeatures/vkphysicaldevicezeroinitializeworkgroupmemoryfeatures.zep.c
+	vulkan/struct/vkpipelinecachecreateinfo/vkpipelinecachecreateinfo.zep.c
+	vulkan/struct/vkpipelinecacheheaderversionone/vkpipelinecacheheaderversionone.zep.c
+	vulkan/struct/vkpipelinecolorblendattachmentstate/vkpipelinecolorblendattachmentstate.zep.c
+	vulkan/struct/vkpipelinecolorblendstatecreateinfo/vkpipelinecolorblendstatecreateinfo.zep.c
+	vulkan/struct/vkpipelinecreateflags2createinfo/vkpipelinecreateflags2createinfo.zep.c
+	vulkan/struct/vkpipelinecreationfeedback/vkpipelinecreationfeedback.zep.c
+	vulkan/struct/vkpipelinecreationfeedbackcreateinfo/vkpipelinecreationfeedbackcreateinfo.zep.c
+	vulkan/struct/vkpipelinedepthstencilstatecreateinfo/vkpipelinedepthstencilstatecreateinfo.zep.c
+	vulkan/struct/vkpipelinedynamicstatecreateinfo/vkpipelinedynamicstatecreateinfo.zep.c
+	vulkan/struct/vkpipelineinputassemblystatecreateinfo/vkpipelineinputassemblystatecreateinfo.zep.c
+	vulkan/struct/vkpipelinelayoutcreateinfo/vkpipelinelayoutcreateinfo.zep.c
+	vulkan/struct/vkpipelinemultisamplestatecreateinfo/vkpipelinemultisamplestatecreateinfo.zep.c
+	vulkan/struct/vkpipelinerasterizationlinestatecreateinfo/vkpipelinerasterizationlinestatecreateinfo.zep.c
+	vulkan/struct/vkpipelinerasterizationstatecreateinfo/vkpipelinerasterizationstatecreateinfo.zep.c
+	vulkan/struct/vkpipelinerenderingcreateinfo/vkpipelinerenderingcreateinfo.zep.c
+	vulkan/struct/vkpipelinerobustnesscreateinfo/vkpipelinerobustnesscreateinfo.zep.c
+	vulkan/struct/vkpipelineshaderstagecreateinfo/vkpipelineshaderstagecreateinfo.zep.c
+	vulkan/struct/vkpipelineshaderstagerequiredsubgroupsizecreateinfo/vkpipelineshaderstagerequiredsubgroupsizecreateinfo.zep.c
+	vulkan/struct/vkpipelinetessellationdomainoriginstatecreateinfo/vkpipelinetessellationdomainoriginstatecreateinfo.zep.c
+	vulkan/struct/vkpipelinetessellationstatecreateinfo/vkpipelinetessellationstatecreateinfo.zep.c
+	vulkan/struct/vkpipelinevertexinputdivisorstatecreateinfo/vkpipelinevertexinputdivisorstatecreateinfo.zep.c
+	vulkan/struct/vkpipelinevertexinputstatecreateinfo/vkpipelinevertexinputstatecreateinfo.zep.c
+	vulkan/struct/vkpipelineviewportstatecreateinfo/vkpipelineviewportstatecreateinfo.zep.c
+	vulkan/struct/vkpresentinfokhr/vkpresentinfokhr.zep.c
+	vulkan/struct/vkprivatedataslotcreateinfo/vkprivatedataslotcreateinfo.zep.c
+	vulkan/struct/vkprotectedsubmitinfo/vkprotectedsubmitinfo.zep.c
+	vulkan/struct/vkpushconstantrange/vkpushconstantrange.zep.c
+	vulkan/struct/vkpushconstantsinfo/vkpushconstantsinfo.zep.c
+	vulkan/struct/vkpushdescriptorsetinfo/vkpushdescriptorsetinfo.zep.c
+	vulkan/struct/vkpushdescriptorsetwithtemplateinfo/vkpushdescriptorsetwithtemplateinfo.zep.c
+	vulkan/struct/vkquerypoolcreateinfo/vkquerypoolcreateinfo.zep.c
+	vulkan/struct/vkqueuefamilyglobalpriorityproperties/vkqueuefamilyglobalpriorityproperties.zep.c
+	vulkan/struct/vkqueuefamilyproperties/vkqueuefamilyproperties.zep.c
+	vulkan/struct/vkqueuefamilyproperties2/vkqueuefamilyproperties2.zep.c
+	vulkan/struct/vkrect2d/vkrect2d.zep.c
+	vulkan/struct/vkrenderingareainfo/vkrenderingareainfo.zep.c
+	vulkan/struct/vkrenderingattachmentinfo/vkrenderingattachmentinfo.zep.c
+	vulkan/struct/vkrenderingattachmentlocationinfo/vkrenderingattachmentlocationinfo.zep.c
+	vulkan/struct/vkrenderinginfo/vkrenderinginfo.zep.c
+	vulkan/struct/vkrenderinginputattachmentindexinfo/vkrenderinginputattachmentindexinfo.zep.c
+	vulkan/struct/vkrenderpassattachmentbegininfo/vkrenderpassattachmentbegininfo.zep.c
+	vulkan/struct/vkrenderpassbegininfo/vkrenderpassbegininfo.zep.c
+	vulkan/struct/vkrenderpasscreateinfo/vkrenderpasscreateinfo.zep.c
+	vulkan/struct/vkrenderpasscreateinfo2/vkrenderpasscreateinfo2.zep.c
+	vulkan/struct/vkrenderpassinputattachmentaspectcreateinfo/vkrenderpassinputattachmentaspectcreateinfo.zep.c
+	vulkan/struct/vkrenderpassmultiviewcreateinfo/vkrenderpassmultiviewcreateinfo.zep.c
+	vulkan/struct/vkresolveimageinfo2/vkresolveimageinfo2.zep.c
+	vulkan/struct/vksamplercreateinfo/vksamplercreateinfo.zep.c
+	vulkan/struct/vksamplerreductionmodecreateinfo/vksamplerreductionmodecreateinfo.zep.c
+	vulkan/struct/vksamplerycbcrconversioncreateinfo/vksamplerycbcrconversioncreateinfo.zep.c
+	vulkan/struct/vksamplerycbcrconversionimageformatproperties/vksamplerycbcrconversionimageformatproperties.zep.c
+	vulkan/struct/vksamplerycbcrconversioninfo/vksamplerycbcrconversioninfo.zep.c
+	vulkan/struct/vksemaphorecreateinfo/vksemaphorecreateinfo.zep.c
+	vulkan/struct/vksemaphoresignalinfo/vksemaphoresignalinfo.zep.c
+	vulkan/struct/vksemaphoresubmitinfo/vksemaphoresubmitinfo.zep.c
+	vulkan/struct/vksemaphoretypecreateinfo/vksemaphoretypecreateinfo.zep.c
+	vulkan/struct/vksemaphorewaitinfo/vksemaphorewaitinfo.zep.c
+	vulkan/struct/vkshadermodulecreateinfo/vkshadermodulecreateinfo.zep.c
+	vulkan/struct/vksparsebuffermemorybindinfo/vksparsebuffermemorybindinfo.zep.c
+	vulkan/struct/vksparseimageformatproperties/vksparseimageformatproperties.zep.c
+	vulkan/struct/vksparseimageformatproperties2/vksparseimageformatproperties2.zep.c
+	vulkan/struct/vksparseimagememorybind/vksparseimagememorybind.zep.c
+	vulkan/struct/vksparseimagememorybindinfo/vksparseimagememorybindinfo.zep.c
+	vulkan/struct/vksparseimagememoryrequirements/vksparseimagememoryrequirements.zep.c
+	vulkan/struct/vksparseimagememoryrequirements2/vksparseimagememoryrequirements2.zep.c
+	vulkan/struct/vksparseimageopaquememorybindinfo/vksparseimageopaquememorybindinfo.zep.c
+	vulkan/struct/vksparsememorybind/vksparsememorybind.zep.c
+	vulkan/struct/vkspecializationinfo/vkspecializationinfo.zep.c
+	vulkan/struct/vkspecializationmapentry/vkspecializationmapentry.zep.c
+	vulkan/struct/vkstencilopstate/vkstencilopstate.zep.c
+	vulkan/struct/vksubmitinfo/vksubmitinfo.zep.c
+	vulkan/struct/vksubmitinfo2/vksubmitinfo2.zep.c
+	vulkan/struct/vksubpassbegininfo/vksubpassbegininfo.zep.c
+	vulkan/struct/vksubpassdependency/vksubpassdependency.zep.c
+	vulkan/struct/vksubpassdependency2/vksubpassdependency2.zep.c
+	vulkan/struct/vksubpassdescription/vksubpassdescription.zep.c
+	vulkan/struct/vksubpassdescription2/vksubpassdescription2.zep.c
+	vulkan/struct/vksubpassdescriptiondepthstencilresolve/vksubpassdescriptiondepthstencilresolve.zep.c
+	vulkan/struct/vksubpassendinfo/vksubpassendinfo.zep.c
+	vulkan/struct/vksubresourcehostmemcpysize/vksubresourcehostmemcpysize.zep.c
+	vulkan/struct/vksubresourcelayout/vksubresourcelayout.zep.c
+	vulkan/struct/vksubresourcelayout2/vksubresourcelayout2.zep.c
+	vulkan/struct/vksurfacecapabilitieskhr/vksurfacecapabilitieskhr.zep.c
+	vulkan/struct/vksurfaceformatkhr/vksurfaceformatkhr.zep.c
+	vulkan/struct/vkswapchaincreateinfokhr/vkswapchaincreateinfokhr.zep.c
+	vulkan/struct/vktimelinesemaphoresubmitinfo/vktimelinesemaphoresubmitinfo.zep.c
+	vulkan/struct/vkvertexinputattributedescription/vkvertexinputattributedescription.zep.c
+	vulkan/struct/vkvertexinputbindingdescription/vkvertexinputbindingdescription.zep.c
+	vulkan/struct/vkvertexinputbindingdivisordescription/vkvertexinputbindingdivisordescription.zep.c
+	vulkan/struct/vkviewport/vkviewport.zep.c
+	vulkan/struct/vkwaylandsurfacecreateinfokhr/vkwaylandsurfacecreateinfokhr.zep.c
+	vulkan/struct/vkwritedescriptorset/vkwritedescriptorset.zep.c
+	vulkan/struct/vkwritedescriptorsetinlineuniformblock/vkwritedescriptorsetinlineuniformblock.zep.c
+	vulkan/struct/vkxcbsurfacecreateinfokhr/vkxcbsurfacecreateinfokhr.zep.c
+	vulkan/struct/vkxlibsurfacecreateinfokhr/vkxlibsurfacecreateinfokhr.zep.c
+	vulkan/vk/vk10/vk10.zep.c
+	vulkan/vk/vk11/vk11.zep.c
+	vulkan/vk/vk12/vk12.zep.c
+	vulkan/vk/vk13/vk13.zep.c
+	vulkan/vk/vk14/vk14.zep.c src/phpvk-bridge.c
+	src/phpvk-registry.c
+	src/phpvk-support.c
+	src/vk-10.c
+	src/vk-11.c
+	src/vk-12.c
+	src/vk-13.c
+	src/vk-14.c
+	src/vk-ext-extdebugutils.c
+	src/vk-ext-extmetalobjects.c
+	src/vk-ext-extmetalsurface.c
+	src/vk-ext-khrsurface.c
+	src/vk-ext-khrswapchain.c
+	src/vk-ext-khrwaylandsurface.c
+	src/vk-ext-khrxcbsurface.c
+	src/vk-ext-khrxlibsurface.c
+	src/vk-struct-10.c
+	src/vk-struct-11.c
+	src/vk-struct-12.c
+	src/vk-struct-13.c
+	src/vk-struct-14.c
+	src/vk-struct-asserts.c
+	src/vk-struct-ext.c"
+	PHP_NEW_EXTENSION(vulkan, $vulkan_sources, $ext_shared,, -Wno-error=incompatible-pointer-types -Wno-deprecated-declarations)
+	PHP_ADD_BUILD_DIR([$ext_builddir/kernel/])
+	for dir in "vulkan/bridge vulkan/ext/extdebugutils vulkan/ext/extmetalobjects vulkan/ext/extmetalsurface vulkan/ext/khrsurface vulkan/ext/khrswapchain vulkan/ext/khrwaylandsurface vulkan/ext/khrxcbsurface vulkan/ext/khrxlibsurface vulkan/struct/vkacquirenextimageinfokhr vulkan/struct/vkallocationcallbacks vulkan/struct/vkapplicationinfo vulkan/struct/vkattachmentdescription vulkan/struct/vkattachmentdescription2 vulkan/struct/vkattachmentdescriptionstencillayout vulkan/struct/vkattachmentreference vulkan/struct/vkattachmentreference2 vulkan/struct/vkattachmentreferencestencillayout vulkan/struct/vkbaseinstructure vulkan/struct/vkbaseoutstructure vulkan/struct/vkbindbuffermemorydevicegroupinfo vulkan/struct/vkbindbuffermemoryinfo vulkan/struct/vkbinddescriptorsetsinfo vulkan/struct/vkbindimagememorydevicegroupinfo vulkan/struct/vkbindimagememoryinfo vulkan/struct/vkbindimagememoryswapchaininfokhr vulkan/struct/vkbindimageplanememoryinfo vulkan/struct/vkbindmemorystatus vulkan/struct/vkbindsparseinfo vulkan/struct/vkblitimageinfo2 vulkan/struct/vkbuffercopy vulkan/struct/vkbuffercopy2 vulkan/struct/vkbuffercreateinfo vulkan/struct/vkbufferdeviceaddressinfo vulkan/struct/vkbufferimagecopy vulkan/struct/vkbufferimagecopy2 vulkan/struct/vkbuffermemorybarrier vulkan/struct/vkbuffermemorybarrier2 vulkan/struct/vkbuffermemoryrequirementsinfo2 vulkan/struct/vkbufferopaquecaptureaddresscreateinfo vulkan/struct/vkbufferusageflags2createinfo vulkan/struct/vkbufferviewcreateinfo vulkan/struct/vkclearattachment vulkan/struct/vkclearcolorvalue vulkan/struct/vkcleardepthstencilvalue vulkan/struct/vkclearrect vulkan/struct/vkclearvalue vulkan/struct/vkcommandbufferallocateinfo vulkan/struct/vkcommandbufferbegininfo vulkan/struct/vkcommandbufferinheritanceinfo vulkan/struct/vkcommandbufferinheritancerenderinginfo vulkan/struct/vkcommandbuffersubmitinfo vulkan/struct/vkcommandpoolcreateinfo vulkan/struct/vkcomponentmapping vulkan/struct/vkcomputepipelinecreateinfo vulkan/struct/vkconformanceversion vulkan/struct/vkcopybufferinfo2 vulkan/struct/vkcopybuffertoimageinfo2 vulkan/struct/vkcopydescriptorset vulkan/struct/vkcopyimageinfo2 vulkan/struct/vkcopyimagetobufferinfo2 vulkan/struct/vkcopyimagetoimageinfo vulkan/struct/vkcopyimagetomemoryinfo vulkan/struct/vkcopymemorytoimageinfo vulkan/struct/vkdebugutilslabelext vulkan/struct/vkdebugutilsmessengercallbackdataext vulkan/struct/vkdebugutilsmessengercreateinfoext vulkan/struct/vkdebugutilsobjectnameinfoext vulkan/struct/vkdebugutilsobjecttaginfoext vulkan/struct/vkdependencyinfo vulkan/struct/vkdescriptorbufferinfo vulkan/struct/vkdescriptorimageinfo vulkan/struct/vkdescriptorpoolcreateinfo vulkan/struct/vkdescriptorpoolinlineuniformblockcreateinfo vulkan/struct/vkdescriptorpoolsize vulkan/struct/vkdescriptorsetallocateinfo vulkan/struct/vkdescriptorsetlayoutbinding vulkan/struct/vkdescriptorsetlayoutbindingflagscreateinfo vulkan/struct/vkdescriptorsetlayoutcreateinfo vulkan/struct/vkdescriptorsetlayoutsupport vulkan/struct/vkdescriptorsetvariabledescriptorcountallocateinfo vulkan/struct/vkdescriptorsetvariabledescriptorcountlayoutsupport vulkan/struct/vkdescriptorupdatetemplatecreateinfo vulkan/struct/vkdescriptorupdatetemplateentry vulkan/struct/vkdevicebuffermemoryrequirements vulkan/struct/vkdevicecreateinfo vulkan/struct/vkdevicegroupbindsparseinfo vulkan/struct/vkdevicegroupcommandbufferbegininfo vulkan/struct/vkdevicegroupdevicecreateinfo vulkan/struct/vkdevicegrouppresentcapabilitieskhr vulkan/struct/vkdevicegrouppresentinfokhr vulkan/struct/vkdevicegrouprenderpassbegininfo vulkan/struct/vkdevicegroupsubmitinfo vulkan/struct/vkdevicegroupswapchaincreateinfokhr vulkan/struct/vkdeviceimagememoryrequirements vulkan/struct/vkdeviceimagesubresourceinfo vulkan/struct/vkdevicememoryopaquecaptureaddressinfo vulkan/struct/vkdeviceprivatedatacreateinfo vulkan/struct/vkdevicequeuecreateinfo vulkan/struct/vkdevicequeueglobalprioritycreateinfo vulkan/struct/vkdevicequeueinfo2 vulkan/struct/vkdispatchindirectcommand vulkan/struct/vkdrawindexedindirectcommand vulkan/struct/vkdrawindirectcommand vulkan/struct/vkeventcreateinfo vulkan/struct/vkexportfencecreateinfo vulkan/struct/vkexportmemoryallocateinfo vulkan/struct/vkexportmetalbufferinfoext vulkan/struct/vkexportmetalcommandqueueinfoext vulkan/struct/vkexportmetaldeviceinfoext vulkan/struct/vkexportmetaliosurfaceinfoext vulkan/struct/vkexportmetalobjectcreateinfoext vulkan/struct/vkexportmetalobjectsinfoext vulkan/struct/vkexportmetalsharedeventinfoext vulkan/struct/vkexportmetaltextureinfoext vulkan/struct/vkexportsemaphorecreateinfo vulkan/struct/vkextensionproperties vulkan/struct/vkextent2d vulkan/struct/vkextent3d vulkan/struct/vkexternalbufferproperties vulkan/struct/vkexternalfenceproperties vulkan/struct/vkexternalimageformatproperties vulkan/struct/vkexternalmemorybuffercreateinfo vulkan/struct/vkexternalmemoryimagecreateinfo vulkan/struct/vkexternalmemoryproperties vulkan/struct/vkexternalsemaphoreproperties vulkan/struct/vkfencecreateinfo vulkan/struct/vkformatproperties vulkan/struct/vkformatproperties2 vulkan/struct/vkformatproperties3 vulkan/struct/vkframebufferattachmentimageinfo vulkan/struct/vkframebufferattachmentscreateinfo vulkan/struct/vkframebuffercreateinfo vulkan/struct/vkgraphicspipelinecreateinfo vulkan/struct/vkhostimagecopydeviceperformancequery vulkan/struct/vkhostimagelayouttransitioninfo vulkan/struct/vkimageblit vulkan/struct/vkimageblit2 vulkan/struct/vkimagecopy vulkan/struct/vkimagecopy2 vulkan/struct/vkimagecreateinfo vulkan/struct/vkimageformatlistcreateinfo vulkan/struct/vkimageformatproperties vulkan/struct/vkimageformatproperties2 vulkan/struct/vkimagememorybarrier vulkan/struct/vkimagememorybarrier2 vulkan/struct/vkimagememoryrequirementsinfo2 vulkan/struct/vkimageplanememoryrequirementsinfo vulkan/struct/vkimageresolve vulkan/struct/vkimageresolve2 vulkan/struct/vkimagesparsememoryrequirementsinfo2 vulkan/struct/vkimagestencilusagecreateinfo vulkan/struct/vkimagesubresource vulkan/struct/vkimagesubresource2 vulkan/struct/vkimagesubresourcelayers vulkan/struct/vkimagesubresourcerange vulkan/struct/vkimageswapchaincreateinfokhr vulkan/struct/vkimagetomemorycopy vulkan/struct/vkimageviewcreateinfo vulkan/struct/vkimageviewusagecreateinfo vulkan/struct/vkimportmetalbufferinfoext vulkan/struct/vkimportmetaliosurfaceinfoext vulkan/struct/vkimportmetalsharedeventinfoext vulkan/struct/vkimportmetaltextureinfoext vulkan/struct/vkinputattachmentaspectreference vulkan/struct/vkinstancecreateinfo vulkan/struct/vklayerproperties vulkan/struct/vklayersettingext vulkan/struct/vklayersettingscreateinfoext vulkan/struct/vkmappedmemoryrange vulkan/struct/vkmemoryallocateflagsinfo vulkan/struct/vkmemoryallocateinfo vulkan/struct/vkmemorybarrier vulkan/struct/vkmemorybarrier2 vulkan/struct/vkmemorydedicatedallocateinfo vulkan/struct/vkmemorydedicatedrequirements vulkan/struct/vkmemoryheap vulkan/struct/vkmemorymapinfo vulkan/struct/vkmemoryopaquecaptureaddressallocateinfo vulkan/struct/vkmemoryrequirements vulkan/struct/vkmemoryrequirements2 vulkan/struct/vkmemorytoimagecopy vulkan/struct/vkmemorytype vulkan/struct/vkmemoryunmapinfo vulkan/struct/vkmetalsurfacecreateinfoext vulkan/struct/vkoffset2d vulkan/struct/vkoffset3d vulkan/struct/vkphysicaldevice16bitstoragefeatures vulkan/struct/vkphysicaldevice8bitstoragefeatures vulkan/struct/vkphysicaldevicebufferdeviceaddressfeatures vulkan/struct/vkphysicaldevicedepthstencilresolveproperties vulkan/struct/vkphysicaldevicedescriptorindexingfeatures vulkan/struct/vkphysicaldevicedescriptorindexingproperties vulkan/struct/vkphysicaldevicedriverproperties vulkan/struct/vkphysicaldevicedynamicrenderingfeatures vulkan/struct/vkphysicaldevicedynamicrenderinglocalreadfeatures vulkan/struct/vkphysicaldeviceexternalbufferinfo vulkan/struct/vkphysicaldeviceexternalfenceinfo vulkan/struct/vkphysicaldeviceexternalimageformatinfo vulkan/struct/vkphysicaldeviceexternalsemaphoreinfo vulkan/struct/vkphysicaldevicefeatures vulkan/struct/vkphysicaldevicefeatures2 vulkan/struct/vkphysicaldevicefloatcontrolsproperties vulkan/struct/vkphysicaldeviceglobalpriorityqueryfeatures vulkan/struct/vkphysicaldevicegroupproperties vulkan/struct/vkphysicaldevicehostimagecopyfeatures vulkan/struct/vkphysicaldevicehostimagecopyproperties vulkan/struct/vkphysicaldevicehostqueryresetfeatures vulkan/struct/vkphysicaldeviceidproperties vulkan/struct/vkphysicaldeviceimageformatinfo2 vulkan/struct/vkphysicaldeviceimagelessframebufferfeatures vulkan/struct/vkphysicaldeviceimagerobustnessfeatures vulkan/struct/vkphysicaldeviceindextypeuint8features vulkan/struct/vkphysicaldeviceinlineuniformblockfeatures vulkan/struct/vkphysicaldeviceinlineuniformblockproperties vulkan/struct/vkphysicaldevicelimits vulkan/struct/vkphysicaldevicelinerasterizationfeatures vulkan/struct/vkphysicaldevicelinerasterizationproperties vulkan/struct/vkphysicaldevicemaintenance3properties vulkan/struct/vkphysicaldevicemaintenance4features vulkan/struct/vkphysicaldevicemaintenance4properties vulkan/struct/vkphysicaldevicemaintenance5features vulkan/struct/vkphysicaldevicemaintenance5properties vulkan/struct/vkphysicaldevicemaintenance6features vulkan/struct/vkphysicaldevicemaintenance6properties vulkan/struct/vkphysicaldevicememoryproperties vulkan/struct/vkphysicaldevicememoryproperties2 vulkan/struct/vkphysicaldevicemultiviewfeatures vulkan/struct/vkphysicaldevicemultiviewproperties vulkan/struct/vkphysicaldevicepipelinecreationcachecontrolfeatures vulkan/struct/vkphysicaldevicepipelineprotectedaccessfeatures vulkan/struct/vkphysicaldevicepipelinerobustnessfeatures vulkan/struct/vkphysicaldevicepipelinerobustnessproperties vulkan/struct/vkphysicaldevicepointclippingproperties vulkan/struct/vkphysicaldeviceportabilitysubsetfeatureskhr vulkan/struct/vkphysicaldeviceportabilitysubsetpropertieskhr vulkan/struct/vkphysicaldeviceprivatedatafeatures vulkan/struct/vkphysicaldeviceproperties vulkan/struct/vkphysicaldeviceproperties2 vulkan/struct/vkphysicaldeviceprotectedmemoryfeatures vulkan/struct/vkphysicaldeviceprotectedmemoryproperties vulkan/struct/vkphysicaldevicepushdescriptorproperties vulkan/struct/vkphysicaldevicesamplerfilterminmaxproperties vulkan/struct/vkphysicaldevicesamplerycbcrconversionfeatures vulkan/struct/vkphysicaldevicescalarblocklayoutfeatures vulkan/struct/vkphysicaldeviceseparatedepthstencillayoutsfeatures vulkan/struct/vkphysicaldeviceshaderatomicint64features vulkan/struct/vkphysicaldeviceshaderdemotetohelperinvocationfeatures vulkan/struct/vkphysicaldeviceshaderdrawparametersfeatures vulkan/struct/vkphysicaldeviceshaderexpectassumefeatures vulkan/struct/vkphysicaldeviceshaderfloat16int8features vulkan/struct/vkphysicaldeviceshaderfloatcontrols2features vulkan/struct/vkphysicaldeviceshaderintegerdotproductfeatures vulkan/struct/vkphysicaldeviceshaderintegerdotproductproperties vulkan/struct/vkphysicaldeviceshadersubgroupextendedtypesfeatures vulkan/struct/vkphysicaldeviceshadersubgrouprotatefeatures vulkan/struct/vkphysicaldeviceshaderterminateinvocationfeatures vulkan/struct/vkphysicaldevicesparseimageformatinfo2 vulkan/struct/vkphysicaldevicesparseproperties vulkan/struct/vkphysicaldevicesubgroupproperties vulkan/struct/vkphysicaldevicesubgroupsizecontrolfeatures vulkan/struct/vkphysicaldevicesubgroupsizecontrolproperties vulkan/struct/vkphysicaldevicesynchronization2features vulkan/struct/vkphysicaldevicetexelbufferalignmentproperties vulkan/struct/vkphysicaldevicetexturecompressionastchdrfeatures vulkan/struct/vkphysicaldevicetimelinesemaphorefeatures vulkan/struct/vkphysicaldevicetimelinesemaphoreproperties vulkan/struct/vkphysicaldevicetoolproperties vulkan/struct/vkphysicaldeviceuniformbufferstandardlayoutfeatures vulkan/struct/vkphysicaldevicevariablepointersfeatures vulkan/struct/vkphysicaldevicevertexattributedivisorfeatures vulkan/struct/vkphysicaldevicevertexattributedivisorproperties vulkan/struct/vkphysicaldevicevulkan11features vulkan/struct/vkphysicaldevicevulkan11properties vulkan/struct/vkphysicaldevicevulkan12features vulkan/struct/vkphysicaldevicevulkan12properties vulkan/struct/vkphysicaldevicevulkan13features vulkan/struct/vkphysicaldevicevulkan13properties vulkan/struct/vkphysicaldevicevulkan14features vulkan/struct/vkphysicaldevicevulkan14properties vulkan/struct/vkphysicaldevicevulkanmemorymodelfeatures vulkan/struct/vkphysicaldevicezeroinitializeworkgroupmemoryfeatures vulkan/struct/vkpipelinecachecreateinfo vulkan/struct/vkpipelinecacheheaderversionone vulkan/struct/vkpipelinecolorblendattachmentstate vulkan/struct/vkpipelinecolorblendstatecreateinfo vulkan/struct/vkpipelinecreateflags2createinfo vulkan/struct/vkpipelinecreationfeedback vulkan/struct/vkpipelinecreationfeedbackcreateinfo vulkan/struct/vkpipelinedepthstencilstatecreateinfo vulkan/struct/vkpipelinedynamicstatecreateinfo vulkan/struct/vkpipelineinputassemblystatecreateinfo vulkan/struct/vkpipelinelayoutcreateinfo vulkan/struct/vkpipelinemultisamplestatecreateinfo vulkan/struct/vkpipelinerasterizationlinestatecreateinfo vulkan/struct/vkpipelinerasterizationstatecreateinfo vulkan/struct/vkpipelinerenderingcreateinfo vulkan/struct/vkpipelinerobustnesscreateinfo vulkan/struct/vkpipelineshaderstagecreateinfo vulkan/struct/vkpipelineshaderstagerequiredsubgroupsizecreateinfo vulkan/struct/vkpipelinetessellationdomainoriginstatecreateinfo vulkan/struct/vkpipelinetessellationstatecreateinfo vulkan/struct/vkpipelinevertexinputdivisorstatecreateinfo vulkan/struct/vkpipelinevertexinputstatecreateinfo vulkan/struct/vkpipelineviewportstatecreateinfo vulkan/struct/vkpresentinfokhr vulkan/struct/vkprivatedataslotcreateinfo vulkan/struct/vkprotectedsubmitinfo vulkan/struct/vkpushconstantrange vulkan/struct/vkpushconstantsinfo vulkan/struct/vkpushdescriptorsetinfo vulkan/struct/vkpushdescriptorsetwithtemplateinfo vulkan/struct/vkquerypoolcreateinfo vulkan/struct/vkqueuefamilyglobalpriorityproperties vulkan/struct/vkqueuefamilyproperties vulkan/struct/vkqueuefamilyproperties2 vulkan/struct/vkrect2d vulkan/struct/vkrenderingareainfo vulkan/struct/vkrenderingattachmentinfo vulkan/struct/vkrenderingattachmentlocationinfo vulkan/struct/vkrenderinginfo vulkan/struct/vkrenderinginputattachmentindexinfo vulkan/struct/vkrenderpassattachmentbegininfo vulkan/struct/vkrenderpassbegininfo vulkan/struct/vkrenderpasscreateinfo vulkan/struct/vkrenderpasscreateinfo2 vulkan/struct/vkrenderpassinputattachmentaspectcreateinfo vulkan/struct/vkrenderpassmultiviewcreateinfo vulkan/struct/vkresolveimageinfo2 vulkan/struct/vksamplercreateinfo vulkan/struct/vksamplerreductionmodecreateinfo vulkan/struct/vksamplerycbcrconversioncreateinfo vulkan/struct/vksamplerycbcrconversionimageformatproperties vulkan/struct/vksamplerycbcrconversioninfo vulkan/struct/vksemaphorecreateinfo vulkan/struct/vksemaphoresignalinfo vulkan/struct/vksemaphoresubmitinfo vulkan/struct/vksemaphoretypecreateinfo vulkan/struct/vksemaphorewaitinfo vulkan/struct/vkshadermodulecreateinfo vulkan/struct/vksparsebuffermemorybindinfo vulkan/struct/vksparseimageformatproperties vulkan/struct/vksparseimageformatproperties2 vulkan/struct/vksparseimagememorybind vulkan/struct/vksparseimagememorybindinfo vulkan/struct/vksparseimagememoryrequirements vulkan/struct/vksparseimagememoryrequirements2 vulkan/struct/vksparseimageopaquememorybindinfo vulkan/struct/vksparsememorybind vulkan/struct/vkspecializationinfo vulkan/struct/vkspecializationmapentry vulkan/struct/vkstencilopstate vulkan/struct/vksubmitinfo vulkan/struct/vksubmitinfo2 vulkan/struct/vksubpassbegininfo vulkan/struct/vksubpassdependency vulkan/struct/vksubpassdependency2 vulkan/struct/vksubpassdescription vulkan/struct/vksubpassdescription2 vulkan/struct/vksubpassdescriptiondepthstencilresolve vulkan/struct/vksubpassendinfo vulkan/struct/vksubresourcehostmemcpysize vulkan/struct/vksubresourcelayout vulkan/struct/vksubresourcelayout2 vulkan/struct/vksurfacecapabilitieskhr vulkan/struct/vksurfaceformatkhr vulkan/struct/vkswapchaincreateinfokhr vulkan/struct/vktimelinesemaphoresubmitinfo vulkan/struct/vkvertexinputattributedescription vulkan/struct/vkvertexinputbindingdescription vulkan/struct/vkvertexinputbindingdivisordescription vulkan/struct/vkviewport vulkan/struct/vkwaylandsurfacecreateinfokhr vulkan/struct/vkwritedescriptorset vulkan/struct/vkwritedescriptorsetinlineuniformblock vulkan/struct/vkxcbsurfacecreateinfokhr vulkan/struct/vkxlibsurfacecreateinfokhr vulkan/vk/vk10 vulkan/vk/vk11 vulkan/vk/vk12 vulkan/vk/vk13 vulkan/vk/vk14"; do
+		PHP_ADD_BUILD_DIR([$ext_builddir/$dir])
 	done
-
 	PHP_SUBST(VULKAN_SHARED_LIBADD)
 
 	old_CPPFLAGS=$CPPFLAGS
@@ -87,9 +488,6 @@ if test "$PHP_VULKAN" = "yes"; then
 	)
 
 	CPPFLAGS=$old_CPPFLAGS
-
-	PHP_ADD_INCLUDE([$ext_srcdir/src])
-	PHP_ADD_INCLUDE([$ext_builddir/src])
 
 	PHP_INSTALL_HEADERS([ext/vulkan], [php_VULKAN.h])
 
