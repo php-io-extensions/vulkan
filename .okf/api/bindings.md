@@ -1,0 +1,28 @@
+---
+type: API
+title: Bindings
+description: The Vulkan functions and structs this extension binds, by group.
+tags: [vulkan, api]
+status: draft
+generated: { by: grok/4.7, at: 2026-10-05T09:30:00-04:00 }
+sources:
+  - id: plan
+    resource: /docs/superpowers/plans/2026-10-05-slice-4-ext-vulkan.md
+    title: Slice 4 plan
+---
+
+# Groups
+
+| Group | Source | What it binds |
+|---|---|---|
+| Instance and device | `src/vk_instance.c` | `VkInstance`, `VkPhysicalDevice`, `VkDevice`, `VkQueue`; create, destroy, enumerate, properties, formats, memory properties, queues |
+| Memory | `src/vk_memory.c` | `VkDeviceMemory`, `VkBuffer`, `VkImage`, `VkImageView`, `VkSampler`; allocate, map, flush, invalidate, bind |
+| Pipelines | `src/vk_pipeline.c` | render passes, framebuffers, shader modules, graphics pipelines, descriptor layouts, pools, sets, writes |
+| Commands | `src/vk_command.c` | command pools and buffers, draw and copy and blit, barriers, submit, fences, semaphores |
+| Surfaces | `src/vk_surface.c` | `VkSurfaceKHR`, `VkSwapchainKHR`; capabilities, formats, present modes, acquire, present |
+| Metal surface | `src/vk_metal.c` | `vkCreateMetalSurfaceEXT`, macOS only, loaded with `vkGetInstanceProcAddr` |
+| dmabuf | `src/vk_external.c` | `vkGetMemoryFdKHR`, `vkGetImageDrmFormatModifierPropertiesEXT` via `vkGetDeviceProcAddr`; `vkGetImageSubresourceLayout` |
+
+`vk_read_mapped` and `vk_write_mapped` live in `src/vulkan.c`. They are not Vulkan API entry points.
+
+A device proc that the loader does not export answers `VK_ERROR_EXTENSION_NOT_PRESENT`.

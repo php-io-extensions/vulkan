@@ -1,0 +1,5097 @@
+<?php
+
+/** @generate-class-entries */
+
+/** Generated from vulkan_core.h VK_HEADER_VERSION 309. */
+
+/**
+ * @var int
+ * @cvalue VK_SUCCESS
+ */
+const VK_SUCCESS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_NOT_READY
+ */
+const VK_NOT_READY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_TIMEOUT
+ */
+const VK_TIMEOUT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EVENT_SET
+ */
+const VK_EVENT_SET = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EVENT_RESET
+ */
+const VK_EVENT_RESET = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_INCOMPLETE
+ */
+const VK_INCOMPLETE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_OUT_OF_HOST_MEMORY
+ */
+const VK_ERROR_OUT_OF_HOST_MEMORY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_OUT_OF_DEVICE_MEMORY
+ */
+const VK_ERROR_OUT_OF_DEVICE_MEMORY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INITIALIZATION_FAILED
+ */
+const VK_ERROR_INITIALIZATION_FAILED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_DEVICE_LOST
+ */
+const VK_ERROR_DEVICE_LOST = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_MEMORY_MAP_FAILED
+ */
+const VK_ERROR_MEMORY_MAP_FAILED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_LAYER_NOT_PRESENT
+ */
+const VK_ERROR_LAYER_NOT_PRESENT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_EXTENSION_NOT_PRESENT
+ */
+const VK_ERROR_EXTENSION_NOT_PRESENT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_FEATURE_NOT_PRESENT
+ */
+const VK_ERROR_FEATURE_NOT_PRESENT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INCOMPATIBLE_DRIVER
+ */
+const VK_ERROR_INCOMPATIBLE_DRIVER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_TOO_MANY_OBJECTS
+ */
+const VK_ERROR_TOO_MANY_OBJECTS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_FORMAT_NOT_SUPPORTED
+ */
+const VK_ERROR_FORMAT_NOT_SUPPORTED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_FRAGMENTED_POOL
+ */
+const VK_ERROR_FRAGMENTED_POOL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_UNKNOWN
+ */
+const VK_ERROR_UNKNOWN = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_OUT_OF_POOL_MEMORY
+ */
+const VK_ERROR_OUT_OF_POOL_MEMORY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INVALID_EXTERNAL_HANDLE
+ */
+const VK_ERROR_INVALID_EXTERNAL_HANDLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_FRAGMENTATION
+ */
+const VK_ERROR_FRAGMENTATION = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS
+ */
+const VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_COMPILE_REQUIRED
+ */
+const VK_PIPELINE_COMPILE_REQUIRED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_NOT_PERMITTED
+ */
+const VK_ERROR_NOT_PERMITTED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_SURFACE_LOST_KHR
+ */
+const VK_ERROR_SURFACE_LOST_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_NATIVE_WINDOW_IN_USE_KHR
+ */
+const VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SUBOPTIMAL_KHR
+ */
+const VK_SUBOPTIMAL_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_OUT_OF_DATE_KHR
+ */
+const VK_ERROR_OUT_OF_DATE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INCOMPATIBLE_DISPLAY_KHR
+ */
+const VK_ERROR_INCOMPATIBLE_DISPLAY_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_VALIDATION_FAILED_EXT
+ */
+const VK_ERROR_VALIDATION_FAILED_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INVALID_SHADER_NV
+ */
+const VK_ERROR_INVALID_SHADER_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR
+ */
+const VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR
+ */
+const VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR
+ */
+const VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR
+ */
+const VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR
+ */
+const VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR
+ */
+const VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT
+ */
+const VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT
+ */
+const VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_THREAD_IDLE_KHR
+ */
+const VK_THREAD_IDLE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_THREAD_DONE_KHR
+ */
+const VK_THREAD_DONE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_OPERATION_DEFERRED_KHR
+ */
+const VK_OPERATION_DEFERRED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_OPERATION_NOT_DEFERRED_KHR
+ */
+const VK_OPERATION_NOT_DEFERRED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR
+ */
+const VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_COMPRESSION_EXHAUSTED_EXT
+ */
+const VK_ERROR_COMPRESSION_EXHAUSTED_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_INCOMPATIBLE_SHADER_BINARY_EXT
+ */
+const VK_INCOMPATIBLE_SHADER_BINARY_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_BINARY_MISSING_KHR
+ */
+const VK_PIPELINE_BINARY_MISSING_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ERROR_NOT_ENOUGH_SPACE_KHR
+ */
+const VK_ERROR_NOT_ENOUGH_SPACE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_UNDEFINED
+ */
+const VK_FORMAT_UNDEFINED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R4G4_UNORM_PACK8
+ */
+const VK_FORMAT_R4G4_UNORM_PACK8 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R4G4B4A4_UNORM_PACK16
+ */
+const VK_FORMAT_R4G4B4A4_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B4G4R4A4_UNORM_PACK16
+ */
+const VK_FORMAT_B4G4R4A4_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R5G6B5_UNORM_PACK16
+ */
+const VK_FORMAT_R5G6B5_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B5G6R5_UNORM_PACK16
+ */
+const VK_FORMAT_B5G6R5_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R5G5B5A1_UNORM_PACK16
+ */
+const VK_FORMAT_R5G5B5A1_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B5G5R5A1_UNORM_PACK16
+ */
+const VK_FORMAT_B5G5R5A1_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A1R5G5B5_UNORM_PACK16
+ */
+const VK_FORMAT_A1R5G5B5_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8_UNORM
+ */
+const VK_FORMAT_R8_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8_SNORM
+ */
+const VK_FORMAT_R8_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8_USCALED
+ */
+const VK_FORMAT_R8_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8_SSCALED
+ */
+const VK_FORMAT_R8_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8_UINT
+ */
+const VK_FORMAT_R8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8_SINT
+ */
+const VK_FORMAT_R8_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8_SRGB
+ */
+const VK_FORMAT_R8_SRGB = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8_UNORM
+ */
+const VK_FORMAT_R8G8_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8_SNORM
+ */
+const VK_FORMAT_R8G8_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8_USCALED
+ */
+const VK_FORMAT_R8G8_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8_SSCALED
+ */
+const VK_FORMAT_R8G8_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8_UINT
+ */
+const VK_FORMAT_R8G8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8_SINT
+ */
+const VK_FORMAT_R8G8_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8_SRGB
+ */
+const VK_FORMAT_R8G8_SRGB = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8_UNORM
+ */
+const VK_FORMAT_R8G8B8_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8_SNORM
+ */
+const VK_FORMAT_R8G8B8_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8_USCALED
+ */
+const VK_FORMAT_R8G8B8_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8_SSCALED
+ */
+const VK_FORMAT_R8G8B8_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8_UINT
+ */
+const VK_FORMAT_R8G8B8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8_SINT
+ */
+const VK_FORMAT_R8G8B8_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8_SRGB
+ */
+const VK_FORMAT_R8G8B8_SRGB = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8_UNORM
+ */
+const VK_FORMAT_B8G8R8_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8_SNORM
+ */
+const VK_FORMAT_B8G8R8_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8_USCALED
+ */
+const VK_FORMAT_B8G8R8_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8_SSCALED
+ */
+const VK_FORMAT_B8G8R8_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8_UINT
+ */
+const VK_FORMAT_B8G8R8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8_SINT
+ */
+const VK_FORMAT_B8G8R8_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8_SRGB
+ */
+const VK_FORMAT_B8G8R8_SRGB = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8A8_UNORM
+ */
+const VK_FORMAT_R8G8B8A8_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8A8_SNORM
+ */
+const VK_FORMAT_R8G8B8A8_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8A8_USCALED
+ */
+const VK_FORMAT_R8G8B8A8_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8A8_SSCALED
+ */
+const VK_FORMAT_R8G8B8A8_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8A8_UINT
+ */
+const VK_FORMAT_R8G8B8A8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8A8_SINT
+ */
+const VK_FORMAT_R8G8B8A8_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R8G8B8A8_SRGB
+ */
+const VK_FORMAT_R8G8B8A8_SRGB = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8A8_UNORM
+ */
+const VK_FORMAT_B8G8R8A8_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8A8_SNORM
+ */
+const VK_FORMAT_B8G8R8A8_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8A8_USCALED
+ */
+const VK_FORMAT_B8G8R8A8_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8A8_SSCALED
+ */
+const VK_FORMAT_B8G8R8A8_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8A8_UINT
+ */
+const VK_FORMAT_B8G8R8A8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8A8_SINT
+ */
+const VK_FORMAT_B8G8R8A8_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8A8_SRGB
+ */
+const VK_FORMAT_B8G8R8A8_SRGB = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8B8G8R8_UNORM_PACK32
+ */
+const VK_FORMAT_A8B8G8R8_UNORM_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8B8G8R8_SNORM_PACK32
+ */
+const VK_FORMAT_A8B8G8R8_SNORM_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8B8G8R8_USCALED_PACK32
+ */
+const VK_FORMAT_A8B8G8R8_USCALED_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8B8G8R8_SSCALED_PACK32
+ */
+const VK_FORMAT_A8B8G8R8_SSCALED_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8B8G8R8_UINT_PACK32
+ */
+const VK_FORMAT_A8B8G8R8_UINT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8B8G8R8_SINT_PACK32
+ */
+const VK_FORMAT_A8B8G8R8_SINT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8B8G8R8_SRGB_PACK32
+ */
+const VK_FORMAT_A8B8G8R8_SRGB_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2R10G10B10_UNORM_PACK32
+ */
+const VK_FORMAT_A2R10G10B10_UNORM_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2R10G10B10_SNORM_PACK32
+ */
+const VK_FORMAT_A2R10G10B10_SNORM_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2R10G10B10_USCALED_PACK32
+ */
+const VK_FORMAT_A2R10G10B10_USCALED_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2R10G10B10_SSCALED_PACK32
+ */
+const VK_FORMAT_A2R10G10B10_SSCALED_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2R10G10B10_UINT_PACK32
+ */
+const VK_FORMAT_A2R10G10B10_UINT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2R10G10B10_SINT_PACK32
+ */
+const VK_FORMAT_A2R10G10B10_SINT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2B10G10R10_UNORM_PACK32
+ */
+const VK_FORMAT_A2B10G10R10_UNORM_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2B10G10R10_SNORM_PACK32
+ */
+const VK_FORMAT_A2B10G10R10_SNORM_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2B10G10R10_USCALED_PACK32
+ */
+const VK_FORMAT_A2B10G10R10_USCALED_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2B10G10R10_SSCALED_PACK32
+ */
+const VK_FORMAT_A2B10G10R10_SSCALED_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2B10G10R10_UINT_PACK32
+ */
+const VK_FORMAT_A2B10G10R10_UINT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A2B10G10R10_SINT_PACK32
+ */
+const VK_FORMAT_A2B10G10R10_SINT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16_UNORM
+ */
+const VK_FORMAT_R16_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16_SNORM
+ */
+const VK_FORMAT_R16_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16_USCALED
+ */
+const VK_FORMAT_R16_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16_SSCALED
+ */
+const VK_FORMAT_R16_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16_UINT
+ */
+const VK_FORMAT_R16_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16_SINT
+ */
+const VK_FORMAT_R16_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16_SFLOAT
+ */
+const VK_FORMAT_R16_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_UNORM
+ */
+const VK_FORMAT_R16G16_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_SNORM
+ */
+const VK_FORMAT_R16G16_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_USCALED
+ */
+const VK_FORMAT_R16G16_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_SSCALED
+ */
+const VK_FORMAT_R16G16_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_UINT
+ */
+const VK_FORMAT_R16G16_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_SINT
+ */
+const VK_FORMAT_R16G16_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_SFLOAT
+ */
+const VK_FORMAT_R16G16_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16_UNORM
+ */
+const VK_FORMAT_R16G16B16_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16_SNORM
+ */
+const VK_FORMAT_R16G16B16_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16_USCALED
+ */
+const VK_FORMAT_R16G16B16_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16_SSCALED
+ */
+const VK_FORMAT_R16G16B16_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16_UINT
+ */
+const VK_FORMAT_R16G16B16_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16_SINT
+ */
+const VK_FORMAT_R16G16B16_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16_SFLOAT
+ */
+const VK_FORMAT_R16G16B16_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16A16_UNORM
+ */
+const VK_FORMAT_R16G16B16A16_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16A16_SNORM
+ */
+const VK_FORMAT_R16G16B16A16_SNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16A16_USCALED
+ */
+const VK_FORMAT_R16G16B16A16_USCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16A16_SSCALED
+ */
+const VK_FORMAT_R16G16B16A16_SSCALED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16A16_UINT
+ */
+const VK_FORMAT_R16G16B16A16_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16A16_SINT
+ */
+const VK_FORMAT_R16G16B16A16_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16B16A16_SFLOAT
+ */
+const VK_FORMAT_R16G16B16A16_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32_UINT
+ */
+const VK_FORMAT_R32_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32_SINT
+ */
+const VK_FORMAT_R32_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32_SFLOAT
+ */
+const VK_FORMAT_R32_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32_UINT
+ */
+const VK_FORMAT_R32G32_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32_SINT
+ */
+const VK_FORMAT_R32G32_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32_SFLOAT
+ */
+const VK_FORMAT_R32G32_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32B32_UINT
+ */
+const VK_FORMAT_R32G32B32_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32B32_SINT
+ */
+const VK_FORMAT_R32G32B32_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32B32_SFLOAT
+ */
+const VK_FORMAT_R32G32B32_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32B32A32_UINT
+ */
+const VK_FORMAT_R32G32B32A32_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32B32A32_SINT
+ */
+const VK_FORMAT_R32G32B32A32_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R32G32B32A32_SFLOAT
+ */
+const VK_FORMAT_R32G32B32A32_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64_UINT
+ */
+const VK_FORMAT_R64_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64_SINT
+ */
+const VK_FORMAT_R64_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64_SFLOAT
+ */
+const VK_FORMAT_R64_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64_UINT
+ */
+const VK_FORMAT_R64G64_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64_SINT
+ */
+const VK_FORMAT_R64G64_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64_SFLOAT
+ */
+const VK_FORMAT_R64G64_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64B64_UINT
+ */
+const VK_FORMAT_R64G64B64_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64B64_SINT
+ */
+const VK_FORMAT_R64G64B64_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64B64_SFLOAT
+ */
+const VK_FORMAT_R64G64B64_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64B64A64_UINT
+ */
+const VK_FORMAT_R64G64B64A64_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64B64A64_SINT
+ */
+const VK_FORMAT_R64G64B64A64_SINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R64G64B64A64_SFLOAT
+ */
+const VK_FORMAT_R64G64B64A64_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B10G11R11_UFLOAT_PACK32
+ */
+const VK_FORMAT_B10G11R11_UFLOAT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_E5B9G9R9_UFLOAT_PACK32
+ */
+const VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_D16_UNORM
+ */
+const VK_FORMAT_D16_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_X8_D24_UNORM_PACK32
+ */
+const VK_FORMAT_X8_D24_UNORM_PACK32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_D32_SFLOAT
+ */
+const VK_FORMAT_D32_SFLOAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_S8_UINT
+ */
+const VK_FORMAT_S8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_D16_UNORM_S8_UINT
+ */
+const VK_FORMAT_D16_UNORM_S8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_D24_UNORM_S8_UINT
+ */
+const VK_FORMAT_D24_UNORM_S8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_D32_SFLOAT_S8_UINT
+ */
+const VK_FORMAT_D32_SFLOAT_S8_UINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC1_RGB_UNORM_BLOCK
+ */
+const VK_FORMAT_BC1_RGB_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC1_RGB_SRGB_BLOCK
+ */
+const VK_FORMAT_BC1_RGB_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC1_RGBA_UNORM_BLOCK
+ */
+const VK_FORMAT_BC1_RGBA_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC1_RGBA_SRGB_BLOCK
+ */
+const VK_FORMAT_BC1_RGBA_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC2_UNORM_BLOCK
+ */
+const VK_FORMAT_BC2_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC2_SRGB_BLOCK
+ */
+const VK_FORMAT_BC2_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC3_UNORM_BLOCK
+ */
+const VK_FORMAT_BC3_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC3_SRGB_BLOCK
+ */
+const VK_FORMAT_BC3_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC4_UNORM_BLOCK
+ */
+const VK_FORMAT_BC4_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC4_SNORM_BLOCK
+ */
+const VK_FORMAT_BC4_SNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC5_UNORM_BLOCK
+ */
+const VK_FORMAT_BC5_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC5_SNORM_BLOCK
+ */
+const VK_FORMAT_BC5_SNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC6H_UFLOAT_BLOCK
+ */
+const VK_FORMAT_BC6H_UFLOAT_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC6H_SFLOAT_BLOCK
+ */
+const VK_FORMAT_BC6H_SFLOAT_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC7_UNORM_BLOCK
+ */
+const VK_FORMAT_BC7_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_BC7_SRGB_BLOCK
+ */
+const VK_FORMAT_BC7_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK
+ */
+const VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK
+ */
+const VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK
+ */
+const VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK
+ */
+const VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK
+ */
+const VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK
+ */
+const VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_EAC_R11_UNORM_BLOCK
+ */
+const VK_FORMAT_EAC_R11_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_EAC_R11_SNORM_BLOCK
+ */
+const VK_FORMAT_EAC_R11_SNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_EAC_R11G11_UNORM_BLOCK
+ */
+const VK_FORMAT_EAC_R11G11_UNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_EAC_R11G11_SNORM_BLOCK
+ */
+const VK_FORMAT_EAC_R11G11_SNORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G8B8G8R8_422_UNORM
+ */
+const VK_FORMAT_G8B8G8R8_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B8G8R8G8_422_UNORM
+ */
+const VK_FORMAT_B8G8R8G8_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM
+ */
+const VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G8_B8R8_2PLANE_420_UNORM
+ */
+const VK_FORMAT_G8_B8R8_2PLANE_420_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM
+ */
+const VK_FORMAT_G8_B8_R8_3PLANE_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G8_B8R8_2PLANE_422_UNORM
+ */
+const VK_FORMAT_G8_B8R8_2PLANE_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM
+ */
+const VK_FORMAT_G8_B8_R8_3PLANE_444_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R10X6_UNORM_PACK16
+ */
+const VK_FORMAT_R10X6_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R10X6G10X6_UNORM_2PACK16
+ */
+const VK_FORMAT_R10X6G10X6_UNORM_2PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16
+ */
+const VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16
+ */
+const VK_FORMAT_G10X6B10X6G10X6R10X6_422_UNORM_4PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16
+ */
+const VK_FORMAT_B10X6G10X6R10X6G10X6_422_UNORM_4PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16
+ */
+const VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16
+ */
+const VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16
+ */
+const VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16
+ */
+const VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16
+ */
+const VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R12X4_UNORM_PACK16
+ */
+const VK_FORMAT_R12X4_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R12X4G12X4_UNORM_2PACK16
+ */
+const VK_FORMAT_R12X4G12X4_UNORM_2PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16
+ */
+const VK_FORMAT_R12X4G12X4B12X4A12X4_UNORM_4PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16
+ */
+const VK_FORMAT_G12X4B12X4G12X4R12X4_422_UNORM_4PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16
+ */
+const VK_FORMAT_B12X4G12X4R12X4G12X4_422_UNORM_4PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16
+ */
+const VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16
+ */
+const VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16
+ */
+const VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16
+ */
+const VK_FORMAT_G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16
+ */
+const VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G16B16G16R16_422_UNORM
+ */
+const VK_FORMAT_G16B16G16R16_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_B16G16R16G16_422_UNORM
+ */
+const VK_FORMAT_B16G16R16G16_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM
+ */
+const VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G16_B16R16_2PLANE_420_UNORM
+ */
+const VK_FORMAT_G16_B16R16_2PLANE_420_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM
+ */
+const VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G16_B16R16_2PLANE_422_UNORM
+ */
+const VK_FORMAT_G16_B16R16_2PLANE_422_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM
+ */
+const VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G8_B8R8_2PLANE_444_UNORM
+ */
+const VK_FORMAT_G8_B8R8_2PLANE_444_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16
+ */
+const VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16
+ */
+const VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_G16_B16R16_2PLANE_444_UNORM
+ */
+const VK_FORMAT_G16_B16R16_2PLANE_444_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A4R4G4B4_UNORM_PACK16
+ */
+const VK_FORMAT_A4R4G4B4_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A4B4G4R4_UNORM_PACK16
+ */
+const VK_FORMAT_A4B4G4R4_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A1B5G5R5_UNORM_PACK16
+ */
+const VK_FORMAT_A1B5G5R5_UNORM_PACK16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_A8_UNORM
+ */
+const VK_FORMAT_A8_UNORM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG
+ */
+const VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_R16G16_SFIXED5_NV
+ */
+const VK_FORMAT_R16G16_SFIXED5_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_TYPE_1D
+ */
+const VK_IMAGE_TYPE_1D = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_TYPE_2D
+ */
+const VK_IMAGE_TYPE_2D = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_TYPE_3D
+ */
+const VK_IMAGE_TYPE_3D = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_TILING_OPTIMAL
+ */
+const VK_IMAGE_TILING_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_TILING_LINEAR
+ */
+const VK_IMAGE_TILING_LINEAR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT
+ */
+const VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+ */
+const VK_IMAGE_USAGE_TRANSFER_SRC_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_TRANSFER_DST_BIT
+ */
+const VK_IMAGE_USAGE_TRANSFER_DST_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_SAMPLED_BIT
+ */
+const VK_IMAGE_USAGE_SAMPLED_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_STORAGE_BIT
+ */
+const VK_IMAGE_USAGE_STORAGE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+ */
+const VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+ */
+const VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT
+ */
+const VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
+ */
+const VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_HOST_TRANSFER_BIT
+ */
+const VK_IMAGE_USAGE_HOST_TRANSFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT
+ */
+const VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+ */
+const VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT
+ */
+const VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI
+ */
+const VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM
+ */
+const VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM
+ */
+const VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_ENCODE_QUANTIZATION_DELTA_MAP_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_ENCODE_QUANTIZATION_DELTA_MAP_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_USAGE_VIDEO_ENCODE_EMPHASIS_MAP_BIT_KHR
+ */
+const VK_IMAGE_USAGE_VIDEO_ENCODE_EMPHASIS_MAP_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_UNDEFINED
+ */
+const VK_IMAGE_LAYOUT_UNDEFINED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_GENERAL
+ */
+const VK_IMAGE_LAYOUT_GENERAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_PREINITIALIZED
+ */
+const VK_IMAGE_LAYOUT_PREINITIALIZED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL
+ */
+const VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ
+ */
+const VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+ */
+const VK_IMAGE_LAYOUT_PRESENT_SRC_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR
+ */
+const VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR
+ */
+const VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR
+ */
+const VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR
+ */
+const VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT
+ */
+const VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR
+ */
+const VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_VIDEO_ENCODE_DST_KHR
+ */
+const VK_IMAGE_LAYOUT_VIDEO_ENCODE_DST_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR
+ */
+const VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR
+ */
+const VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT
+ */
+const VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_LAYOUT_VIDEO_ENCODE_QUANTIZATION_MAP_KHR
+ */
+const VK_IMAGE_LAYOUT_VIDEO_ENCODE_QUANTIZATION_MAP_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_COLOR_BIT
+ */
+const VK_IMAGE_ASPECT_COLOR_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_DEPTH_BIT
+ */
+const VK_IMAGE_ASPECT_DEPTH_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_STENCIL_BIT
+ */
+const VK_IMAGE_ASPECT_STENCIL_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_METADATA_BIT
+ */
+const VK_IMAGE_ASPECT_METADATA_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_PLANE_0_BIT
+ */
+const VK_IMAGE_ASPECT_PLANE_0_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_PLANE_1_BIT
+ */
+const VK_IMAGE_ASPECT_PLANE_1_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_PLANE_2_BIT
+ */
+const VK_IMAGE_ASPECT_PLANE_2_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_NONE
+ */
+const VK_IMAGE_ASPECT_NONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT
+ */
+const VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT
+ */
+const VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT
+ */
+const VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT
+ */
+const VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_VIEW_TYPE_1D
+ */
+const VK_IMAGE_VIEW_TYPE_1D = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_VIEW_TYPE_2D
+ */
+const VK_IMAGE_VIEW_TYPE_2D = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_VIEW_TYPE_3D
+ */
+const VK_IMAGE_VIEW_TYPE_3D = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_VIEW_TYPE_CUBE
+ */
+const VK_IMAGE_VIEW_TYPE_CUBE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_VIEW_TYPE_1D_ARRAY
+ */
+const VK_IMAGE_VIEW_TYPE_1D_ARRAY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_VIEW_TYPE_2D_ARRAY
+ */
+const VK_IMAGE_VIEW_TYPE_2D_ARRAY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+ */
+const VK_IMAGE_VIEW_TYPE_CUBE_ARRAY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLE_COUNT_1_BIT
+ */
+const VK_SAMPLE_COUNT_1_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLE_COUNT_2_BIT
+ */
+const VK_SAMPLE_COUNT_2_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLE_COUNT_4_BIT
+ */
+const VK_SAMPLE_COUNT_4_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLE_COUNT_8_BIT
+ */
+const VK_SAMPLE_COUNT_8_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLE_COUNT_16_BIT
+ */
+const VK_SAMPLE_COUNT_16_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLE_COUNT_32_BIT
+ */
+const VK_SAMPLE_COUNT_32_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLE_COUNT_64_BIT
+ */
+const VK_SAMPLE_COUNT_64_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHARING_MODE_EXCLUSIVE
+ */
+const VK_SHARING_MODE_EXCLUSIVE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHARING_MODE_CONCURRENT
+ */
+const VK_SHARING_MODE_CONCURRENT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+ */
+const VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+ */
+const VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+ */
+const VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_HOST_CACHED_BIT
+ */
+const VK_MEMORY_PROPERTY_HOST_CACHED_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
+ */
+const VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_PROTECTED_BIT
+ */
+const VK_MEMORY_PROPERTY_PROTECTED_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD
+ */
+const VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD
+ */
+const VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV
+ */
+const VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+ */
+const VK_BUFFER_USAGE_TRANSFER_SRC_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_TRANSFER_DST_BIT
+ */
+const VK_BUFFER_USAGE_TRANSFER_DST_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT
+ */
+const VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT
+ */
+const VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
+ */
+const VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+ */
+const VK_BUFFER_USAGE_STORAGE_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_INDEX_BUFFER_BIT
+ */
+const VK_BUFFER_USAGE_INDEX_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+ */
+const VK_BUFFER_USAGE_VERTEX_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT
+ */
+const VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+ */
+const VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR
+ */
+const VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_VIDEO_DECODE_DST_BIT_KHR
+ */
+const VK_BUFFER_USAGE_VIDEO_DECODE_DST_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT
+ */
+const VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT
+ */
+const VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT
+ */
+const VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR
+ */
+const VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR
+ */
+const VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR
+ */
+const VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR
+ */
+const VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR
+ */
+const VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT
+ */
+const VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT
+ */
+const VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT
+ */
+const VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT
+ */
+const VK_BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT
+ */
+const VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FILTER_NEAREST
+ */
+const VK_FILTER_NEAREST = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FILTER_LINEAR
+ */
+const VK_FILTER_LINEAR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FILTER_CUBIC_EXT
+ */
+const VK_FILTER_CUBIC_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLER_MIPMAP_MODE_NEAREST
+ */
+const VK_SAMPLER_MIPMAP_MODE_NEAREST = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLER_MIPMAP_MODE_LINEAR
+ */
+const VK_SAMPLER_MIPMAP_MODE_LINEAR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLER_ADDRESS_MODE_REPEAT
+ */
+const VK_SAMPLER_ADDRESS_MODE_REPEAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT
+ */
+const VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+ */
+const VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
+ */
+const VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE
+ */
+const VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK
+ */
+const VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_INT_TRANSPARENT_BLACK
+ */
+const VK_BORDER_COLOR_INT_TRANSPARENT_BLACK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK
+ */
+const VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_INT_OPAQUE_BLACK
+ */
+const VK_BORDER_COLOR_INT_OPAQUE_BLACK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE
+ */
+const VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_INT_OPAQUE_WHITE
+ */
+const VK_BORDER_COLOR_INT_OPAQUE_WHITE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_FLOAT_CUSTOM_EXT
+ */
+const VK_BORDER_COLOR_FLOAT_CUSTOM_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BORDER_COLOR_INT_CUSTOM_EXT
+ */
+const VK_BORDER_COLOR_INT_CUSTOM_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_NEVER
+ */
+const VK_COMPARE_OP_NEVER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_LESS
+ */
+const VK_COMPARE_OP_LESS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_EQUAL
+ */
+const VK_COMPARE_OP_EQUAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_LESS_OR_EQUAL
+ */
+const VK_COMPARE_OP_LESS_OR_EQUAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_GREATER
+ */
+const VK_COMPARE_OP_GREATER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_NOT_EQUAL
+ */
+const VK_COMPARE_OP_NOT_EQUAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_GREATER_OR_EQUAL
+ */
+const VK_COMPARE_OP_GREATER_OR_EQUAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPARE_OP_ALWAYS
+ */
+const VK_COMPARE_OP_ALWAYS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_KEEP
+ */
+const VK_STENCIL_OP_KEEP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_ZERO
+ */
+const VK_STENCIL_OP_ZERO = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_REPLACE
+ */
+const VK_STENCIL_OP_REPLACE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_INCREMENT_AND_CLAMP
+ */
+const VK_STENCIL_OP_INCREMENT_AND_CLAMP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_DECREMENT_AND_CLAMP
+ */
+const VK_STENCIL_OP_DECREMENT_AND_CLAMP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_INVERT
+ */
+const VK_STENCIL_OP_INVERT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_INCREMENT_AND_WRAP
+ */
+const VK_STENCIL_OP_INCREMENT_AND_WRAP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_OP_DECREMENT_AND_WRAP
+ */
+const VK_STENCIL_OP_DECREMENT_AND_WRAP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ATTACHMENT_LOAD_OP_LOAD
+ */
+const VK_ATTACHMENT_LOAD_OP_LOAD = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ATTACHMENT_LOAD_OP_CLEAR
+ */
+const VK_ATTACHMENT_LOAD_OP_CLEAR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ATTACHMENT_LOAD_OP_DONT_CARE
+ */
+const VK_ATTACHMENT_LOAD_OP_DONT_CARE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ATTACHMENT_LOAD_OP_NONE
+ */
+const VK_ATTACHMENT_LOAD_OP_NONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ATTACHMENT_STORE_OP_STORE
+ */
+const VK_ATTACHMENT_STORE_OP_STORE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ATTACHMENT_STORE_OP_DONT_CARE
+ */
+const VK_ATTACHMENT_STORE_OP_DONT_CARE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ATTACHMENT_STORE_OP_NONE
+ */
+const VK_ATTACHMENT_STORE_OP_NONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_BIND_POINT_GRAPHICS
+ */
+const VK_PIPELINE_BIND_POINT_GRAPHICS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_BIND_POINT_COMPUTE
+ */
+const VK_PIPELINE_BIND_POINT_COMPUTE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR
+ */
+const VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_BIND_POINT_SUBPASS_SHADING_HUAWEI
+ */
+const VK_PIPELINE_BIND_POINT_SUBPASS_SHADING_HUAWEI = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+ */
+const VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT
+ */
+const VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+ */
+const VK_PIPELINE_STAGE_VERTEX_INPUT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_VERTEX_SHADER_BIT
+ */
+const VK_PIPELINE_STAGE_VERTEX_SHADER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT
+ */
+const VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT
+ */
+const VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT
+ */
+const VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+ */
+const VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+ */
+const VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
+ */
+const VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+ */
+const VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT
+ */
+const VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_TRANSFER_BIT
+ */
+const VK_PIPELINE_STAGE_TRANSFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+ */
+const VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_HOST_BIT
+ */
+const VK_PIPELINE_STAGE_HOST_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT
+ */
+const VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_ALL_COMMANDS_BIT
+ */
+const VK_PIPELINE_STAGE_ALL_COMMANDS_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_NONE
+ */
+const VK_PIPELINE_STAGE_NONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT
+ */
+const VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT
+ */
+const VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR
+ */
+const VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR
+ */
+const VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT
+ */
+const VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+ */
+const VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV
+ */
+const VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT
+ */
+const VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT
+ */
+const VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_INDIRECT_COMMAND_READ_BIT
+ */
+const VK_ACCESS_INDIRECT_COMMAND_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_INDEX_READ_BIT
+ */
+const VK_ACCESS_INDEX_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT
+ */
+const VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_UNIFORM_READ_BIT
+ */
+const VK_ACCESS_UNIFORM_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_INPUT_ATTACHMENT_READ_BIT
+ */
+const VK_ACCESS_INPUT_ATTACHMENT_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_SHADER_READ_BIT
+ */
+const VK_ACCESS_SHADER_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_SHADER_WRITE_BIT
+ */
+const VK_ACCESS_SHADER_WRITE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
+ */
+const VK_ACCESS_COLOR_ATTACHMENT_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+ */
+const VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
+ */
+const VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+ */
+const VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_TRANSFER_READ_BIT
+ */
+const VK_ACCESS_TRANSFER_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_TRANSFER_WRITE_BIT
+ */
+const VK_ACCESS_TRANSFER_WRITE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_HOST_READ_BIT
+ */
+const VK_ACCESS_HOST_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_HOST_WRITE_BIT
+ */
+const VK_ACCESS_HOST_WRITE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_MEMORY_READ_BIT
+ */
+const VK_ACCESS_MEMORY_READ_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_MEMORY_WRITE_BIT
+ */
+const VK_ACCESS_MEMORY_WRITE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_NONE
+ */
+const VK_ACCESS_NONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT
+ */
+const VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT
+ */
+const VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT
+ */
+const VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT
+ */
+const VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT
+ */
+const VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR
+ */
+const VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR
+ */
+const VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT
+ */
+const VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR
+ */
+const VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV
+ */
+const VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV
+ */
+const VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DEPENDENCY_BY_REGION_BIT
+ */
+const VK_DEPENDENCY_BY_REGION_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DEPENDENCY_DEVICE_GROUP_BIT
+ */
+const VK_DEPENDENCY_DEVICE_GROUP_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DEPENDENCY_VIEW_LOCAL_BIT
+ */
+const VK_DEPENDENCY_VIEW_LOCAL_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DEPENDENCY_FEEDBACK_LOOP_BIT_EXT
+ */
+const VK_DEPENDENCY_FEEDBACK_LOOP_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DEPENDENCY_QUEUE_FAMILY_OWNERSHIP_TRANSFER_USE_ALL_STAGES_BIT_KHR
+ */
+const VK_DEPENDENCY_QUEUE_FAMILY_OWNERSHIP_TRANSFER_USE_ALL_STAGES_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_VERTEX_BIT
+ */
+const VK_SHADER_STAGE_VERTEX_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT
+ */
+const VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT
+ */
+const VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_GEOMETRY_BIT
+ */
+const VK_SHADER_STAGE_GEOMETRY_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_FRAGMENT_BIT
+ */
+const VK_SHADER_STAGE_FRAGMENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_COMPUTE_BIT
+ */
+const VK_SHADER_STAGE_COMPUTE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_ALL_GRAPHICS
+ */
+const VK_SHADER_STAGE_ALL_GRAPHICS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_ALL
+ */
+const VK_SHADER_STAGE_ALL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_RAYGEN_BIT_KHR
+ */
+const VK_SHADER_STAGE_RAYGEN_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_ANY_HIT_BIT_KHR
+ */
+const VK_SHADER_STAGE_ANY_HIT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR
+ */
+const VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_MISS_BIT_KHR
+ */
+const VK_SHADER_STAGE_MISS_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_INTERSECTION_BIT_KHR
+ */
+const VK_SHADER_STAGE_INTERSECTION_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_CALLABLE_BIT_KHR
+ */
+const VK_SHADER_STAGE_CALLABLE_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_TASK_BIT_EXT
+ */
+const VK_SHADER_STAGE_TASK_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_MESH_BIT_EXT
+ */
+const VK_SHADER_STAGE_MESH_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI
+ */
+const VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI
+ */
+const VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_VERTEX_INPUT_RATE_VERTEX
+ */
+const VK_VERTEX_INPUT_RATE_VERTEX = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_VERTEX_INPUT_RATE_INSTANCE
+ */
+const VK_VERTEX_INPUT_RATE_INSTANCE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_POINT_LIST
+ */
+const VK_PRIMITIVE_TOPOLOGY_POINT_LIST = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_LINE_LIST
+ */
+const VK_PRIMITIVE_TOPOLOGY_LINE_LIST = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_LINE_STRIP
+ */
+const VK_PRIMITIVE_TOPOLOGY_LINE_STRIP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+ */
+const VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
+ */
+const VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN
+ */
+const VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY
+ */
+const VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY
+ */
+const VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY
+ */
+const VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY
+ */
+const VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRIMITIVE_TOPOLOGY_PATCH_LIST
+ */
+const VK_PRIMITIVE_TOPOLOGY_PATCH_LIST = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_POLYGON_MODE_FILL
+ */
+const VK_POLYGON_MODE_FILL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_POLYGON_MODE_LINE
+ */
+const VK_POLYGON_MODE_LINE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_POLYGON_MODE_POINT
+ */
+const VK_POLYGON_MODE_POINT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_POLYGON_MODE_FILL_RECTANGLE_NV
+ */
+const VK_POLYGON_MODE_FILL_RECTANGLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_CULL_MODE_NONE
+ */
+const VK_CULL_MODE_NONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_CULL_MODE_FRONT_BIT
+ */
+const VK_CULL_MODE_FRONT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_CULL_MODE_BACK_BIT
+ */
+const VK_CULL_MODE_BACK_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_CULL_MODE_FRONT_AND_BACK
+ */
+const VK_CULL_MODE_FRONT_AND_BACK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FRONT_FACE_COUNTER_CLOCKWISE
+ */
+const VK_FRONT_FACE_COUNTER_CLOCKWISE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FRONT_FACE_CLOCKWISE
+ */
+const VK_FRONT_FACE_CLOCKWISE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_CLEAR
+ */
+const VK_LOGIC_OP_CLEAR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_AND
+ */
+const VK_LOGIC_OP_AND = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_AND_REVERSE
+ */
+const VK_LOGIC_OP_AND_REVERSE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_COPY
+ */
+const VK_LOGIC_OP_COPY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_AND_INVERTED
+ */
+const VK_LOGIC_OP_AND_INVERTED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_NO_OP
+ */
+const VK_LOGIC_OP_NO_OP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_XOR
+ */
+const VK_LOGIC_OP_XOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_OR
+ */
+const VK_LOGIC_OP_OR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_NOR
+ */
+const VK_LOGIC_OP_NOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_EQUIVALENT
+ */
+const VK_LOGIC_OP_EQUIVALENT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_INVERT
+ */
+const VK_LOGIC_OP_INVERT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_OR_REVERSE
+ */
+const VK_LOGIC_OP_OR_REVERSE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_COPY_INVERTED
+ */
+const VK_LOGIC_OP_COPY_INVERTED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_OR_INVERTED
+ */
+const VK_LOGIC_OP_OR_INVERTED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_NAND
+ */
+const VK_LOGIC_OP_NAND = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_LOGIC_OP_SET
+ */
+const VK_LOGIC_OP_SET = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ZERO
+ */
+const VK_BLEND_FACTOR_ZERO = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE
+ */
+const VK_BLEND_FACTOR_ONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_SRC_COLOR
+ */
+const VK_BLEND_FACTOR_SRC_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_DST_COLOR
+ */
+const VK_BLEND_FACTOR_DST_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_SRC_ALPHA
+ */
+const VK_BLEND_FACTOR_SRC_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_DST_ALPHA
+ */
+const VK_BLEND_FACTOR_DST_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_CONSTANT_COLOR
+ */
+const VK_BLEND_FACTOR_CONSTANT_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_CONSTANT_ALPHA
+ */
+const VK_BLEND_FACTOR_CONSTANT_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_SRC_ALPHA_SATURATE
+ */
+const VK_BLEND_FACTOR_SRC_ALPHA_SATURATE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_SRC1_COLOR
+ */
+const VK_BLEND_FACTOR_SRC1_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_SRC1_ALPHA
+ */
+const VK_BLEND_FACTOR_SRC1_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA
+ */
+const VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_ADD
+ */
+const VK_BLEND_OP_ADD = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SUBTRACT
+ */
+const VK_BLEND_OP_SUBTRACT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_REVERSE_SUBTRACT
+ */
+const VK_BLEND_OP_REVERSE_SUBTRACT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_MIN
+ */
+const VK_BLEND_OP_MIN = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_MAX
+ */
+const VK_BLEND_OP_MAX = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_ZERO_EXT
+ */
+const VK_BLEND_OP_ZERO_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SRC_EXT
+ */
+const VK_BLEND_OP_SRC_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_DST_EXT
+ */
+const VK_BLEND_OP_DST_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SRC_OVER_EXT
+ */
+const VK_BLEND_OP_SRC_OVER_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_DST_OVER_EXT
+ */
+const VK_BLEND_OP_DST_OVER_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SRC_IN_EXT
+ */
+const VK_BLEND_OP_SRC_IN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_DST_IN_EXT
+ */
+const VK_BLEND_OP_DST_IN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SRC_OUT_EXT
+ */
+const VK_BLEND_OP_SRC_OUT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_DST_OUT_EXT
+ */
+const VK_BLEND_OP_DST_OUT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SRC_ATOP_EXT
+ */
+const VK_BLEND_OP_SRC_ATOP_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_DST_ATOP_EXT
+ */
+const VK_BLEND_OP_DST_ATOP_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_XOR_EXT
+ */
+const VK_BLEND_OP_XOR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_MULTIPLY_EXT
+ */
+const VK_BLEND_OP_MULTIPLY_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SCREEN_EXT
+ */
+const VK_BLEND_OP_SCREEN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_OVERLAY_EXT
+ */
+const VK_BLEND_OP_OVERLAY_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_DARKEN_EXT
+ */
+const VK_BLEND_OP_DARKEN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_LIGHTEN_EXT
+ */
+const VK_BLEND_OP_LIGHTEN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_COLORDODGE_EXT
+ */
+const VK_BLEND_OP_COLORDODGE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_COLORBURN_EXT
+ */
+const VK_BLEND_OP_COLORBURN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_HARDLIGHT_EXT
+ */
+const VK_BLEND_OP_HARDLIGHT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_SOFTLIGHT_EXT
+ */
+const VK_BLEND_OP_SOFTLIGHT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_DIFFERENCE_EXT
+ */
+const VK_BLEND_OP_DIFFERENCE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_EXCLUSION_EXT
+ */
+const VK_BLEND_OP_EXCLUSION_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_INVERT_EXT
+ */
+const VK_BLEND_OP_INVERT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_INVERT_RGB_EXT
+ */
+const VK_BLEND_OP_INVERT_RGB_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_LINEARDODGE_EXT
+ */
+const VK_BLEND_OP_LINEARDODGE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_LINEARBURN_EXT
+ */
+const VK_BLEND_OP_LINEARBURN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_VIVIDLIGHT_EXT
+ */
+const VK_BLEND_OP_VIVIDLIGHT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_LINEARLIGHT_EXT
+ */
+const VK_BLEND_OP_LINEARLIGHT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_PINLIGHT_EXT
+ */
+const VK_BLEND_OP_PINLIGHT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_HARDMIX_EXT
+ */
+const VK_BLEND_OP_HARDMIX_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_HSL_HUE_EXT
+ */
+const VK_BLEND_OP_HSL_HUE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_HSL_SATURATION_EXT
+ */
+const VK_BLEND_OP_HSL_SATURATION_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_HSL_COLOR_EXT
+ */
+const VK_BLEND_OP_HSL_COLOR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_HSL_LUMINOSITY_EXT
+ */
+const VK_BLEND_OP_HSL_LUMINOSITY_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_PLUS_EXT
+ */
+const VK_BLEND_OP_PLUS_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_PLUS_CLAMPED_EXT
+ */
+const VK_BLEND_OP_PLUS_CLAMPED_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_PLUS_CLAMPED_ALPHA_EXT
+ */
+const VK_BLEND_OP_PLUS_CLAMPED_ALPHA_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_PLUS_DARKER_EXT
+ */
+const VK_BLEND_OP_PLUS_DARKER_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_MINUS_EXT
+ */
+const VK_BLEND_OP_MINUS_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_MINUS_CLAMPED_EXT
+ */
+const VK_BLEND_OP_MINUS_CLAMPED_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_CONTRAST_EXT
+ */
+const VK_BLEND_OP_CONTRAST_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_INVERT_OVG_EXT
+ */
+const VK_BLEND_OP_INVERT_OVG_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_RED_EXT
+ */
+const VK_BLEND_OP_RED_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_GREEN_EXT
+ */
+const VK_BLEND_OP_GREEN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_BLEND_OP_BLUE_EXT
+ */
+const VK_BLEND_OP_BLUE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_COMPONENT_R_BIT
+ */
+const VK_COLOR_COMPONENT_R_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_COMPONENT_G_BIT
+ */
+const VK_COLOR_COMPONENT_G_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_COMPONENT_B_BIT
+ */
+const VK_COLOR_COMPONENT_B_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_COMPONENT_A_BIT
+ */
+const VK_COLOR_COMPONENT_A_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VIEWPORT
+ */
+const VK_DYNAMIC_STATE_VIEWPORT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_SCISSOR
+ */
+const VK_DYNAMIC_STATE_SCISSOR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_LINE_WIDTH
+ */
+const VK_DYNAMIC_STATE_LINE_WIDTH = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_BIAS
+ */
+const VK_DYNAMIC_STATE_DEPTH_BIAS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_BLEND_CONSTANTS
+ */
+const VK_DYNAMIC_STATE_BLEND_CONSTANTS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_BOUNDS
+ */
+const VK_DYNAMIC_STATE_DEPTH_BOUNDS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK
+ */
+const VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_STENCIL_WRITE_MASK
+ */
+const VK_DYNAMIC_STATE_STENCIL_WRITE_MASK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_STENCIL_REFERENCE
+ */
+const VK_DYNAMIC_STATE_STENCIL_REFERENCE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_CULL_MODE
+ */
+const VK_DYNAMIC_STATE_CULL_MODE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_FRONT_FACE
+ */
+const VK_DYNAMIC_STATE_FRONT_FACE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY
+ */
+const VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT
+ */
+const VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT
+ */
+const VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE
+ */
+const VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE
+ */
+const VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE
+ */
+const VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_COMPARE_OP
+ */
+const VK_DYNAMIC_STATE_DEPTH_COMPARE_OP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE
+ */
+const VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE
+ */
+const VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_STENCIL_OP
+ */
+const VK_DYNAMIC_STATE_STENCIL_OP = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE
+ */
+const VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE
+ */
+const VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE
+ */
+const VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_LINE_STIPPLE
+ */
+const VK_DYNAMIC_STATE_LINE_STIPPLE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV
+ */
+const VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT
+ */
+const VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_DISCARD_RECTANGLE_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXT
+ */
+const VK_DYNAMIC_STATE_DISCARD_RECTANGLE_MODE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT
+ */
+const VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR
+ */
+const VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV
+ */
+const VK_DYNAMIC_STATE_VIEWPORT_SHADING_RATE_PALETTE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VIEWPORT_COARSE_SAMPLE_ORDER_NV
+ */
+const VK_DYNAMIC_STATE_VIEWPORT_COARSE_SAMPLE_ORDER_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_ENABLE_NV
+ */
+const VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_ENABLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV
+ */
+const VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR
+ */
+const VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VERTEX_INPUT_EXT
+ */
+const VK_DYNAMIC_STATE_VERTEX_INPUT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT
+ */
+const VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_LOGIC_OP_EXT
+ */
+const VK_DYNAMIC_STATE_LOGIC_OP_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_CLAMP_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_DEPTH_CLAMP_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_POLYGON_MODE_EXT
+ */
+const VK_DYNAMIC_STATE_POLYGON_MODE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT
+ */
+const VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_SAMPLE_MASK_EXT
+ */
+const VK_DYNAMIC_STATE_SAMPLE_MASK_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_ALPHA_TO_COVERAGE_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_ALPHA_TO_ONE_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_LOGIC_OP_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_COLOR_BLEND_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT
+ */
+const VK_DYNAMIC_STATE_COLOR_BLEND_EQUATION_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT
+ */
+const VK_DYNAMIC_STATE_COLOR_WRITE_MASK_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_TESSELLATION_DOMAIN_ORIGIN_EXT
+ */
+const VK_DYNAMIC_STATE_TESSELLATION_DOMAIN_ORIGIN_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_RASTERIZATION_STREAM_EXT
+ */
+const VK_DYNAMIC_STATE_RASTERIZATION_STREAM_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_CONSERVATIVE_RASTERIZATION_MODE_EXT
+ */
+const VK_DYNAMIC_STATE_CONSERVATIVE_RASTERIZATION_MODE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_EXTRA_PRIMITIVE_OVERESTIMATION_SIZE_EXT
+ */
+const VK_DYNAMIC_STATE_EXTRA_PRIMITIVE_OVERESTIMATION_SIZE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_CLIP_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_DEPTH_CLIP_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT
+ */
+const VK_DYNAMIC_STATE_COLOR_BLEND_ADVANCED_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_PROVOKING_VERTEX_MODE_EXT
+ */
+const VK_DYNAMIC_STATE_PROVOKING_VERTEX_MODE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT
+ */
+const VK_DYNAMIC_STATE_LINE_RASTERIZATION_MODE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_LINE_STIPPLE_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_CLIP_NEGATIVE_ONE_TO_ONE_EXT
+ */
+const VK_DYNAMIC_STATE_DEPTH_CLIP_NEGATIVE_ONE_TO_ONE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_ENABLE_NV
+ */
+const VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_ENABLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV
+ */
+const VK_DYNAMIC_STATE_VIEWPORT_SWIZZLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV
+ */
+const VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_ENABLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_LOCATION_NV
+ */
+const VK_DYNAMIC_STATE_COVERAGE_TO_COLOR_LOCATION_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COVERAGE_MODULATION_MODE_NV
+ */
+const VK_DYNAMIC_STATE_COVERAGE_MODULATION_MODE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_ENABLE_NV
+ */
+const VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_ENABLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_NV
+ */
+const VK_DYNAMIC_STATE_COVERAGE_MODULATION_TABLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_SHADING_RATE_IMAGE_ENABLE_NV
+ */
+const VK_DYNAMIC_STATE_SHADING_RATE_IMAGE_ENABLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_REPRESENTATIVE_FRAGMENT_TEST_ENABLE_NV
+ */
+const VK_DYNAMIC_STATE_REPRESENTATIVE_FRAGMENT_TEST_ENABLE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_COVERAGE_REDUCTION_MODE_NV
+ */
+const VK_DYNAMIC_STATE_COVERAGE_REDUCTION_MODE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT
+ */
+const VK_DYNAMIC_STATE_ATTACHMENT_FEEDBACK_LOOP_ENABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DYNAMIC_STATE_DEPTH_CLAMP_RANGE_EXT
+ */
+const VK_DYNAMIC_STATE_DEPTH_CLAMP_RANGE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_SAMPLER
+ */
+const VK_DESCRIPTOR_TYPE_SAMPLER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+ */
+const VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE
+ */
+const VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_STORAGE_IMAGE
+ */
+const VK_DESCRIPTOR_TYPE_STORAGE_IMAGE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER
+ */
+const VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER
+ */
+const VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+ */
+const VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+ */
+const VK_DESCRIPTOR_TYPE_STORAGE_BUFFER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC
+ */
+const VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
+ */
+const VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
+ */
+const VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK
+ */
+const VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR
+ */
+const VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV
+ */
+const VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM
+ */
+const VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM
+ */
+const VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_MUTABLE_EXT
+ */
+const VK_DESCRIPTOR_TYPE_MUTABLE_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_DESCRIPTOR_TYPE_PARTITIONED_ACCELERATION_STRUCTURE_NV
+ */
+const VK_DESCRIPTOR_TYPE_PARTITIONED_ACCELERATION_STRUCTURE_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_POOL_CREATE_TRANSIENT_BIT
+ */
+const VK_COMMAND_POOL_CREATE_TRANSIENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+ */
+const VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_POOL_CREATE_PROTECTED_BIT
+ */
+const VK_COMMAND_POOL_CREATE_PROTECTED_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_BUFFER_LEVEL_PRIMARY
+ */
+const VK_COMMAND_BUFFER_LEVEL_PRIMARY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_BUFFER_LEVEL_SECONDARY
+ */
+const VK_COMMAND_BUFFER_LEVEL_SECONDARY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+ */
+const VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT
+ */
+const VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+ */
+const VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SUBPASS_CONTENTS_INLINE
+ */
+const VK_SUBPASS_CONTENTS_INLINE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS
+ */
+const VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR
+ */
+const VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_INDEX_TYPE_UINT16
+ */
+const VK_INDEX_TYPE_UINT16 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_INDEX_TYPE_UINT32
+ */
+const VK_INDEX_TYPE_UINT32 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_INDEX_TYPE_UINT8
+ */
+const VK_INDEX_TYPE_UINT8 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_INDEX_TYPE_NONE_KHR
+ */
+const VK_INDEX_TYPE_NONE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FENCE_CREATE_SIGNALED_BIT
+ */
+const VK_FENCE_CREATE_SIGNALED_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_GRAPHICS_BIT
+ */
+const VK_QUEUE_GRAPHICS_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_COMPUTE_BIT
+ */
+const VK_QUEUE_COMPUTE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_TRANSFER_BIT
+ */
+const VK_QUEUE_TRANSFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_SPARSE_BINDING_BIT
+ */
+const VK_QUEUE_SPARSE_BINDING_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_PROTECTED_BIT
+ */
+const VK_QUEUE_PROTECTED_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_VIDEO_DECODE_BIT_KHR
+ */
+const VK_QUEUE_VIDEO_DECODE_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_VIDEO_ENCODE_BIT_KHR
+ */
+const VK_QUEUE_VIDEO_ENCODE_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_OPTICAL_FLOW_BIT_NV
+ */
+const VK_QUEUE_OPTICAL_FLOW_BIT_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PHYSICAL_DEVICE_TYPE_OTHER
+ */
+const VK_PHYSICAL_DEVICE_TYPE_OTHER = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
+ */
+const VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+ */
+const VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU
+ */
+const VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PHYSICAL_DEVICE_TYPE_CPU
+ */
+const VK_PHYSICAL_DEVICE_TYPE_CPU = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
+ */
+const VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT
+ */
+const VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
+ */
+const VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT
+ */
+const VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT
+ */
+const VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT
+ */
+const VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
+ */
+const VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT
+ */
+const VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+ */
+const VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_BLIT_SRC_BIT
+ */
+const VK_FORMAT_FEATURE_BLIT_SRC_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_BLIT_DST_BIT
+ */
+const VK_FORMAT_FEATURE_BLIT_DST_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_TRANSFER_SRC_BIT
+ */
+const VK_FORMAT_FEATURE_TRANSFER_SRC_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_TRANSFER_DST_BIT
+ */
+const VK_FORMAT_FEATURE_TRANSFER_DST_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT
+ */
+const VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_DISJOINT_BIT
+ */
+const VK_FORMAT_FEATURE_DISJOINT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT
+ */
+const VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR
+ */
+const VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR
+ */
+const VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR
+ */
+const VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT
+ */
+const VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT
+ */
+const VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR
+ */
+const VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR
+ */
+const VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR
+ */
+const VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPONENT_SWIZZLE_IDENTITY
+ */
+const VK_COMPONENT_SWIZZLE_IDENTITY = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPONENT_SWIZZLE_ZERO
+ */
+const VK_COMPONENT_SWIZZLE_ZERO = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPONENT_SWIZZLE_ONE
+ */
+const VK_COMPONENT_SWIZZLE_ONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPONENT_SWIZZLE_R
+ */
+const VK_COMPONENT_SWIZZLE_R = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPONENT_SWIZZLE_G
+ */
+const VK_COMPONENT_SWIZZLE_G = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPONENT_SWIZZLE_B
+ */
+const VK_COMPONENT_SWIZZLE_B = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPONENT_SWIZZLE_A
+ */
+const VK_COMPONENT_SWIZZLE_A = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_IMMEDIATE_KHR
+ */
+const VK_PRESENT_MODE_IMMEDIATE_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_MAILBOX_KHR
+ */
+const VK_PRESENT_MODE_MAILBOX_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_FIFO_KHR
+ */
+const VK_PRESENT_MODE_FIFO_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_FIFO_RELAXED_KHR
+ */
+const VK_PRESENT_MODE_FIFO_RELAXED_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR
+ */
+const VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR
+ */
+const VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_FIFO_LATEST_READY_EXT
+ */
+const VK_PRESENT_MODE_FIFO_LATEST_READY_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_PRESENT_MODE_MAX_ENUM_KHR
+ */
+const VK_PRESENT_MODE_MAX_ENUM_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
+ */
+const VK_COLOR_SPACE_SRGB_NONLINEAR_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT
+ */
+const VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT
+ */
+const VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_DISPLAY_P3_LINEAR_EXT
+ */
+const VK_COLOR_SPACE_DISPLAY_P3_LINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_DCI_P3_NONLINEAR_EXT
+ */
+const VK_COLOR_SPACE_DCI_P3_NONLINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_BT709_LINEAR_EXT
+ */
+const VK_COLOR_SPACE_BT709_LINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_BT709_NONLINEAR_EXT
+ */
+const VK_COLOR_SPACE_BT709_NONLINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_BT2020_LINEAR_EXT
+ */
+const VK_COLOR_SPACE_BT2020_LINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_HDR10_ST2084_EXT
+ */
+const VK_COLOR_SPACE_HDR10_ST2084_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_DOLBYVISION_EXT
+ */
+const VK_COLOR_SPACE_DOLBYVISION_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_HDR10_HLG_EXT
+ */
+const VK_COLOR_SPACE_HDR10_HLG_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_ADOBERGB_LINEAR_EXT
+ */
+const VK_COLOR_SPACE_ADOBERGB_LINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_ADOBERGB_NONLINEAR_EXT
+ */
+const VK_COLOR_SPACE_ADOBERGB_NONLINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_PASS_THROUGH_EXT
+ */
+const VK_COLOR_SPACE_PASS_THROUGH_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT
+ */
+const VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_DISPLAY_NATIVE_AMD
+ */
+const VK_COLOR_SPACE_DISPLAY_NATIVE_AMD = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COLOR_SPACE_MAX_ENUM_KHR
+ */
+const VK_COLOR_SPACE_MAX_ENUM_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
+ */
+const VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR
+ */
+const VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR
+ */
+const VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR
+ */
+const VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR
+ */
+const VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR
+ */
+const VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR
+ */
+const VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_RDMA_ADDRESS_BIT_NV
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_RDMA_ADDRESS_BIT_NV = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_SCREEN_BUFFER_BIT_QNX
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_SCREEN_BUFFER_BIT_QNX = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLBUFFER_BIT_EXT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLBUFFER_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_EXT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLTEXTURE_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLHEAP_BIT_EXT
+ */
+const VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLHEAP_BIT_EXT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
+ */
+const VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_FACE_FRONT_BIT
+ */
+const VK_STENCIL_FACE_FRONT_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_FACE_BACK_BIT
+ */
+const VK_STENCIL_FACE_BACK_BIT = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_STENCIL_FACE_FRONT_AND_BACK
+ */
+const VK_STENCIL_FACE_FRONT_AND_BACK = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_API_VERSION_1_3
+ */
+const VK_API_VERSION_1_3 = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_WHOLE_SIZE
+ */
+const VK_WHOLE_SIZE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_FAMILY_IGNORED
+ */
+const VK_QUEUE_FAMILY_IGNORED = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_SUBPASS_EXTERNAL
+ */
+const VK_SUBPASS_EXTERNAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_TRUE
+ */
+const VK_TRUE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_FALSE
+ */
+const VK_FALSE = UNKNOWN;
+
+/**
+ * @var int
+ */
+const VK_NULL_HANDLE = 0;
+
+/**
+ * @var string
+ * @cvalue VK_KHR_SURFACE_EXTENSION_NAME
+ */
+const VK_KHR_SURFACE_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_KHR_SWAPCHAIN_EXTENSION_NAME
+ */
+const VK_KHR_SWAPCHAIN_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME
+ */
+const VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME
+ */
+const VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME
+ */
+const VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+ */
+const VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ */
+const VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME = 'VK_KHR_portability_subset';
+
+/** An address of 0 is refused. Any other address is trusted. */
+function vk_read_mapped(int $address, int $size): string {}
+
+/** An address of 0 is refused. Any other address is trusted. */
+function vk_write_mapped(int $address, string $bytes): void {}

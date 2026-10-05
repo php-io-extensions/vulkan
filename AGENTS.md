@@ -1,0 +1,12 @@
+# Agent guidance — php-io-extensions/vulkan
+
+1. **Read [`.okf/index.md`](.okf/index.md) first** before changing the API, the C, or packaging. Open only the concepts the change touches.
+2. **Bindings are 1:1.** Global functions and constants keep their C names. No defaults, no composites. The translations are only the ones in [structs](.okf/architecture/structs.md): a pointer plus a count is one list, enumerate-twice fills a by-reference list and retries `VK_INCOMPLETE`, an out-parameter is by reference, `sType` is filled by the class, `pNext` is a chain of struct objects, `pAllocator` is `null`.
+3. **Constants are the C constants**, registered with `@cvalue` from `vulkan_core.h`. Not class constants and not PHP enums. `tools/vk-constants.php` generates `stubs/vk_constants.stub.php` from the Pi's 1.4.309 header so the stub compiles against a newer header. `VK_NULL_HANDLE` is the literal `0`. `VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME` is the literal string, because its macro lives in `vulkan_beta.h`. Beta-only enumerators (`VK_ENABLE_BETA_EXTENSIONS`) are left out.
+4. **Handles** are `final`, not constructable, not cloneable, not serializable, with `pointer(): int` and `static fromPointer(int $pointer): static`. One identity table per class per thread. Address 0 is refused. A released handle throws `ValueError` "`Name has been destroyed`" before any Vulkan call. See [handles](.okf/architecture/handles.md) for which destroy releases which children.
+5. **Mapping.** `vkMapMemory` writes an address to `$ppData`. `vk_read_mapped` and `vk_write_mapped` dereference it. Address 0 throws `ValueError`. Any other address is trusted.
+6. **The stub is the declaration.** Edit `stubs/*.stub.php`, regenerate with `php84 /opt/homebrew/opt/php@8.4/lib/php/build/gen_stub.php stubs`, and commit both. Never hand-edit `*_arginfo.h`. One `.c` includes one arginfo header. `vk_metal.stub.php` is built on macOS only.
+7. **Build.** `./install-macos.sh` into Homebrew `php@8.4` and `php@8.4-zts`. On the Pi, copy the tree with `fnk` and `./install-debian-trixie.sh`. Pest at `-d memory_limit=128M`. On the Pi export `WAYLAND_DISPLAY=wayland-0` and `XDG_RUNTIME_DIR=/run/user/$(id -u)` for the swapchain test. Gate a commit on the suite's exit code.
+8. **Device tests skip the CPU device.** On macOS they skip with `MoltenVK needs portability enumeration: slice 5`.
+9. **Durable facts go in `.okf`.** Update the matching concept and append `.okf/log.md`.
+10. **Version** is `PHP_VULKAN_VERSION` in `php_vulkan.h`: 0.10.0. `os-families` are `linux` and `darwin`.
