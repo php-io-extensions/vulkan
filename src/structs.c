@@ -4,6 +4,8 @@ zend_class_entry *vulkan_ce_VkApplicationInfo;
 zend_class_entry *vulkan_ce_VkInstanceCreateInfo;
 zend_class_entry *vulkan_ce_VkDeviceQueueCreateInfo;
 zend_class_entry *vulkan_ce_VkPhysicalDeviceFeatures;
+zend_class_entry *vulkan_ce_VkPhysicalDeviceFeatures2;
+zend_class_entry *vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR;
 zend_class_entry *vulkan_ce_VkDeviceCreateInfo;
 zend_class_entry *vulkan_ce_VkPhysicalDeviceLimits;
 zend_class_entry *vulkan_ce_VkPhysicalDeviceSparseProperties;
@@ -288,6 +290,10 @@ bool vk_VkDeviceQueueCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch
 void vk_VkDeviceQueueCreateInfo_to(const void *raw, zval *rv);
 bool vk_VkPhysicalDeviceFeatures_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkPhysicalDeviceFeatures_to(const void *raw, zval *rv);
+bool vk_VkPhysicalDeviceFeatures2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+void vk_VkPhysicalDeviceFeatures2_to(const void *raw, zval *rv);
+bool vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+void vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_to(const void *raw, zval *rv);
 bool vk_VkDeviceCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkDeviceCreateInfo_to(const void *raw, zval *rv);
 bool vk_VkPhysicalDeviceLimits_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
@@ -316,6 +322,8 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkInstanceCreateInfo, sizeof(VkInstanceCreateInfo), vk_VkInstanceCreateInfo_from },
 	{ &vulkan_ce_VkDeviceQueueCreateInfo, sizeof(VkDeviceQueueCreateInfo), vk_VkDeviceQueueCreateInfo_from },
 	{ &vulkan_ce_VkPhysicalDeviceFeatures, sizeof(VkPhysicalDeviceFeatures), vk_VkPhysicalDeviceFeatures_from },
+	{ &vulkan_ce_VkPhysicalDeviceFeatures2, sizeof(VkPhysicalDeviceFeatures2), vk_VkPhysicalDeviceFeatures2_from },
+	{ &vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR, sizeof(VkPhysicalDevicePortabilitySubsetFeaturesKHR), vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_from },
 	{ &vulkan_ce_VkDeviceCreateInfo, sizeof(VkDeviceCreateInfo), vk_VkDeviceCreateInfo_from },
 	{ &vulkan_ce_VkPhysicalDeviceLimits, sizeof(VkPhysicalDeviceLimits), vk_VkPhysicalDeviceLimits_from },
 	{ &vulkan_ce_VkPhysicalDeviceSparseProperties, sizeof(VkPhysicalDeviceSparseProperties), vk_VkPhysicalDeviceSparseProperties_from },
@@ -751,12 +759,8 @@ bool vk_VkPhysicalDeviceFeatures_from(zend_object *obj, void *raw, vulkan_scratc
 	return true;
 }
 
-void vk_VkPhysicalDeviceFeatures_to(const void *raw, zval *rv)
+static void vulkan_features_apply(zend_object *obj, const VkPhysicalDeviceFeatures *src)
 {
-	const VkPhysicalDeviceFeatures *src = raw;
-	object_init_ex(rv, vulkan_ce_VkPhysicalDeviceFeatures);
-	{
-		zend_object *obj = Z_OBJ_P(rv);
 	vulkan_set_bool(obj, "robustBufferAccess", src->robustBufferAccess == VK_TRUE);
 	vulkan_set_bool(obj, "fullDrawIndexUint32", src->fullDrawIndexUint32 == VK_TRUE);
 	vulkan_set_bool(obj, "imageCubeArray", src->imageCubeArray == VK_TRUE);
@@ -812,7 +816,122 @@ void vk_VkPhysicalDeviceFeatures_to(const void *raw, zval *rv)
 	vulkan_set_bool(obj, "sparseResidencyAliased", src->sparseResidencyAliased == VK_TRUE);
 	vulkan_set_bool(obj, "variableMultisampleRate", src->variableMultisampleRate == VK_TRUE);
 	vulkan_set_bool(obj, "inheritedQueries", src->inheritedQueries == VK_TRUE);
+}
+
+void vk_VkPhysicalDeviceFeatures_to(const void *raw, zval *rv)
+{
+	object_init_ex(rv, vulkan_ce_VkPhysicalDeviceFeatures);
+	vulkan_features_apply(Z_OBJ_P(rv), raw);
+}
+
+static void vulkan_features2_apply(zend_object *obj, const VkPhysicalDeviceFeatures2 *src)
+{
+	zval *features = zend_read_property(obj->ce, obj, "features", sizeof("features") - 1, 0, NULL);
+
+	if (features == NULL || Z_TYPE_P(features) != IS_OBJECT) {
+		return;
 	}
+	vulkan_features_apply(Z_OBJ_P(features), &src->features);
+}
+
+static void vulkan_portability_apply(zend_object *obj, const VkPhysicalDevicePortabilitySubsetFeaturesKHR *src)
+{
+	vulkan_set_bool(obj, "constantAlphaColorBlendFactors", src->constantAlphaColorBlendFactors == VK_TRUE);
+	vulkan_set_bool(obj, "events", src->events == VK_TRUE);
+	vulkan_set_bool(obj, "imageViewFormatReinterpretation", src->imageViewFormatReinterpretation == VK_TRUE);
+	vulkan_set_bool(obj, "imageViewFormatSwizzle", src->imageViewFormatSwizzle == VK_TRUE);
+	vulkan_set_bool(obj, "imageView2DOn3DImage", src->imageView2DOn3DImage == VK_TRUE);
+	vulkan_set_bool(obj, "multisampleArrayImage", src->multisampleArrayImage == VK_TRUE);
+	vulkan_set_bool(obj, "mutableComparisonSamplers", src->mutableComparisonSamplers == VK_TRUE);
+	vulkan_set_bool(obj, "pointPolygons", src->pointPolygons == VK_TRUE);
+	vulkan_set_bool(obj, "samplerMipLodBias", src->samplerMipLodBias == VK_TRUE);
+	vulkan_set_bool(obj, "separateStencilMaskRef", src->separateStencilMaskRef == VK_TRUE);
+	vulkan_set_bool(obj, "shaderSampleRateInterpolationFunctions", src->shaderSampleRateInterpolationFunctions == VK_TRUE);
+	vulkan_set_bool(obj, "tessellationIsolines", src->tessellationIsolines == VK_TRUE);
+	vulkan_set_bool(obj, "tessellationPointMode", src->tessellationPointMode == VK_TRUE);
+	vulkan_set_bool(obj, "triangleFans", src->triangleFans == VK_TRUE);
+	vulkan_set_bool(obj, "vertexAttributeAccessBeyondStride", src->vertexAttributeAccessBeyondStride == VK_TRUE);
+}
+
+void vulkan_store_pnext_chain(zend_object *obj, const void *raw)
+{
+	const VkBaseInStructure *base = raw;
+	zval *next;
+
+	if (obj->ce == vulkan_ce_VkPhysicalDeviceFeatures2) {
+		vulkan_features2_apply(obj, raw);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR) {
+		vulkan_portability_apply(obj, raw);
+	}
+
+	next = zend_read_property(obj->ce, obj, "pNext", sizeof("pNext") - 1, 0, NULL);
+	if (next != NULL && Z_TYPE_P(next) == IS_OBJECT && base->pNext != NULL) {
+		vulkan_store_pnext_chain(Z_OBJ_P(next), base->pNext);
+	}
+}
+
+bool vk_VkPhysicalDeviceFeatures2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDeviceFeatures2 *dst = raw;
+	const void *next = NULL;
+
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+	if (!vulkan_enter(obj, visited)) {
+		return false;
+	}
+	if (!vulkan_pnext(obj, &next, scratch, visited)) {
+		return false;
+	}
+	dst->pNext = (void *) next;
+	return vulkan_struct_value(obj, "features", vulkan_ce_VkPhysicalDeviceFeatures, vk_VkPhysicalDeviceFeatures_from, &dst->features, scratch, visited);
+}
+
+void vk_VkPhysicalDeviceFeatures2_to(const void *raw, zval *rv)
+{
+	object_init_ex(rv, vulkan_ce_VkPhysicalDeviceFeatures2);
+	vulkan_init_nested(Z_OBJ_P(rv), "features", vulkan_ce_VkPhysicalDeviceFeatures);
+	vulkan_set_null(Z_OBJ_P(rv), "pNext");
+	vulkan_features2_apply(Z_OBJ_P(rv), raw);
+}
+
+bool vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDevicePortabilitySubsetFeaturesKHR *dst = raw;
+	const void *next = NULL;
+
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR;
+	if (!vulkan_enter(obj, visited)) {
+		return false;
+	}
+	if (!vulkan_pnext(obj, &next, scratch, visited)) {
+		return false;
+	}
+	dst->pNext = (void *) next;
+	if (!vulkan_bool32(obj, "constantAlphaColorBlendFactors", &dst->constantAlphaColorBlendFactors)) return false;
+	if (!vulkan_bool32(obj, "events", &dst->events)) return false;
+	if (!vulkan_bool32(obj, "imageViewFormatReinterpretation", &dst->imageViewFormatReinterpretation)) return false;
+	if (!vulkan_bool32(obj, "imageViewFormatSwizzle", &dst->imageViewFormatSwizzle)) return false;
+	if (!vulkan_bool32(obj, "imageView2DOn3DImage", &dst->imageView2DOn3DImage)) return false;
+	if (!vulkan_bool32(obj, "multisampleArrayImage", &dst->multisampleArrayImage)) return false;
+	if (!vulkan_bool32(obj, "mutableComparisonSamplers", &dst->mutableComparisonSamplers)) return false;
+	if (!vulkan_bool32(obj, "pointPolygons", &dst->pointPolygons)) return false;
+	if (!vulkan_bool32(obj, "samplerMipLodBias", &dst->samplerMipLodBias)) return false;
+	if (!vulkan_bool32(obj, "separateStencilMaskRef", &dst->separateStencilMaskRef)) return false;
+	if (!vulkan_bool32(obj, "shaderSampleRateInterpolationFunctions", &dst->shaderSampleRateInterpolationFunctions)) return false;
+	if (!vulkan_bool32(obj, "tessellationIsolines", &dst->tessellationIsolines)) return false;
+	if (!vulkan_bool32(obj, "tessellationPointMode", &dst->tessellationPointMode)) return false;
+	if (!vulkan_bool32(obj, "triangleFans", &dst->triangleFans)) return false;
+	if (!vulkan_bool32(obj, "vertexAttributeAccessBeyondStride", &dst->vertexAttributeAccessBeyondStride)) return false;
+	return true;
+}
+
+void vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_to(const void *raw, zval *rv)
+{
+	object_init_ex(rv, vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR);
+	vulkan_set_null(Z_OBJ_P(rv), "pNext");
+	vulkan_portability_apply(Z_OBJ_P(rv), raw);
 }
 
 bool vk_VkDeviceCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)

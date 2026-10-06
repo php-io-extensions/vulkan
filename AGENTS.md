@@ -7,6 +7,6 @@
 5. **Mapping.** `vkMapMemory` writes an address to `$ppData`. `vk_read_mapped` and `vk_write_mapped` dereference it. Address 0 throws `ValueError`. Any other address is trusted.
 6. **The stub is the declaration.** Edit `stubs/*.stub.php`, regenerate with `php84 /opt/homebrew/opt/php@8.4/lib/php/build/gen_stub.php stubs`, and commit both. Never hand-edit `*_arginfo.h`. One `.c` includes one arginfo header. `vk_metal.stub.php` is built on macOS only.
 7. **Build.** `./install-macos.sh` into Homebrew `php@8.4` and `php@8.4-zts`. On the Pi, copy the tree with `fnk` and `./install-debian-trixie.sh`. Pest at `-d memory_limit=128M`. On the Pi export `WAYLAND_DISPLAY=wayland-0` and `XDG_RUNTIME_DIR=/run/user/$(id -u)` for the swapchain test. Gate a commit on the suite's exit code.
-8. **Device tests skip the CPU device.** On macOS they skip with `MoltenVK needs portability enumeration: slice 5`.
+8. **Device tests skip the CPU device.** On macOS they open MoltenVK by enabling `VK_KHR_portability_enumeration` and `VK_KHR_portability_subset` where the loader and the device list them (`tests/Pest.php`). The swapchain test and the dmabuf test stay Linux-only.
 9. **Durable facts go in `.okf`.** Update the matching concept and append `.okf/log.md`.
 10. **Version** is `PHP_VULKAN_VERSION` in `php_vulkan.h`: 0.10.0. `os-families` are `linux` and `darwin`.

@@ -7,11 +7,7 @@ it('makes a swapchain on an SDL window\'s surface, acquires an image without wai
     $window = SDL_CreateWindow('ext-vulkan swapchain', 160, 120, SDL_WINDOW_VULKAN);
     $extensions = SDL_Vulkan_GetInstanceExtensions();
 
-    $app = new VkApplicationInfo();
-    $app->apiVersion = VK_API_VERSION_1_3;
-    $info = new VkInstanceCreateInfo();
-    $info->pApplicationInfo = $app;
-    $info->enabledExtensionNames = $extensions;
+    $info = portabilityInstance($extensions);
     vkCreateInstance($info, null, $instance);
     SDL_Vulkan_CreateSurface($window, $instance->pointer(), null, $surfaceAddress) || throw new RuntimeException(SDL_GetError());
     $surface = VkSurfaceKHR::fromPointer($surfaceAddress);
@@ -35,7 +31,7 @@ it('makes a swapchain on an SDL window\'s surface, acquires an image without wai
     $deviceInfo = new VkDeviceCreateInfo();
     $deviceInfo->pQueueCreateInfos = [$queueInfo];
     $deviceInfo->enabledExtensionNames = [VK_KHR_SWAPCHAIN_EXTENSION_NAME];
-    vkCreateDevice($physical, $deviceInfo, null, $device);
+    vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), null, $device);
     vkGetDeviceQueue($device, 0, 0, $queue);
 
     $swapInfo = new VkSwapchainCreateInfoKHR();
@@ -79,4 +75,4 @@ it('makes a swapchain on an SDL window\'s surface, acquires an image without wai
     vkDestroySurfaceKHR($instance, $surface, null);
     vkDestroyInstance($instance, null);
     SDL_DestroyWindow($window);
-})->skip(! extension_loaded('sdl3') || PHP_OS_FAMILY === 'Darwin', 'needs ext-sdl3 and a Linux display (the Mac surface is slice 5)');
+})->skip(! extension_loaded('sdl3') || PHP_OS_FAMILY === 'Darwin', 'needs ext-sdl3 and a Linux display');

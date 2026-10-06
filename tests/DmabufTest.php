@@ -10,7 +10,7 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     $deviceInfo = new VkDeviceCreateInfo();
     $deviceInfo->pQueueCreateInfos = [$queueInfo];
     $deviceInfo->enabledExtensionNames = [VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME, VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME, VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME];
-    vkCreateDevice($physical, $deviceInfo, null, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice with dmabuf extensions');
+    vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), null, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice with dmabuf extensions');
 
     $modifiers = new VkImageDrmFormatModifierListCreateInfoEXT();
     $modifiers->pDrmFormatModifiers = [0]; // DRM_FORMAT_MOD_LINEAR

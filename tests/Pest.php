@@ -13,6 +13,38 @@ function tap(object $object, Closure $callback): object
     return $object;
 }
 
+/** An instance create info with the extensions asked for, plus portability enumeration where the loader lists it. */
+function portabilityInstance(array $extensions = []): VkInstanceCreateInfo
+{
+    $app = new VkApplicationInfo();
+    $app->pApplicationName = 'ext-vulkan tests';
+    $app->apiVersion = VK_API_VERSION_1_3;
+    $info = new VkInstanceCreateInfo();
+    $info->pApplicationInfo = $app;
+
+    vkEnumerateInstanceExtensionProperties(null, $available);
+    $names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
+    if (in_array(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME, $names, true)) {
+        $extensions[] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+        $info->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    }
+    $info->enabledExtensionNames = array_values(array_unique($extensions));
+
+    return $info;
+}
+
+/** The device create info with VK_KHR_portability_subset added where the device lists it. */
+function portabilityDevice(VkPhysicalDevice $physical, VkDeviceCreateInfo $info): VkDeviceCreateInfo
+{
+    vkEnumerateDeviceExtensionProperties($physical, null, $available);
+    $names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
+    if (in_array(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, $names, true)) {
+        $info->enabledExtensionNames = array_values(array_unique([...$info->enabledExtensionNames, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME]));
+    }
+
+    return $info;
+}
+
 /** @return array{VkInstance, VkPhysicalDevice, VkDevice, VkQueue, int}|null instance, the GPU (never the CPU device), a device with one graphics queue, that queue, its family; null where no GPU is visible */
 function vulkan(): ?array
 {
@@ -22,11 +54,7 @@ function vulkan(): ?array
     }
     $made = true;
 
-    $app = new VkApplicationInfo();
-    $app->pApplicationName = 'ext-vulkan tests';
-    $app->apiVersion = VK_API_VERSION_1_3;
-    $create = new VkInstanceCreateInfo();
-    $create->pApplicationInfo = $app;
+    $create = portabilityInstance();
     if (vkCreateInstance($create, null, $instance) !== VK_SUCCESS) {
         return null;
     }
@@ -50,7 +78,7 @@ function vulkan(): ?array
     $queueInfo->pQueuePriorities = [1.0];
     $deviceInfo = new VkDeviceCreateInfo();
     $deviceInfo->pQueueCreateInfos = [$queueInfo];
-    vkCreateDevice($physical, $deviceInfo, null, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice');
+    vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), null, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice');
     vkGetDeviceQueue($device, $family, 0, $queue);
 
     return $vulkan = [$instance, $physical, $device, $queue, $family];
@@ -59,7 +87,7 @@ function vulkan(): ?array
 /** The Vulkan objects, or the test skipped where the platform has no GPU device this slice can open. */
 function gpu(): array
 {
-    return vulkan() ?? test()->markTestSkipped(PHP_OS_FAMILY === 'Darwin' ? 'MoltenVK needs portability enumeration: slice 5' : 'no Vulkan GPU');
+    return vulkan() ?? test()->markTestSkipped('no Vulkan GPU');
 }
 
 /** First memory type whose index is set in $typeBits and whose flags include every bit of $properties. */

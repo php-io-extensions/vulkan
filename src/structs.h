@@ -10,6 +10,8 @@ extern zend_class_entry *vulkan_ce_VkApplicationInfo;
 extern zend_class_entry *vulkan_ce_VkInstanceCreateInfo;
 extern zend_class_entry *vulkan_ce_VkDeviceQueueCreateInfo;
 extern zend_class_entry *vulkan_ce_VkPhysicalDeviceFeatures;
+extern zend_class_entry *vulkan_ce_VkPhysicalDeviceFeatures2;
+extern zend_class_entry *vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR;
 extern zend_class_entry *vulkan_ce_VkDeviceCreateInfo;
 extern zend_class_entry *vulkan_ce_VkPhysicalDeviceLimits;
 extern zend_class_entry *vulkan_ce_VkPhysicalDeviceSparseProperties;
@@ -36,6 +38,12 @@ bool vk_VkDeviceQueueCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch
 void vk_VkDeviceQueueCreateInfo_to(const void *raw, zval *rv);
 bool vk_VkPhysicalDeviceFeatures_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkPhysicalDeviceFeatures_to(const void *raw, zval *rv);
+bool vk_VkPhysicalDeviceFeatures2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+void vk_VkPhysicalDeviceFeatures2_to(const void *raw, zval *rv);
+bool vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+void vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_to(const void *raw, zval *rv);
+/* Writes an output pNext chain back onto the objects that produced it, leaving each pNext link as the caller set it. */
+void vulkan_store_pnext_chain(zend_object *obj, const void *raw);
 bool vk_VkDeviceCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkDeviceCreateInfo_to(const void *raw, zval *rv);
 bool vk_VkPhysicalDeviceLimits_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);

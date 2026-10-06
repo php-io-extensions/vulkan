@@ -37,7 +37,7 @@ it('releases everything made from a destroyed device', function (): void {
     $queueInfo->pQueuePriorities = [1.0];
     $info = new VkDeviceCreateInfo();
     $info->pQueueCreateInfos = [$queueInfo];
-    vkCreateDevice($physical, $info, null, $device);
+    vkCreateDevice($physical, portabilityDevice($physical, $info), null, $device);
     vkGetDeviceQueue($device, $family, 0, $queue);
 
     vkDestroyDevice($device, null);

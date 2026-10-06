@@ -8,6 +8,7 @@
 #include "php.h"
 #include "zend_exceptions.h"
 #include "php_vulkan.h"
+#define VK_ENABLE_BETA_EXTENSIONS
 #include <vulkan/vulkan.h>
 
 ZEND_BEGIN_MODULE_GLOBALS(vulkan)

@@ -14,10 +14,10 @@ final class. Each struct is a final class whose properties are the C members.
 
 - The Vulkan loader and headers. Debian and Raspberry Pi OS: `libvulkan-dev`.
   macOS: `brew install vulkan-loader vulkan-headers molten-vk`.
-- A GPU device. Tests skip the CPU device (llvmpipe). On macOS, MoltenVK is
-  visible only with the portability enumeration flags, which are slice 5, so
-  device tests skip there with that reason. The Mac build still links and the
-  device-free tests run.
+- A GPU device. Tests skip the CPU device (llvmpipe). On macOS the device
+  tests run through MoltenVK once the instance and device enable portability,
+  as in [On macOS](#on-macos). The swapchain test and the dmabuf test stay
+  Linux-only.
 - The measured Pi is Mesa 26.2 V3DV, Vulkan headers 1.4.309, API 1.3. The Mac
   headers measured here are 1.4.357.
 
@@ -52,6 +52,9 @@ Bindings are 1:1. There are no defaults and no composites. The only translations
 - `pNext` is `?object`, a chain of struct objects. A chain that loops is a
   `ValueError` before the binding walks it. A struct of the wrong kind for its
   parent is linked as given.
+- `vkGetPhysicalDeviceFeatures2` takes the `VkPhysicalDeviceFeatures2` object
+  and fills it in place, including the structs already linked on `pNext`. The
+  call does not replace those objects.
 - `pAllocator` is `null`. There is no custom allocator.
 - `VkShaderModuleCreateInfo::$code` is one string. `codeSize` is its length. A
   length that is not a multiple of 4 is a `ValueError`.
@@ -89,6 +92,47 @@ enters through `VkSurfaceKHR::fromPointer()`. Its parent is unknown, so only
 Skip `VK_PHYSICAL_DEVICE_TYPE_CPU`. The integrated or discrete GPU is the
 device. Pick a stencil format with `vkGetPhysicalDeviceFormatProperties`:
 `VK_FORMAT_D24_UNORM_S8_UINT`, otherwise `VK_FORMAT_D32_SFLOAT_S8_UINT`.
+
+## On macOS
+
+Homebrew packages: `vulkan-loader`, `vulkan-headers`, `molten-vk`. The loader
+finds MoltenVK through its ICD manifest and lists that device only to an
+instance created with `VK_KHR_portability_enumeration` and
+`VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR`. A device on it enables
+`VK_KHR_portability_subset` when `vkEnumerateDeviceExtensionProperties` lists
+that extension. `vkGetPhysicalDeviceFeatures2` with a
+`VkPhysicalDevicePortabilitySubsetFeaturesKHR` chained on
+`VkPhysicalDeviceFeatures2::$pNext` reports what the subset forbids.
+`triangleFans` is one of those flags; read it from the driver.
+
+A surface over ext-metal uses `CAMetalLayer::pointer()` as
+`VkMetalSurfaceCreateInfoEXT::$pLayer`, with `VK_KHR_surface` and
+`VK_EXT_metal_surface` enabled on the instance, then `vkCreateMetalSurfaceEXT`.
+
+Enable portability only where the loader and the device list it. On the Pi
+neither name is present, so the same code leaves the create infos alone:
+
+```php
+$app = new VkApplicationInfo();
+$app->pApplicationName = 'ext-vulkan tests';
+$app->apiVersion = VK_API_VERSION_1_3;
+vkEnumerateInstanceExtensionProperties(null, $available);
+$names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
+$extensions = [];
+$instanceInfo = new VkInstanceCreateInfo();
+$instanceInfo->pApplicationInfo = $app;
+if (in_array(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME, $names, true)) {
+    $extensions[] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+    $instanceInfo->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+}
+$instanceInfo->enabledExtensionNames = $extensions;
+
+vkEnumerateDeviceExtensionProperties($physical, null, $deviceExtensions);
+$deviceNames = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $deviceExtensions);
+if (in_array(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, $deviceNames, true)) {
+    $deviceInfo->enabledExtensionNames[] = VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME;
+}
+```
 
 ## Example
 
@@ -150,4 +194,6 @@ php   -d memory_limit=128M vendor/bin/pest   # the Pi
 On the Pi the swapchain test needs `WAYLAND_DISPLAY=wayland-0` and
 `XDG_RUNTIME_DIR=/run/user/$(id -u)`. A window appears. The gate draws a
 stencil-then-cover triangle into a 4× image, resolves it in the render pass,
-blits, copies out, and reads the pixels back.
+blits, copies out, and reads the pixels back. On macOS that gate runs through
+MoltenVK, which has `VK_FORMAT_D32_SFLOAT_S8_UINT` and not
+`VK_FORMAT_D24_UNORM_S8_UINT`.

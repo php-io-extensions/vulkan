@@ -210,8 +210,16 @@ foreach ($extensionNames as $name) {
     $emitString($name);
 }
 
-// The macro lives in vulkan_beta.h, which this generator does not read.
+// These macros live outside vulkan_core.h: portability subset in vulkan_beta.h, metal surface in vulkan_metal.h.
 $emitString('VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME', 'VK_KHR_portability_subset');
+$emitString('VK_EXT_METAL_SURFACE_EXTENSION_NAME', 'VK_EXT_metal_surface');
+
+$out[] = '/** An address of 0 is refused. Any other address is trusted. */';
+$out[] = 'function vk_read_mapped(int $address, int $size): string {}';
+$out[] = '';
+$out[] = '/** An address of 0 is refused. Any other address is trusted. */';
+$out[] = 'function vk_write_mapped(int $address, string $bytes): void {}';
+$out[] = '';
 
 $target = dirname(__DIR__) . '/stubs/vk_constants.stub.php';
 if (! is_dir(dirname($target))) {

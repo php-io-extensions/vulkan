@@ -1,3 +1,9 @@
+ZEND_METHOD(VkPhysicalDeviceFeatures2, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "features", vulkan_ce_VkPhysicalDeviceFeatures);
+}
+
 ZEND_METHOD(VkPhysicalDeviceProperties, __construct)
 {
 	ZEND_PARSE_PARAMETERS_NONE();

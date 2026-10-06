@@ -88,6 +88,10 @@ void vulkan_register_instance(int module_number)
 	vulkan_struct_setup(vulkan_ce_VkDeviceQueueCreateInfo);
 	vulkan_ce_VkPhysicalDeviceFeatures = register_class_VkPhysicalDeviceFeatures();
 	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceFeatures);
+	vulkan_ce_VkPhysicalDeviceFeatures2 = register_class_VkPhysicalDeviceFeatures2();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceFeatures2);
+	vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR = register_class_VkPhysicalDevicePortabilitySubsetFeaturesKHR();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR);
 	vulkan_ce_VkDeviceCreateInfo = register_class_VkDeviceCreateInfo();
 	vulkan_struct_setup(vulkan_ce_VkDeviceCreateInfo);
 	vulkan_ce_VkPhysicalDeviceLimits = register_class_VkPhysicalDeviceLimits();
@@ -507,4 +511,39 @@ ZEND_FUNCTION(vkDeviceWaitIdle)
 	}
 
 	RETURN_LONG((zend_long) vkDeviceWaitIdle((VkDevice) (uintptr_t) value));
+}
+
+ZEND_FUNCTION(vkGetPhysicalDeviceFeatures2)
+{
+	zval *physical, *features;
+	uint64_t value;
+	vulkan_scratch scratch;
+	HashTable visited;
+	VkPhysicalDeviceFeatures2 info;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJECT(physical)
+		Z_PARAM_OBJECT(features)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &value)) {
+		RETURN_THROWS();
+	}
+	if (!instanceof_function(Z_OBJCE_P(features), vulkan_ce_VkPhysicalDeviceFeatures2)) {
+		zend_argument_type_error(2, "must be of type %s, %s given", "VkPhysicalDeviceFeatures2", zend_zval_value_name(features));
+		RETURN_THROWS();
+	}
+
+	vulkan_scratch_init(&scratch);
+	zend_hash_init(&visited, 4, NULL, NULL, 0);
+	if (!vk_VkPhysicalDeviceFeatures2_from(Z_OBJ_P(features), &info, &scratch, &visited)) {
+		zend_hash_destroy(&visited);
+		vulkan_scratch_free(&scratch);
+		RETURN_THROWS();
+	}
+	zend_hash_destroy(&visited);
+
+	vkGetPhysicalDeviceFeatures2((VkPhysicalDevice) (uintptr_t) value, &info);
+	vulkan_store_pnext_chain(Z_OBJ_P(features), &info);
+	vulkan_scratch_free(&scratch);
 }

@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 703d3aae4ff0a862d567f7d0751ae5b07d762965 */
+ * Stub hash: 15eefd32137669a0228c8ae8789808f29a4f825c */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateInstance, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkInstanceCreateInfo, 0)
@@ -72,6 +72,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDeviceWaitIdle, 0, 1, IS_LONG,
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceFeatures2, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
+	ZEND_ARG_OBJ_INFO(0, pFeatures, VkPhysicalDeviceFeatures2, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_VkInstance___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -100,6 +105,8 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_VkQueue_fromPointer arginfo_class_VkInstance_fromPointer
 
+#define arginfo_class_VkPhysicalDeviceFeatures2___construct arginfo_class_VkInstance___construct
+
 #define arginfo_class_VkPhysicalDeviceProperties___construct arginfo_class_VkInstance___construct
 
 #define arginfo_class_VkQueueFamilyProperties___construct arginfo_class_VkInstance___construct
@@ -117,6 +124,7 @@ ZEND_FUNCTION(vkCreateDevice);
 ZEND_FUNCTION(vkDestroyDevice);
 ZEND_FUNCTION(vkGetDeviceQueue);
 ZEND_FUNCTION(vkDeviceWaitIdle);
+ZEND_FUNCTION(vkGetPhysicalDeviceFeatures2);
 ZEND_METHOD(VkInstance, __construct);
 ZEND_METHOD(VkInstance, pointer);
 ZEND_METHOD(VkInstance, fromPointer);
@@ -129,6 +137,7 @@ ZEND_METHOD(VkDevice, fromPointer);
 ZEND_METHOD(VkQueue, __construct);
 ZEND_METHOD(VkQueue, pointer);
 ZEND_METHOD(VkQueue, fromPointer);
+ZEND_METHOD(VkPhysicalDeviceFeatures2, __construct);
 ZEND_METHOD(VkPhysicalDeviceProperties, __construct);
 ZEND_METHOD(VkQueueFamilyProperties, __construct);
 
@@ -146,6 +155,7 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkDestroyDevice, arginfo_vkDestroyDevice)
 	ZEND_FE(vkGetDeviceQueue, arginfo_vkGetDeviceQueue)
 	ZEND_FE(vkDeviceWaitIdle, arginfo_vkDeviceWaitIdle)
+	ZEND_FE(vkGetPhysicalDeviceFeatures2, arginfo_vkGetPhysicalDeviceFeatures2)
 	ZEND_FE_END
 };
 
@@ -174,6 +184,11 @@ static const zend_function_entry class_VkQueue_methods[] = {
 	ZEND_ME(VkQueue, __construct, arginfo_class_VkQueue___construct, ZEND_ACC_PRIVATE)
 	ZEND_ME(VkQueue, pointer, arginfo_class_VkQueue_pointer, ZEND_ACC_PUBLIC)
 	ZEND_ME(VkQueue, fromPointer, arginfo_class_VkQueue_fromPointer, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_VkPhysicalDeviceFeatures2_methods[] = {
+	ZEND_ME(VkPhysicalDeviceFeatures2, __construct, arginfo_class_VkPhysicalDeviceFeatures2___construct, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -696,6 +711,135 @@ static zend_class_entry *register_class_VkPhysicalDeviceFeatures(void)
 	zend_string *property_inheritedQueries_name = zend_string_init("inheritedQueries", sizeof("inheritedQueries") - 1, 1);
 	zend_declare_typed_property(class_entry, property_inheritedQueries_name, &property_inheritedQueries_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
 	zend_string_release(property_inheritedQueries_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkPhysicalDeviceFeatures2(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkPhysicalDeviceFeatures2", class_VkPhysicalDeviceFeatures2_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_features_default_value;
+	ZVAL_UNDEF(&property_features_default_value);
+	zend_string *property_features_name = zend_string_init("features", sizeof("features") - 1, 1);
+	zend_string *property_features_class_VkPhysicalDeviceFeatures = zend_string_init("VkPhysicalDeviceFeatures", sizeof("VkPhysicalDeviceFeatures")-1, 1);
+	zend_declare_typed_property(class_entry, property_features_name, &property_features_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_features_class_VkPhysicalDeviceFeatures, 0, 0));
+	zend_string_release(property_features_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkPhysicalDevicePortabilitySubsetFeaturesKHR(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkPhysicalDevicePortabilitySubsetFeaturesKHR", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_constantAlphaColorBlendFactors_default_value;
+	ZVAL_FALSE(&property_constantAlphaColorBlendFactors_default_value);
+	zend_string *property_constantAlphaColorBlendFactors_name = zend_string_init("constantAlphaColorBlendFactors", sizeof("constantAlphaColorBlendFactors") - 1, 1);
+	zend_declare_typed_property(class_entry, property_constantAlphaColorBlendFactors_name, &property_constantAlphaColorBlendFactors_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_constantAlphaColorBlendFactors_name);
+
+	zval property_events_default_value;
+	ZVAL_FALSE(&property_events_default_value);
+	zend_string *property_events_name = zend_string_init("events", sizeof("events") - 1, 1);
+	zend_declare_typed_property(class_entry, property_events_name, &property_events_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_events_name);
+
+	zval property_imageViewFormatReinterpretation_default_value;
+	ZVAL_FALSE(&property_imageViewFormatReinterpretation_default_value);
+	zend_string *property_imageViewFormatReinterpretation_name = zend_string_init("imageViewFormatReinterpretation", sizeof("imageViewFormatReinterpretation") - 1, 1);
+	zend_declare_typed_property(class_entry, property_imageViewFormatReinterpretation_name, &property_imageViewFormatReinterpretation_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_imageViewFormatReinterpretation_name);
+
+	zval property_imageViewFormatSwizzle_default_value;
+	ZVAL_FALSE(&property_imageViewFormatSwizzle_default_value);
+	zend_string *property_imageViewFormatSwizzle_name = zend_string_init("imageViewFormatSwizzle", sizeof("imageViewFormatSwizzle") - 1, 1);
+	zend_declare_typed_property(class_entry, property_imageViewFormatSwizzle_name, &property_imageViewFormatSwizzle_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_imageViewFormatSwizzle_name);
+
+	zval property_imageView2DOn3DImage_default_value;
+	ZVAL_FALSE(&property_imageView2DOn3DImage_default_value);
+	zend_string *property_imageView2DOn3DImage_name = zend_string_init("imageView2DOn3DImage", sizeof("imageView2DOn3DImage") - 1, 1);
+	zend_declare_typed_property(class_entry, property_imageView2DOn3DImage_name, &property_imageView2DOn3DImage_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_imageView2DOn3DImage_name);
+
+	zval property_multisampleArrayImage_default_value;
+	ZVAL_FALSE(&property_multisampleArrayImage_default_value);
+	zend_string *property_multisampleArrayImage_name = zend_string_init("multisampleArrayImage", sizeof("multisampleArrayImage") - 1, 1);
+	zend_declare_typed_property(class_entry, property_multisampleArrayImage_name, &property_multisampleArrayImage_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_multisampleArrayImage_name);
+
+	zval property_mutableComparisonSamplers_default_value;
+	ZVAL_FALSE(&property_mutableComparisonSamplers_default_value);
+	zend_string *property_mutableComparisonSamplers_name = zend_string_init("mutableComparisonSamplers", sizeof("mutableComparisonSamplers") - 1, 1);
+	zend_declare_typed_property(class_entry, property_mutableComparisonSamplers_name, &property_mutableComparisonSamplers_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_mutableComparisonSamplers_name);
+
+	zval property_pointPolygons_default_value;
+	ZVAL_FALSE(&property_pointPolygons_default_value);
+	zend_string *property_pointPolygons_name = zend_string_init("pointPolygons", sizeof("pointPolygons") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pointPolygons_name, &property_pointPolygons_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_pointPolygons_name);
+
+	zval property_samplerMipLodBias_default_value;
+	ZVAL_FALSE(&property_samplerMipLodBias_default_value);
+	zend_string *property_samplerMipLodBias_name = zend_string_init("samplerMipLodBias", sizeof("samplerMipLodBias") - 1, 1);
+	zend_declare_typed_property(class_entry, property_samplerMipLodBias_name, &property_samplerMipLodBias_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_samplerMipLodBias_name);
+
+	zval property_separateStencilMaskRef_default_value;
+	ZVAL_FALSE(&property_separateStencilMaskRef_default_value);
+	zend_string *property_separateStencilMaskRef_name = zend_string_init("separateStencilMaskRef", sizeof("separateStencilMaskRef") - 1, 1);
+	zend_declare_typed_property(class_entry, property_separateStencilMaskRef_name, &property_separateStencilMaskRef_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_separateStencilMaskRef_name);
+
+	zval property_shaderSampleRateInterpolationFunctions_default_value;
+	ZVAL_FALSE(&property_shaderSampleRateInterpolationFunctions_default_value);
+	zend_string *property_shaderSampleRateInterpolationFunctions_name = zend_string_init("shaderSampleRateInterpolationFunctions", sizeof("shaderSampleRateInterpolationFunctions") - 1, 1);
+	zend_declare_typed_property(class_entry, property_shaderSampleRateInterpolationFunctions_name, &property_shaderSampleRateInterpolationFunctions_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_shaderSampleRateInterpolationFunctions_name);
+
+	zval property_tessellationIsolines_default_value;
+	ZVAL_FALSE(&property_tessellationIsolines_default_value);
+	zend_string *property_tessellationIsolines_name = zend_string_init("tessellationIsolines", sizeof("tessellationIsolines") - 1, 1);
+	zend_declare_typed_property(class_entry, property_tessellationIsolines_name, &property_tessellationIsolines_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_tessellationIsolines_name);
+
+	zval property_tessellationPointMode_default_value;
+	ZVAL_FALSE(&property_tessellationPointMode_default_value);
+	zend_string *property_tessellationPointMode_name = zend_string_init("tessellationPointMode", sizeof("tessellationPointMode") - 1, 1);
+	zend_declare_typed_property(class_entry, property_tessellationPointMode_name, &property_tessellationPointMode_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_tessellationPointMode_name);
+
+	zval property_triangleFans_default_value;
+	ZVAL_FALSE(&property_triangleFans_default_value);
+	zend_string *property_triangleFans_name = zend_string_init("triangleFans", sizeof("triangleFans") - 1, 1);
+	zend_declare_typed_property(class_entry, property_triangleFans_name, &property_triangleFans_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_triangleFans_name);
+
+	zval property_vertexAttributeAccessBeyondStride_default_value;
+	ZVAL_FALSE(&property_vertexAttributeAccessBeyondStride_default_value);
+	zend_string *property_vertexAttributeAccessBeyondStride_name = zend_string_init("vertexAttributeAccessBeyondStride", sizeof("vertexAttributeAccessBeyondStride") - 1, 1);
+	zend_declare_typed_property(class_entry, property_vertexAttributeAccessBeyondStride_name, &property_vertexAttributeAccessBeyondStride_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_vertexAttributeAccessBeyondStride_name);
 
 	return class_entry;
 }

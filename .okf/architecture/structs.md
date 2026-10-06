@@ -19,6 +19,8 @@ Properties are the C members. `sType` is not a property; each `vk_<Struct>_from`
 
 `pNext` is `?object`. The binding links the chain and records each object before it recurses. Seeing an object already on the chain throws `ValueError` "pNext chain loops". A known struct of the wrong kind for its parent is still linked. The same struct object may appear twice in a list; that is not a `pNext` cycle. `VkRenderPassBeginInfo` passes the same clear colour twice.[^plan]
 
+`vkGetPhysicalDeviceFeatures2` is the output form of that chain. The caller passes a `VkPhysicalDeviceFeatures2` and the binding writes the driver's answers back onto that object and onto each object already linked from `pNext`. It does not replace those objects, and it leaves each `pNext` link as the caller set it. On a driver that does not recognise `VkPhysicalDevicePortabilitySubsetFeaturesKHR`, the chained object stays at the values the caller put there.
+
 `VkClearValue` holds exactly one of `$color` or `$depthStencil`. Both set, or neither, throws `ValueError` "VkClearValue holds one of color or depthStencil". `VkClearColorValue::$float32` is four floats.
 
 `VkShaderModuleCreateInfo::$code` is one string. Its byte length becomes `codeSize`. A length that is not a multiple of 4 is refused. `vkCmdPushConstants` refuses a string shorter than `size`.

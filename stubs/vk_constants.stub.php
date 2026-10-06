@@ -5090,6 +5090,11 @@ const VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME = UNKNOWN;
  */
 const VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME = 'VK_KHR_portability_subset';
 
+/**
+ * @var string
+ */
+const VK_EXT_METAL_SURFACE_EXTENSION_NAME = 'VK_EXT_metal_surface';
+
 /** An address of 0 is refused. Any other address is trusted. */
 function vk_read_mapped(int $address, int $size): string {}
 

@@ -221,6 +221,56 @@ final class VkPhysicalDeviceFeatures
 /**
  * @not-serializable
  */
+final class VkPhysicalDeviceFeatures2
+{
+    public ?object $pNext = null;
+
+    public VkPhysicalDeviceFeatures $features;
+
+    public function __construct() {}
+}
+
+/**
+ * @not-serializable
+ */
+final class VkPhysicalDevicePortabilitySubsetFeaturesKHR
+{
+    public ?object $pNext = null;
+
+    public bool $constantAlphaColorBlendFactors = false;
+
+    public bool $events = false;
+
+    public bool $imageViewFormatReinterpretation = false;
+
+    public bool $imageViewFormatSwizzle = false;
+
+    public bool $imageView2DOn3DImage = false;
+
+    public bool $multisampleArrayImage = false;
+
+    public bool $mutableComparisonSamplers = false;
+
+    public bool $pointPolygons = false;
+
+    public bool $samplerMipLodBias = false;
+
+    public bool $separateStencilMaskRef = false;
+
+    public bool $shaderSampleRateInterpolationFunctions = false;
+
+    public bool $tessellationIsolines = false;
+
+    public bool $tessellationPointMode = false;
+
+    public bool $triangleFans = false;
+
+    public bool $vertexAttributeAccessBeyondStride = false;
+}
+
+/**
+ * @not-serializable
+ */
 final class VkDeviceCreateInfo
 {
     public ?object $pNext = null;
@@ -605,4 +655,6 @@ function vkDestroyDevice(VkDevice $device, null $pAllocator): void {}
 function vkGetDeviceQueue(VkDevice $device, int $queueFamilyIndex, int $queueIndex, ?VkQueue &$pQueue): void {}
 
 function vkDeviceWaitIdle(VkDevice $device): int {}
+
+function vkGetPhysicalDeviceFeatures2(VkPhysicalDevice $physicalDevice, VkPhysicalDeviceFeatures2 $pFeatures): void {}
 
