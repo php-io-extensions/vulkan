@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: dd80ec6cb31b8f77aec122ed0f56b10b518aff77 */
+ * Stub hash: 2d6e0527b8c45b8c261a884483310c1c4792b346 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetMemoryFdKHR, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -71,6 +71,36 @@ static zend_class_entry *register_class_VkExportMemoryAllocateInfo(void)
 	zend_string *property_handleTypes_name = zend_string_init("handleTypes", sizeof("handleTypes") - 1, 1);
 	zend_declare_typed_property(class_entry, property_handleTypes_name, &property_handleTypes_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_handleTypes_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkMemoryDedicatedAllocateInfo(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkMemoryDedicatedAllocateInfo", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_image_default_value;
+	ZVAL_NULL(&property_image_default_value);
+	zend_string *property_image_name = zend_string_init("image", sizeof("image") - 1, 1);
+	zend_string *property_image_class_VkImage = zend_string_init("VkImage", sizeof("VkImage")-1, 1);
+	zend_declare_typed_property(class_entry, property_image_name, &property_image_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_image_class_VkImage, 0, MAY_BE_NULL));
+	zend_string_release(property_image_name);
+
+	zval property_buffer_default_value;
+	ZVAL_NULL(&property_buffer_default_value);
+	zend_string *property_buffer_name = zend_string_init("buffer", sizeof("buffer") - 1, 1);
+	zend_string *property_buffer_class_VkBuffer = zend_string_init("VkBuffer", sizeof("VkBuffer")-1, 1);
+	zend_declare_typed_property(class_entry, property_buffer_name, &property_buffer_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_buffer_class_VkBuffer, 0, MAY_BE_NULL));
+	zend_string_release(property_buffer_name);
 
 	return class_entry;
 }

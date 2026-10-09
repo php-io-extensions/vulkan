@@ -59,3 +59,38 @@ it('makes a sampler and refuses a freed memory object', function (): void {
     vkFreeMemory($device, $memory, null);
     expect(fn () => vkMapMemory($device, $memory, 0, 64, 0, $address))->toThrow(ValueError::class, 'VkDeviceMemory has been destroyed');
 });
+
+it('allocates an image\'s memory dedicated to it', function (): void {
+    [, , $device] = gpu();
+    $info = new VkImageCreateInfo();
+    $info->imageType = VK_IMAGE_TYPE_2D;
+    $info->format = VK_FORMAT_R8G8B8A8_UNORM;
+    [$info->extent->width, $info->extent->height, $info->extent->depth] = [16, 8, 1];
+    $info->mipLevels = 1;
+    $info->arrayLayers = 1;
+    $info->samples = VK_SAMPLE_COUNT_1_BIT;
+    $info->tiling = VK_IMAGE_TILING_OPTIMAL;
+    $info->usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    vkCreateImage($device, $info, null, $image);
+    vkGetImageMemoryRequirements($device, $image, $requirements);
+    $dedicated = new VkMemoryDedicatedAllocateInfo();
+    $dedicated->image = $image;
+    $allocate = new VkMemoryAllocateInfo();
+    $allocate->pNext = $dedicated;
+    $allocate->allocationSize = $requirements->size;
+    $allocate->memoryTypeIndex = memoryType($requirements->memoryTypeBits, 0);
+
+    expect(vkAllocateMemory($device, $allocate, null, $memory))->toBe(VK_SUCCESS)
+        ->and(vkBindImageMemory($device, $image, $memory, 0))->toBe(VK_SUCCESS);
+
+    vkDestroyImage($device, $image, null);
+    vkFreeMemory($device, $memory, null);
+});
+
+it('names the file the Vulkan loader was loaded from', function (): void {
+    $path = vk_loader_path();
+
+    expect($path)->toBeString()
+        ->and(is_file($path))->toBeTrue()
+        ->and(basename($path))->toContain('vulkan');
+});

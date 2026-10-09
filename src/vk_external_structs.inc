@@ -1,31 +1,3 @@
-static bool vulkan_u64_list(zend_object *obj, const char *name, const uint64_t **out, uint32_t *count, vulkan_scratch *scratch)
-{
-	zval *zv = zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL);
-	zval *item;
-	uint32_t n, i;
-	uint64_t *stored;
-
-	if (zv == NULL || EG(exception) != NULL) return false;
-	if (Z_TYPE_P(zv) != IS_ARRAY) {
-		zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
-		return false;
-	}
-	n = zend_hash_num_elements(Z_ARRVAL_P(zv));
-	*count = n;
-	if (n == 0) { *out = NULL; return true; }
-	stored = vulkan_scratch_alloc(scratch, sizeof(uint64_t) * n);
-	i = 0;
-	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), item) {
-		if (Z_TYPE_P(item) != IS_LONG) {
-			zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
-			return false;
-		}
-		stored[i++] = (uint64_t) Z_LVAL_P(item);
-	} ZEND_HASH_FOREACH_END();
-	*out = stored;
-	return true;
-}
-
 bool vk_VkExternalMemoryImageCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkExternalMemoryImageCreateInfo *dst = raw;
@@ -45,6 +17,20 @@ bool vk_VkExportMemoryAllocateInfo_from(zend_object *obj, void *raw, vulkan_scra
 	return vulkan_u32(obj, "handleTypes", &dst->handleTypes);
 }
 void vk_VkExportMemoryAllocateInfo_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkExportMemoryAllocateInfo); }
+
+bool vk_VkMemoryDedicatedAllocateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkMemoryDedicatedAllocateInfo *dst = raw;
+	uint64_t image, buffer;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_handle_prop(obj, "image", vulkan_ce_VkImage, &image) || !vulkan_handle_prop(obj, "buffer", vulkan_ce_VkBuffer, &buffer)) return false;
+	dst->image = (VkImage) (uintptr_t) image;
+	dst->buffer = (VkBuffer) (uintptr_t) buffer;
+	return true;
+}
+void vk_VkMemoryDedicatedAllocateInfo_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkMemoryDedicatedAllocateInfo); }
 
 bool vk_VkMemoryGetFdInfoKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {

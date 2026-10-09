@@ -3,7 +3,15 @@
  * last PHP reference does not destroy the native object.
  */
 
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE /* dladdr() on glibc */
+#endif
 #include "runtime.h"
+
+#include <dlfcn.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
 #include "ext/standard/info.h"
 #include "../stubs/vk_constants_arginfo.h"
 
@@ -134,4 +142,38 @@ ZEND_FUNCTION(vk_write_mapped)
 	}
 
 	memcpy((void *) (uintptr_t) address, ZSTR_VAL(bytes), ZSTR_LEN(bytes));
+}
+
+ZEND_FUNCTION(vk_loader_path)
+{
+	Dl_info info;
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	if (dladdr((const void *) (uintptr_t) vkGetInstanceProcAddr, &info) == 0 || info.dli_fname == NULL) {
+		RETURN_NULL();
+	}
+	RETURN_STRING(info.dli_fname);
+}
+
+ZEND_FUNCTION(vk_close_fd)
+{
+	zend_long fd;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(fd)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (fd < 0 || fd > INT_MAX) {
+		zend_argument_value_error(1, "is not a file descriptor");
+		RETURN_THROWS();
+	}
+	if (close((int) fd) != 0) {
+		if (errno == EBADF) {
+			zend_argument_value_error(1, "is not an open file descriptor");
+		} else {
+			zend_value_error("vk_close_fd(): close() failed: %s", strerror(errno));
+		}
+		RETURN_THROWS();
+	}
 }

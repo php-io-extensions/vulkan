@@ -44,3 +44,19 @@ it('refuses a chain that loops back on itself', function (): void {
 
     vkGetPhysicalDeviceFeatures2($physical, $features);
 })->throws(ValueError::class, 'loops');
+
+it('reads the present id and present wait features through the chain', function (): void {
+    [, $physical] = gpu();
+    $wait = new VkPhysicalDevicePresentWaitFeaturesKHR();
+    $id = new VkPhysicalDevicePresentIdFeaturesKHR();
+    $id->pNext = $wait;
+    $features = new VkPhysicalDeviceFeatures2();
+    $features->pNext = $id;
+
+    vkGetPhysicalDeviceFeatures2($physical, $features);
+
+    vkEnumerateDeviceExtensionProperties($physical, null, $available);
+    $names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
+    expect($id->presentId)->toBe(in_array(VK_KHR_PRESENT_ID_EXTENSION_NAME, $names, true))
+        ->and($wait->presentWait)->toBe(in_array(VK_KHR_PRESENT_WAIT_EXTENSION_NAME, $names, true));
+});

@@ -90,6 +90,7 @@ zend_class_entry *vulkan_ce_VkOffset3D;
 zend_class_entry *vulkan_ce_VkImageSubresourceLayers;
 zend_class_entry *vulkan_ce_VkBufferImageCopy;
 zend_class_entry *vulkan_ce_VkImageBlit;
+zend_class_entry *vulkan_ce_VkMemoryBarrier;
 zend_class_entry *vulkan_ce_VkImageMemoryBarrier;
 zend_class_entry *vulkan_ce_VkSubmitInfo;
 zend_class_entry *vulkan_ce_VkFenceCreateInfo;
@@ -104,10 +105,19 @@ zend_class_entry *vulkan_ce_VkSurfaceFormatKHR;
 zend_class_entry *vulkan_ce_VkSurfaceCapabilitiesKHR;
 zend_class_entry *vulkan_ce_VkSwapchainCreateInfoKHR;
 zend_class_entry *vulkan_ce_VkPresentInfoKHR;
+zend_class_entry *vulkan_ce_VkRectLayerKHR;
+zend_class_entry *vulkan_ce_VkPresentRegionKHR;
+zend_class_entry *vulkan_ce_VkPresentRegionsKHR;
+zend_class_entry *vulkan_ce_VkPresentIdKHR;
+zend_class_entry *vulkan_ce_VkPhysicalDevicePresentIdFeaturesKHR;
+zend_class_entry *vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR;
+zend_class_entry *vulkan_ce_VkXYColorEXT;
+zend_class_entry *vulkan_ce_VkHdrMetadataEXT;
 zend_class_entry *vulkan_ce_VkSurfaceKHR;
 zend_class_entry *vulkan_ce_VkSwapchainKHR;
 zend_class_entry *vulkan_ce_VkExternalMemoryImageCreateInfo;
 zend_class_entry *vulkan_ce_VkExportMemoryAllocateInfo;
+zend_class_entry *vulkan_ce_VkMemoryDedicatedAllocateInfo;
 zend_class_entry *vulkan_ce_VkMemoryGetFdInfoKHR;
 zend_class_entry *vulkan_ce_VkImageDrmFormatModifierListCreateInfoEXT;
 zend_class_entry *vulkan_ce_VkImageDrmFormatModifierPropertiesEXT;
@@ -387,6 +397,7 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkImageSubresourceLayers, sizeof(VkImageSubresourceLayers), vk_VkImageSubresourceLayers_from },
 	{ &vulkan_ce_VkBufferImageCopy, sizeof(VkBufferImageCopy), vk_VkBufferImageCopy_from },
 	{ &vulkan_ce_VkImageBlit, sizeof(VkImageBlit), vk_VkImageBlit_from },
+	{ &vulkan_ce_VkMemoryBarrier, sizeof(VkMemoryBarrier), vk_VkMemoryBarrier_from },
 	{ &vulkan_ce_VkImageMemoryBarrier, sizeof(VkImageMemoryBarrier), vk_VkImageMemoryBarrier_from },
 	{ &vulkan_ce_VkSubmitInfo, sizeof(VkSubmitInfo), vk_VkSubmitInfo_from },
 	{ &vulkan_ce_VkFenceCreateInfo, sizeof(VkFenceCreateInfo), vk_VkFenceCreateInfo_from },
@@ -397,8 +408,14 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkSurfaceCapabilitiesKHR, sizeof(VkSurfaceCapabilitiesKHR), vk_VkSurfaceCapabilitiesKHR_from },
 	{ &vulkan_ce_VkSwapchainCreateInfoKHR, sizeof(VkSwapchainCreateInfoKHR), vk_VkSwapchainCreateInfoKHR_from },
 	{ &vulkan_ce_VkPresentInfoKHR, sizeof(VkPresentInfoKHR), vk_VkPresentInfoKHR_from },
+	{ &vulkan_ce_VkPresentRegionsKHR, sizeof(VkPresentRegionsKHR), vk_VkPresentRegionsKHR_from },
+	{ &vulkan_ce_VkPresentIdKHR, sizeof(VkPresentIdKHR), vk_VkPresentIdKHR_from },
+	{ &vulkan_ce_VkPhysicalDevicePresentIdFeaturesKHR, sizeof(VkPhysicalDevicePresentIdFeaturesKHR), vk_VkPhysicalDevicePresentIdFeaturesKHR_from },
+	{ &vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR, sizeof(VkPhysicalDevicePresentWaitFeaturesKHR), vk_VkPhysicalDevicePresentWaitFeaturesKHR_from },
+	{ &vulkan_ce_VkHdrMetadataEXT, sizeof(VkHdrMetadataEXT), vk_VkHdrMetadataEXT_from },
 	{ &vulkan_ce_VkExternalMemoryImageCreateInfo, sizeof(VkExternalMemoryImageCreateInfo), vk_VkExternalMemoryImageCreateInfo_from },
 	{ &vulkan_ce_VkExportMemoryAllocateInfo, sizeof(VkExportMemoryAllocateInfo), vk_VkExportMemoryAllocateInfo_from },
+	{ &vulkan_ce_VkMemoryDedicatedAllocateInfo, sizeof(VkMemoryDedicatedAllocateInfo), vk_VkMemoryDedicatedAllocateInfo_from },
 	{ &vulkan_ce_VkMemoryGetFdInfoKHR, sizeof(VkMemoryGetFdInfoKHR), vk_VkMemoryGetFdInfoKHR_from },
 	{ &vulkan_ce_VkImageDrmFormatModifierListCreateInfoEXT, sizeof(VkImageDrmFormatModifierListCreateInfoEXT), vk_VkImageDrmFormatModifierListCreateInfoEXT_from },
 	{ &vulkan_ce_VkImageDrmFormatModifierPropertiesEXT, sizeof(VkImageDrmFormatModifierPropertiesEXT), vk_VkImageDrmFormatModifierPropertiesEXT_from },
@@ -862,6 +879,10 @@ void vulkan_store_pnext_chain(zend_object *obj, const void *raw)
 		vulkan_features2_apply(obj, raw);
 	} else if (obj->ce == vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR) {
 		vulkan_portability_apply(obj, raw);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDevicePresentIdFeaturesKHR) {
+		vulkan_set_bool(obj, "presentId", ((const VkPhysicalDevicePresentIdFeaturesKHR *) raw)->presentId == VK_TRUE);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR) {
+		vulkan_set_bool(obj, "presentWait", ((const VkPhysicalDevicePresentWaitFeaturesKHR *) raw)->presentWait == VK_TRUE);
 	}
 
 	next = zend_read_property(obj->ce, obj, "pNext", sizeof("pNext") - 1, 0, NULL);

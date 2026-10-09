@@ -193,6 +193,16 @@ final class VkImageBlit
 }
 
 /** @not-serializable */
+final class VkMemoryBarrier
+{
+    public ?object $pNext = null;
+
+    public int $srcAccessMask = 0;
+
+    public int $dstAccessMask = 0;
+}
+
+/** @not-serializable */
 final class VkImageMemoryBarrier
 {
     public ?object $pNext = null;

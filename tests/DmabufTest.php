@@ -32,6 +32,9 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     vkGetImageMemoryRequirements($device, $image, $requirements);
     $export = new VkExportMemoryAllocateInfo();
     $export->handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+    $dedicated = new VkMemoryDedicatedAllocateInfo();
+    $dedicated->image = $image;
+    $export->pNext = $dedicated;
     $allocate = new VkMemoryAllocateInfo();
     $allocate->pNext = $export;
     $allocate->allocationSize = $requirements->size;
@@ -53,6 +56,15 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     vkGetImageSubresourceLayout($device, $image, $subresource, $layout);
     expect($layout->rowPitch)->toBeGreaterThanOrEqual(64 * 4);
 
-    posix_close($fd);
+    vk_close_fd($fd);
+    expect(fn () => vk_close_fd($fd))->toThrow(ValueError::class, 'is not an open file descriptor');
+
+    vkDestroyImage($device, $image, null);
+    vkFreeMemory($device, $memory, null);
     vkDestroyDevice($device, null);
 })->skip(PHP_OS_FAMILY === 'Darwin', 'dmabuf is Linux only');
+
+it('refuses to close what is not an open descriptor', function (): void {
+    expect(fn () => vk_close_fd(-1))->toThrow(ValueError::class, 'is not a file descriptor')
+        ->and(fn () => vk_close_fd(9999))->toThrow(ValueError::class, 'is not an open file descriptor');
+});

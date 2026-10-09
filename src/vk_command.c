@@ -84,7 +84,12 @@ static bool vulkan_struct_array(zval *list, uint32_t arg_num, const char *what, 
 	i = 0;
 	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(list), item) {
 		zend_hash_clean(&visited);
-		if (Z_TYPE_P(item) != IS_OBJECT || !from(Z_OBJ_P(item), stored + (size_t) i * size, scratch, &visited)) {
+		if (Z_TYPE_P(item) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(item), ce)) {
+			zend_argument_type_error(arg_num, "must be a list of %s", what);
+			zend_hash_destroy(&visited);
+			return false;
+		}
+		if (!from(Z_OBJ_P(item), stored + (size_t) i * size, scratch, &visited)) {
 			zend_hash_destroy(&visited);
 			return false;
 		}
@@ -105,7 +110,7 @@ void vulkan_register_command(int module_number)
 	S(VkCommandPoolCreateInfo); S(VkCommandBufferAllocateInfo); S(VkCommandBufferInheritanceInfo);
 	S(VkCommandBufferBeginInfo); S(VkClearColorValue); S(VkClearDepthStencilValue); S(VkClearValue);
 	S(VkRenderPassBeginInfo); S(VkOffset3D); S(VkImageSubresourceLayers); S(VkBufferImageCopy);
-	S(VkImageBlit); S(VkImageMemoryBarrier); S(VkSubmitInfo); S(VkFenceCreateInfo); S(VkSemaphoreCreateInfo);
+	S(VkImageBlit); S(VkMemoryBarrier); S(VkImageMemoryBarrier); S(VkSubmitInfo); S(VkFenceCreateInfo); S(VkSemaphoreCreateInfo);
 	S(VkClearAttachment); S(VkClearRect);
 #undef H
 #undef S
@@ -461,22 +466,22 @@ ZEND_FUNCTION(vkCmdPipelineBarrier)
 {
 	zval *command, *memory, *buffer_barriers, *image_barriers;
 	zend_long src_stage, dst_stage, flags; uint64_t value;
-	void *images = NULL; uint32_t image_count = 0; vulkan_scratch scratch;
+	void *globals = NULL, *images = NULL; uint32_t global_count = 0, image_count = 0; vulkan_scratch scratch;
 	ZEND_PARSE_PARAMETERS_START(7, 7)
 		Z_PARAM_OBJECT(command) Z_PARAM_LONG(src_stage) Z_PARAM_LONG(dst_stage) Z_PARAM_LONG(flags) Z_PARAM_ZVAL(memory) Z_PARAM_ZVAL(buffer_barriers) Z_PARAM_ZVAL(image_barriers)
 	ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_cmd(command, &value)) RETURN_THROWS();
-	if (Z_TYPE_P(memory) != IS_ARRAY || zend_hash_num_elements(Z_ARRVAL_P(memory)) != 0) {
-		zend_argument_value_error(5, "VkMemoryBarrier is not bound"); RETURN_THROWS();
-	}
 	if (Z_TYPE_P(buffer_barriers) != IS_ARRAY || zend_hash_num_elements(Z_ARRVAL_P(buffer_barriers)) != 0) {
 		zend_argument_value_error(6, "VkBufferMemoryBarrier is not bound"); RETURN_THROWS();
 	}
 	vulkan_scratch_init(&scratch);
+	if (!vulkan_struct_array(memory, 5, "VkMemoryBarrier", vulkan_ce_VkMemoryBarrier, sizeof(VkMemoryBarrier), vk_VkMemoryBarrier_from, &globals, &global_count, &scratch)) {
+		vulkan_scratch_free(&scratch); RETURN_THROWS();
+	}
 	if (!vulkan_struct_array(image_barriers, 7, "VkImageMemoryBarrier", vulkan_ce_VkImageMemoryBarrier, sizeof(VkImageMemoryBarrier), vk_VkImageMemoryBarrier_from, &images, &image_count, &scratch)) {
 		vulkan_scratch_free(&scratch); RETURN_THROWS();
 	}
-	vkCmdPipelineBarrier((VkCommandBuffer) (uintptr_t) value, (VkPipelineStageFlags) src_stage, (VkPipelineStageFlags) dst_stage, (VkDependencyFlags) flags, 0, NULL, 0, NULL, image_count, images);
+	vkCmdPipelineBarrier((VkCommandBuffer) (uintptr_t) value, (VkPipelineStageFlags) src_stage, (VkPipelineStageFlags) dst_stage, (VkDependencyFlags) flags, global_count, globals, 0, NULL, image_count, images);
 	vulkan_scratch_free(&scratch);
 }
 

@@ -447,6 +447,34 @@ static bool vulkan_list(zend_object *obj, const char *name, zval **items, uint32
 	return true;
 }
 
+bool vulkan_u64_list(zend_object *obj, const char *name, const uint64_t **out, uint32_t *count, vulkan_scratch *scratch)
+{
+	zval *zv = zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL);
+	zval *item;
+	uint32_t n, i;
+	uint64_t *stored;
+
+	if (zv == NULL || EG(exception) != NULL) return false;
+	if (Z_TYPE_P(zv) != IS_ARRAY) {
+		zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
+		return false;
+	}
+	n = zend_hash_num_elements(Z_ARRVAL_P(zv));
+	*count = n;
+	if (n == 0) { *out = NULL; return true; }
+	stored = vulkan_scratch_alloc(scratch, sizeof(uint64_t) * n);
+	i = 0;
+	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), item) {
+		if (Z_TYPE_P(item) != IS_LONG) {
+			zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
+			return false;
+		}
+		stored[i++] = (uint64_t) Z_LVAL_P(item);
+	} ZEND_HASH_FOREACH_END();
+	*out = stored;
+	return true;
+}
+
 bool vulkan_u32_list(zend_object *obj, const char *name, const uint32_t **out, uint32_t *count, vulkan_scratch *scratch)
 {
 	zval *items = NULL;

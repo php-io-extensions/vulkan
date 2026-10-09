@@ -5016,6 +5016,12 @@ const VK_API_VERSION_1_3 = UNKNOWN;
 
 /**
  * @var int
+ * @cvalue VK_API_VERSION_1_1
+ */
+const VK_API_VERSION_1_1 = UNKNOWN;
+
+/**
+ * @var int
  * @cvalue VK_WHOLE_SIZE
  */
 const VK_WHOLE_SIZE = UNKNOWN;
@@ -5063,6 +5069,36 @@ const VK_KHR_SWAPCHAIN_EXTENSION_NAME = UNKNOWN;
 
 /**
  * @var string
+ * @cvalue VK_KHR_INCREMENTAL_PRESENT_EXTENSION_NAME
+ */
+const VK_KHR_INCREMENTAL_PRESENT_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_KHR_PRESENT_ID_EXTENSION_NAME
+ */
+const VK_KHR_PRESENT_ID_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_KHR_PRESENT_WAIT_EXTENSION_NAME
+ */
+const VK_KHR_PRESENT_WAIT_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_EXT_HDR_METADATA_EXTENSION_NAME
+ */
+const VK_EXT_HDR_METADATA_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
+ * @cvalue VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME
+ */
+const VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME = UNKNOWN;
+
+/**
+ * @var string
  * @cvalue VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME
  */
 const VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME = UNKNOWN;
@@ -5095,8 +5131,34 @@ const VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME = 'VK_KHR_portability_subset';
  */
 const VK_EXT_METAL_SURFACE_EXTENSION_NAME = 'VK_EXT_metal_surface';
 
+/**
+ * @var string
+ */
+const VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME = 'VK_KHR_wayland_surface';
+
+/**
+ * @var string
+ */
+const VK_KHR_XCB_SURFACE_EXTENSION_NAME = 'VK_KHR_xcb_surface';
+
+/**
+ * @var string
+ */
+const VK_KHR_XLIB_SURFACE_EXTENSION_NAME = 'VK_KHR_xlib_surface';
+
+/**
+ * @var string
+ */
+const VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME = 'VK_KHR_get_physical_device_properties2';
+
 /** An address of 0 is refused. Any other address is trusted. */
 function vk_read_mapped(int $address, int $size): string {}
 
 /** An address of 0 is refused. Any other address is trusted. */
 function vk_write_mapped(int $address, string $bytes): void {}
+
+/** close(2) on a descriptor vkGetMemoryFdKHR handed out. EBADF (not open, or closed already) is a ValueError; another failure is too, naming errno. */
+function vk_close_fd(int $fd): void {}
+
+/** The file the Vulkan loader this extension calls was loaded from (dladdr of vkGetInstanceProcAddr); null when the system cannot say. */
+function vk_loader_path(): ?string {}

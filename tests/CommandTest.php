@@ -24,6 +24,10 @@ it('copies bytes through an image and back with barriers between', function (): 
     vkCmdCopyBufferToImage($cmd, $up, $image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, [$region]);
     vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, [], [], [layoutBarrier($image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT)]);
     vkCmdCopyImageToBuffer($cmd, $image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $down, [$region]);
+    $toHost = new VkMemoryBarrier();
+    $toHost->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    $toHost->dstAccessMask = VK_ACCESS_HOST_READ_BIT;
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, [$toHost], [], []);
     submitAndWait($cmd);
 
     vkMapMemory($device, $downMemory, 0, 64, 0, $address);
@@ -55,4 +59,11 @@ it('signals and resets a fence', function (): void {
         ->and(vkQueueWaitIdle($queue))->toBe(VK_SUCCESS);
 
     vkDestroyFence($device, $fence, null);
+});
+
+it('refuses a global barrier list holding something else, and buffer barriers it does not bind', function (): void {
+    $cmd = commands();
+
+    expect(fn () => vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, [new VkFenceCreateInfo()], [], []))->toThrow(TypeError::class)
+        ->and(fn () => vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, [], [new VkMemoryBarrier()], []))->toThrow(ValueError::class, 'VkBufferMemoryBarrier is not bound');
 });

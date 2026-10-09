@@ -195,6 +195,7 @@ foreach (array_keys($kept) as $name) {
 
 foreach ([
     'VK_API_VERSION_1_3',
+    'VK_API_VERSION_1_1',
     'VK_WHOLE_SIZE',
     'VK_QUEUE_FAMILY_IGNORED',
     'VK_SUBPASS_EXTERNAL',
@@ -213,12 +214,24 @@ foreach ($extensionNames as $name) {
 // These macros live outside vulkan_core.h: portability subset in vulkan_beta.h, metal surface in vulkan_metal.h.
 $emitString('VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME', 'VK_KHR_portability_subset');
 $emitString('VK_EXT_METAL_SURFACE_EXTENSION_NAME', 'VK_EXT_metal_surface');
+// Wayland's lives in vulkan_wayland.h; properties2's is spelled here so every build declares it.
+$emitString('VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME', 'VK_KHR_wayland_surface');
+// X11's live in vulkan_xcb.h and vulkan_xlib.h: spelled here, as Wayland's is.
+$emitString('VK_KHR_XCB_SURFACE_EXTENSION_NAME', 'VK_KHR_xcb_surface');
+$emitString('VK_KHR_XLIB_SURFACE_EXTENSION_NAME', 'VK_KHR_xlib_surface');
+$emitString('VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME', 'VK_KHR_get_physical_device_properties2');
 
 $out[] = '/** An address of 0 is refused. Any other address is trusted. */';
 $out[] = 'function vk_read_mapped(int $address, int $size): string {}';
 $out[] = '';
 $out[] = '/** An address of 0 is refused. Any other address is trusted. */';
 $out[] = 'function vk_write_mapped(int $address, string $bytes): void {}';
+$out[] = '';
+$out[] = '/** close(2) on a descriptor vkGetMemoryFdKHR handed out. EBADF (not open, or closed already) is a ValueError; another failure is too, naming errno. */';
+$out[] = 'function vk_close_fd(int $fd): void {}';
+$out[] = '';
+$out[] = '/** The file the Vulkan loader this extension calls was loaded from (dladdr of vkGetInstanceProcAddr); null when the system cannot say. */';
+$out[] = 'function vk_loader_path(): ?string {}';
 $out[] = '';
 
 $target = dirname(__DIR__) . '/stubs/vk_constants.stub.php';

@@ -19,6 +19,16 @@ final class VkExportMemoryAllocateInfo
 }
 
 /** @not-serializable */
+final class VkMemoryDedicatedAllocateInfo
+{
+    public ?object $pNext = null;
+
+    public ?VkImage $image = null;
+
+    public ?VkBuffer $buffer = null;
+}
+
+/** @not-serializable */
 final class VkMemoryGetFdInfoKHR
 {
     public ?object $pNext = null;

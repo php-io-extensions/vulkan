@@ -172,6 +172,17 @@ bool vk_VkImageBlit_from(zend_object *obj, void *raw, vulkan_scratch *scratch, H
 }
 void vk_VkImageBlit_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkImageBlit); }
 
+bool vk_VkMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkMemoryBarrier *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	return vulkan_u32(obj, "srcAccessMask", &dst->srcAccessMask)
+		&& vulkan_u32(obj, "dstAccessMask", &dst->dstAccessMask);
+}
+void vk_VkMemoryBarrier_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkMemoryBarrier); }
+
 bool vk_VkImageMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkImageMemoryBarrier *dst = raw;

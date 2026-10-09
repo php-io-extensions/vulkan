@@ -19,6 +19,22 @@ ZEND_METHOD(VkSwapchainCreateInfoKHR, __construct)
 	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageExtent", vulkan_ce_VkExtent2D);
 }
 
+ZEND_METHOD(VkRectLayerKHR, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "offset", vulkan_ce_VkOffset2D);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "extent", vulkan_ce_VkExtent2D);
+}
+
+ZEND_METHOD(VkHdrMetadataEXT, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "displayPrimaryRed", vulkan_ce_VkXYColorEXT);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "displayPrimaryGreen", vulkan_ce_VkXYColorEXT);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "displayPrimaryBlue", vulkan_ce_VkXYColorEXT);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "whitePoint", vulkan_ce_VkXYColorEXT);
+}
+
 static bool vulkan_in(zval *zv, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch)
 {
 	HashTable visited;
@@ -67,6 +83,22 @@ void vulkan_register_surface(int module_number)
 	vulkan_struct_setup(vulkan_ce_VkSwapchainCreateInfoKHR);
 	vulkan_ce_VkPresentInfoKHR = register_class_VkPresentInfoKHR();
 	vulkan_struct_setup(vulkan_ce_VkPresentInfoKHR);
+	vulkan_ce_VkRectLayerKHR = register_class_VkRectLayerKHR();
+	vulkan_struct_setup(vulkan_ce_VkRectLayerKHR);
+	vulkan_ce_VkPresentRegionKHR = register_class_VkPresentRegionKHR();
+	vulkan_struct_setup(vulkan_ce_VkPresentRegionKHR);
+	vulkan_ce_VkPresentRegionsKHR = register_class_VkPresentRegionsKHR();
+	vulkan_struct_setup(vulkan_ce_VkPresentRegionsKHR);
+	vulkan_ce_VkPresentIdKHR = register_class_VkPresentIdKHR();
+	vulkan_struct_setup(vulkan_ce_VkPresentIdKHR);
+	vulkan_ce_VkPhysicalDevicePresentIdFeaturesKHR = register_class_VkPhysicalDevicePresentIdFeaturesKHR();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDevicePresentIdFeaturesKHR);
+	vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR = register_class_VkPhysicalDevicePresentWaitFeaturesKHR();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR);
+	vulkan_ce_VkXYColorEXT = register_class_VkXYColorEXT();
+	vulkan_struct_setup(vulkan_ce_VkXYColorEXT);
+	vulkan_ce_VkHdrMetadataEXT = register_class_VkHdrMetadataEXT();
+	vulkan_struct_setup(vulkan_ce_VkHdrMetadataEXT);
 }
 
 ZEND_FUNCTION(vkGetPhysicalDeviceSurfaceSupportKHR)
@@ -281,4 +313,58 @@ ZEND_FUNCTION(vkDestroySurfaceKHR)
 	if (!vulkan_handle_value(instance, vulkan_ce_VkInstance, 1, &instance_value) || !vulkan_handle_value(surface, vulkan_ce_VkSurfaceKHR, 2, &surface_value)) RETURN_THROWS();
 	vkDestroySurfaceKHR((VkInstance) (uintptr_t) instance_value, (VkSurfaceKHR) (uintptr_t) surface_value, NULL);
 	vulkan_release_tree(Z_OBJ_P(surface));
+}
+
+ZEND_FUNCTION(vkWaitForPresentKHR)
+{
+	zval *device, *swapchain;
+	zend_long present_id, timeout;
+	uint64_t device_value, swapchain_value;
+	PFN_vkWaitForPresentKHR wait;
+
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(swapchain) Z_PARAM_LONG(present_id) Z_PARAM_LONG(timeout) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || !vulkan_handle_value(swapchain, vulkan_ce_VkSwapchainKHR, 2, &swapchain_value)) RETURN_THROWS();
+	wait = (PFN_vkWaitForPresentKHR) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkWaitForPresentKHR");
+	if (wait == NULL) {
+		RETURN_LONG((zend_long) VK_ERROR_EXTENSION_NOT_PRESENT);
+	}
+	RETURN_LONG((zend_long) wait((VkDevice) (uintptr_t) device_value, (VkSwapchainKHR) (uintptr_t) swapchain_value, (uint64_t) present_id, (uint64_t) timeout));
+}
+
+ZEND_FUNCTION(vkSetHdrMetadataEXT)
+{
+	zval *device, *item;
+	HashTable *swapchains, *metadata;
+	uint64_t device_value, handle;
+	PFN_vkSetHdrMetadataEXT set;
+	VkSwapchainKHR *chains;
+	VkHdrMetadataEXT *metas;
+	vulkan_scratch scratch;
+	uint32_t count, i = 0;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(device) Z_PARAM_ARRAY_HT(swapchains) Z_PARAM_ARRAY_HT(metadata) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
+	count = zend_hash_num_elements(swapchains);
+	if (count != zend_hash_num_elements(metadata)) {
+		zend_argument_value_error(3, "must hold one VkHdrMetadataEXT per swapchain");
+		RETURN_THROWS();
+	}
+	set = (PFN_vkSetHdrMetadataEXT) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkSetHdrMetadataEXT");
+	if (set == NULL) {
+		RETURN_FALSE;
+	}
+	vulkan_scratch_init(&scratch);
+	chains = vulkan_scratch_alloc(&scratch, sizeof(VkSwapchainKHR) * (count ? count : 1));
+	metas = vulkan_scratch_alloc(&scratch, sizeof(VkHdrMetadataEXT) * (count ? count : 1));
+	ZEND_HASH_FOREACH_VAL(swapchains, item) {
+		if (!vulkan_handle_value(item, vulkan_ce_VkSwapchainKHR, 2, &handle)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+		chains[i++] = (VkSwapchainKHR) (uintptr_t) handle;
+	} ZEND_HASH_FOREACH_END();
+	i = 0;
+	ZEND_HASH_FOREACH_VAL(metadata, item) {
+		if (!vulkan_in(item, vulkan_ce_VkHdrMetadataEXT, vk_VkHdrMetadataEXT_from, &metas[i++], &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+	} ZEND_HASH_FOREACH_END();
+	set((VkDevice) (uintptr_t) device_value, count, chains, metas);
+	vulkan_scratch_free(&scratch);
+	RETURN_TRUE;
 }

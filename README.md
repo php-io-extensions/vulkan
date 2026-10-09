@@ -66,10 +66,20 @@ Bindings are 1:1. There are no defaults and no composites. The only translations
   `vk_write_mapped(int $address, string $bytes): void`. Address 0 is refused.
   Any other address is trusted. `vkFlushMappedMemoryRanges` and
   `vkInvalidateMappedMemoryRanges` are what make non-coherent memory correct.
+- `vkGetMemoryFdKHR` hands out a file descriptor the caller owns.
+  `vk_close_fd(int $fd): void` closes it; a descriptor that is not open (closed
+  already) is a `ValueError`.
+- `vk_loader_path(): ?string` names the file the Vulkan loader this extension
+  calls was loaded from (`dladdr` of `vkGetInstanceProcAddr`), so another
+  library that loads a loader itself (Qt's `QVulkanInstance`) can be pointed at
+  the same one.
+- `VkMemoryDedicatedAllocateInfo` chains on `VkMemoryAllocateInfo`: an
+  exported image allocated dedicated works on drivers that require it.
 
-`VkCopyDescriptorSet`, `VkMemoryBarrier`, and `VkBufferMemoryBarrier` are not
-bound. `vkUpdateDescriptorSets` refuses a non-empty copy list.
-`vkCmdPipelineBarrier` refuses a non-empty memory-barrier or buffer-barrier list.
+`VkCopyDescriptorSet` and `VkBufferMemoryBarrier` are not bound.
+`vkUpdateDescriptorSets` refuses a non-empty copy list. `vkCmdPipelineBarrier`
+takes `VkMemoryBarrier`s and `VkImageMemoryBarrier`s and refuses a non-empty
+buffer-barrier list; a list holding another class is a `TypeError`.
 
 ## Handles and parents
 

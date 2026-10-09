@@ -19,7 +19,7 @@ sources:
 | Memory | `src/vk_memory.c` | `VkDeviceMemory`, `VkBuffer`, `VkImage`, `VkImageView`, `VkSampler`; allocate, map, flush, invalidate, bind |
 | Pipelines | `src/vk_pipeline.c` | render passes, framebuffers, shader modules, graphics pipelines, descriptor layouts, pools, sets, writes |
 | Commands | `src/vk_command.c` | command pools and buffers, draw and copy and blit, barriers, submit, fences, semaphores |
-| Surfaces | `src/vk_surface.c` | `VkSurfaceKHR`, `VkSwapchainKHR`; capabilities, formats, present modes, acquire, present |
+| Surfaces | `src/vk_surface.c` | `VkSurfaceKHR`, `VkSwapchainKHR`; capabilities, formats, present modes, acquire, present; `VkPresentRegionsKHR` / `VkPresentRegionKHR` / `VkRectLayerKHR` (incremental present), `VkPresentIdKHR` and `vkWaitForPresentKHR` (present wait, `VK_ERROR_EXTENSION_NOT_PRESENT` without it), `VkPhysicalDevicePresentIdFeaturesKHR` / `PresentWaitFeaturesKHR` (written back by `vkGetPhysicalDeviceFeatures2`), `VkHdrMetadataEXT` / `VkXYColorEXT` and `vkSetHdrMetadataEXT` (false without the extension) |
 | Metal surface | `src/vk_metal.c` | `vkCreateMetalSurfaceEXT`, macOS only, loaded with `vkGetInstanceProcAddr` |
 | dmabuf | `src/vk_external.c` | `vkGetMemoryFdKHR`, `vkGetImageDrmFormatModifierPropertiesEXT` via `vkGetDeviceProcAddr`; `vkGetImageSubresourceLayout` |
 

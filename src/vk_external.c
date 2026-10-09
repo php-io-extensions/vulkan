@@ -24,6 +24,8 @@ void vulkan_register_external(int module_number)
 	vulkan_struct_setup(vulkan_ce_VkExternalMemoryImageCreateInfo);
 	vulkan_ce_VkExportMemoryAllocateInfo = register_class_VkExportMemoryAllocateInfo();
 	vulkan_struct_setup(vulkan_ce_VkExportMemoryAllocateInfo);
+	vulkan_ce_VkMemoryDedicatedAllocateInfo = register_class_VkMemoryDedicatedAllocateInfo();
+	vulkan_struct_setup(vulkan_ce_VkMemoryDedicatedAllocateInfo);
 	vulkan_ce_VkMemoryGetFdInfoKHR = register_class_VkMemoryGetFdInfoKHR();
 	vulkan_struct_setup(vulkan_ce_VkMemoryGetFdInfoKHR);
 	vulkan_ce_VkImageDrmFormatModifierListCreateInfoEXT = register_class_VkImageDrmFormatModifierListCreateInfoEXT();

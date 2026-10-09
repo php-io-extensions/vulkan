@@ -111,3 +111,86 @@ bool vk_VkPresentInfoKHR_from(zend_object *obj, void *raw, vulkan_scratch *scrat
 	return true;
 }
 void vk_VkPresentInfoKHR_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkPresentInfoKHR); }
+
+bool vk_VkRectLayerKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkRectLayerKHR *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_struct_value(obj, "offset", vulkan_ce_VkOffset2D, vk_VkOffset2D_from, &dst->offset, scratch, visited)) return false;
+	if (!vulkan_struct_value(obj, "extent", vulkan_ce_VkExtent2D, vk_VkExtent2D_from, &dst->extent, scratch, visited)) return false;
+	return vulkan_u32(obj, "layer", &dst->layer);
+}
+
+bool vk_VkPresentRegionKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPresentRegionKHR *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	if (!vulkan_enter(obj, visited)) return false;
+	return vulkan_struct_list(obj, "pRectangles", vulkan_ce_VkRectLayerKHR, sizeof(VkRectLayerKHR), vk_VkRectLayerKHR_from, (void **) &dst->pRectangles, &dst->rectangleCount, scratch, visited);
+}
+
+bool vk_VkPresentRegionsKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPresentRegionsKHR *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	return vulkan_struct_list(obj, "pRegions", vulkan_ce_VkPresentRegionKHR, sizeof(VkPresentRegionKHR), vk_VkPresentRegionKHR_from, (void **) &dst->pRegions, &dst->swapchainCount, scratch, visited);
+}
+
+bool vk_VkPresentIdKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPresentIdKHR *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PRESENT_ID_KHR;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	return vulkan_u64_list(obj, "pPresentIds", &dst->pPresentIds, &dst->swapchainCount, scratch);
+}
+
+bool vk_VkPhysicalDevicePresentIdFeaturesKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDevicePresentIdFeaturesKHR *dst = raw;
+	const void *next = NULL;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_ID_FEATURES_KHR;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &next, scratch, visited)) return false;
+	dst->pNext = (void *) next;
+	return vulkan_bool32(obj, "presentId", &dst->presentId);
+}
+
+bool vk_VkPhysicalDevicePresentWaitFeaturesKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDevicePresentWaitFeaturesKHR *dst = raw;
+	const void *next = NULL;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_WAIT_FEATURES_KHR;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &next, scratch, visited)) return false;
+	dst->pNext = (void *) next;
+	return vulkan_bool32(obj, "presentWait", &dst->presentWait);
+}
+
+bool vk_VkXYColorEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkXYColorEXT *dst = raw;
+	(void) scratch;
+	memset(dst, 0, sizeof(*dst));
+	if (!vulkan_enter(obj, visited)) return false;
+	return vulkan_float(obj, "x", &dst->x) && vulkan_float(obj, "y", &dst->y);
+}
+
+bool vk_VkHdrMetadataEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkHdrMetadataEXT *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_HDR_METADATA_EXT;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	return vulkan_struct_value(obj, "displayPrimaryRed", vulkan_ce_VkXYColorEXT, vk_VkXYColorEXT_from, &dst->displayPrimaryRed, scratch, visited)
+		&& vulkan_struct_value(obj, "displayPrimaryGreen", vulkan_ce_VkXYColorEXT, vk_VkXYColorEXT_from, &dst->displayPrimaryGreen, scratch, visited)
+		&& vulkan_struct_value(obj, "displayPrimaryBlue", vulkan_ce_VkXYColorEXT, vk_VkXYColorEXT_from, &dst->displayPrimaryBlue, scratch, visited)
+		&& vulkan_struct_value(obj, "whitePoint", vulkan_ce_VkXYColorEXT, vk_VkXYColorEXT_from, &dst->whitePoint, scratch, visited)
+		&& vulkan_float(obj, "maxLuminance", &dst->maxLuminance)
+		&& vulkan_float(obj, "minLuminance", &dst->minLuminance)
+		&& vulkan_float(obj, "maxContentLightLevel", &dst->maxContentLightLevel)
+		&& vulkan_float(obj, "maxFrameAverageLightLevel", &dst->maxFrameAverageLightLevel);
+}

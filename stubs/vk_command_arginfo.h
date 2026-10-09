@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: d1dd22e7880d90f5a32100646e05c9f0ba0626ff */
+ * Stub hash: b1a301d5307767b09c776f97505e127ca9fbc1e9 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateCommandPool, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -839,6 +839,34 @@ static zend_class_entry *register_class_VkImageBlit(void)
 	zend_string *property_dstOffsets_name = zend_string_init("dstOffsets", sizeof("dstOffsets") - 1, 1);
 	zend_declare_typed_property(class_entry, property_dstOffsets_name, &property_dstOffsets_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
 	zend_string_release(property_dstOffsets_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkMemoryBarrier(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkMemoryBarrier", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_srcAccessMask_default_value;
+	ZVAL_LONG(&property_srcAccessMask_default_value, 0);
+	zend_string *property_srcAccessMask_name = zend_string_init("srcAccessMask", sizeof("srcAccessMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_srcAccessMask_name, &property_srcAccessMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_srcAccessMask_name);
+
+	zval property_dstAccessMask_default_value;
+	ZVAL_LONG(&property_dstAccessMask_default_value, 0);
+	zend_string *property_dstAccessMask_name = zend_string_init("dstAccessMask", sizeof("dstAccessMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dstAccessMask_name, &property_dstAccessMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dstAccessMask_name);
 
 	return class_entry;
 }

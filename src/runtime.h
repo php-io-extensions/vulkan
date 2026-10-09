@@ -67,6 +67,7 @@ bool vulkan_bool32(zend_object *obj, const char *name, VkBool32 *out);
 bool vulkan_cstring(zend_object *obj, const char *name, const char **out);
 bool vulkan_bytes_from(zend_object *obj, const char *name, void *dst, size_t size);
 bool vulkan_char_array_from(zend_object *obj, const char *name, char *dst, size_t size);
+bool vulkan_u64_list(zend_object *obj, const char *name, const uint64_t **out, uint32_t *count, vulkan_scratch *scratch);
 bool vulkan_u32_list(zend_object *obj, const char *name, const uint32_t **out, uint32_t *count, vulkan_scratch *scratch);
 bool vulkan_i32_list(zend_object *obj, const char *name, const int32_t **out, uint32_t *count, vulkan_scratch *scratch);
 bool vulkan_float_list(zend_object *obj, const char *name, const float **out, uint32_t *count, vulkan_scratch *scratch);
