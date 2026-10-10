@@ -1,5 +1,9 @@
 # Log
 
+## 2026-10-09
+
+* `extra.venusian.system` in composer.json: the apt packages `venusian build` installs to compile the extension, the run-time packages a `.deb` carrying it depends on or recommends beyond what `dpkg-shlibdeps` sees, and the Homebrew packages for a dev install.
+
 ## 2026-10-08
 
 Staged-window presentation: incremental present regions, present id and `vkWaitForPresentKHR`, the present id / wait feature structs, HDR metadata, and the five extension-name constants. `vulkan_u64_list` moved to the runtime. Suite: Homebrew php@8.4 NTS and ZTS 28 passed, 3 skipped; Pi (V3DV) 30 passed, 1 skipped, the present with regions, id and wait included.

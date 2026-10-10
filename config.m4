@@ -7,6 +7,16 @@ if test "$PHP_VULKAN" != "no"; then
   PKG_CHECK_MODULES([VULKAN], [vulkan >= 1.3])
   PHP_EVAL_INCLINE([$VULKAN_CFLAGS])
   PHP_EVAL_LIBLINE([$VULKAN_LIBS], [VULKAN_SHARED_LIBADD])
+  dnl Compiled into PHP, the flags PHP_EVAL_LIBLINE drops (a static library's -framework
+  dnl pairs and -Wl, flags on macOS) join PHP's program link line.
+  if test "$ext_shared" != "yes"; then
+    for vulkan_flag in $VULKAN_LIBS; do
+      case $vulkan_flag in
+        -l*|-L*|-pthread) ;;
+        *) EXTRA_LDFLAGS_PROGRAM="$EXTRA_LDFLAGS_PROGRAM $vulkan_flag" ;;
+      esac
+    done
+  fi
 
   VULKAN_SOURCES="src/vulkan.c src/runtime.c src/structs.c src/vk_instance.c src/vk_memory.c src/vk_pipeline.c src/vk_command.c src/vk_surface.c src/vk_external.c"
   VULKAN_CFLAGS_EXTRA="-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1"

@@ -20,6 +20,7 @@ final class. Each struct is a final class whose properties are the C members.
   Linux-only.
 - The measured Pi is Mesa 26.2 V3DV, Vulkan headers 1.4.309, API 1.3. The Mac
   headers measured here are 1.4.357.
+- `venusian build` reads the system packages from `extra.venusian.system` in composer.json: apt packages to build with and the run-time ones a `.deb` depends on or recommends, and the Homebrew ones.
 
 ## Install
 

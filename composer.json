@@ -29,6 +29,25 @@
     "extra": {
         "branch-alias": {
             "dev-main": "0.10.x-dev"
+        },
+        "venusian": {
+            "system": {
+                "apt": {
+                    "build": [
+                        "libvulkan-dev"
+                    ],
+                    "recommends": [
+                        "mesa-vulkan-drivers"
+                    ]
+                },
+                "brew": {
+                    "build": [
+                        "vulkan-loader",
+                        "vulkan-headers",
+                        "molten-vk"
+                    ]
+                }
+            }
         }
     },
     "php-ext": {
