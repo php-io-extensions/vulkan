@@ -6,6 +6,23 @@ PHP_ARG_ENABLE([vulkan],
 if test "$PHP_VULKAN" != "no"; then
   PKG_CHECK_MODULES([VULKAN], [vulkan >= 1.3])
   PHP_EVAL_INCLINE([$VULKAN_CFLAGS])
+
+  dnl stubs/vk_constants.stub.php is generated from vulkan_core.h header 309 (1.4.309): an
+  dnl older header lacks enumerators the constants table names, and vulkan.pc only reports the
+  dnl loader's version, so the header is checked on its own.
+  vulkan_saved_CPPFLAGS=$CPPFLAGS
+  CPPFLAGS="$CPPFLAGS $VULKAN_CFLAGS"
+  AC_MSG_CHECKING([for Vulkan header 309 (1.4.309) or newer])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <vulkan/vulkan.h>
+#if VK_HEADER_VERSION < 309
+#error Vulkan header older than 309
+#endif
+  ]], [[]])],
+    [AC_MSG_RESULT([yes])],
+    [AC_MSG_RESULT([no])
+     AC_MSG_ERROR([ext-vulkan needs Vulkan headers 1.4.309 or newer: Debian Trixie libvulkan-dev, Homebrew vulkan-headers, or KhronosGroup/Vulkan-Headers installed over an older distribution header])])
+  CPPFLAGS=$vulkan_saved_CPPFLAGS
   PHP_EVAL_LIBLINE([$VULKAN_LIBS], [VULKAN_SHARED_LIBADD])
   dnl Compiled into PHP, the flags PHP_EVAL_LIBLINE drops (a static library's -framework
   dnl pairs and -Wl, flags on macOS) join PHP's program link line.

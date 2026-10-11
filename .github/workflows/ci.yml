@@ -28,11 +28,16 @@ jobs:
           phpts: ${{ matrix.ts == 'zts' && 'ts' || 'nts' }}
 
       - name: Install Vulkan (Linux)
+        # Ubuntu 24.04 ships headers 1.3.275 and the constants table is generated from 1.4.309,
+        # so the Khronos headers go in over the distribution's; the loader stays apt's.
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            pkg-config libvulkan-dev
+            pkg-config cmake libvulkan-dev
+          curl -fsSL https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.4.309.tar.gz | tar -xz -C /tmp
+          cmake -S /tmp/Vulkan-Headers-1.4.309 -B /tmp/vulkan-headers-build
+          sudo cmake --install /tmp/vulkan-headers-build
 
       - name: Install Vulkan (macOS)
         if: runner.os == 'macOS'
