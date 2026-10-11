@@ -1,5 +1,7 @@
 # ext-vulkan
 
+[![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/vulkan/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/vulkan/actions/workflows/ci.yml)
+
 1:1 PHP bindings of Vulkan: instance and device, memory, images, buffers, render
 passes, pipelines, descriptors, commands, sync, surfaces and swapchains, and the
 Linux dmabuf export GTK needs. Written in C against the Zend API and
