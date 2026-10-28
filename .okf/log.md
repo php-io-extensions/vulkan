@@ -1,8 +1,12 @@
 # Log
 
+## 2026-10-28
+
+* **Version**: 0.11.0 in `PHP_VULKAN_VERSION` (`php_vulkan.h`), `AGENTS.md`, README and the index; `branch-alias` `dev-main` is `0.11.x-dev`. Promoted with the Venusian 0.11 ecosystem. No API or behaviour change. Built and loaded on Homebrew PHP 8.4 NTS and ZTS (28 passed, 3 skipped each) and the Pi on 8.4 ZTS (30 passed, 1 skipped).
+* **Open — older Vulkan headers**: an x86_64 Ubuntu-family box's distribution headers are older than 1.4.309, so `configure` refuses and 0.7.1 stays installed there until newer headers (KhronosGroup/Vulkan-Headers) are installed.
+
 ## 2026-10-09
 
-* `extra.venusian.system` in composer.json: the apt packages `venusian build` installs to compile the extension, the run-time packages a `.deb` carrying it depends on or recommends beyond what `dpkg-shlibdeps` sees, and the Homebrew packages for a dev install.
 
 ## 2026-10-08
 

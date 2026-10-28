@@ -6,9 +6,6 @@ tags: [vulkan, handles, lifetime]
 status: draft
 generated: { by: grok/4.7, at: 2026-10-05T09:30:00-04:00 }
 sources:
-  - id: plan
-    resource: /docs/superpowers/plans/2026-10-05-slice-4-ext-vulkan.md
-    title: Slice 4 plan
   - id: runtime
     resource: src/runtime.c
     title: Identity table and release tree
@@ -34,7 +31,6 @@ Dropping the last PHP reference does not destroy the native object. The child ho
 | `vkFreeMemory`, `vkDestroyBuffer`, `vkDestroyImage`, and the other `vkDestroy*` | that handle |
 | `vkDestroySurfaceKHR` | that surface, including one that entered through `fromPointer` |
 
-Swapchain images are parented to the swapchain. PHP does not call `vkDestroyImage` on them. A surface made by SDL enters through `VkSurfaceKHR::fromPointer()` with no parent, so only `vkDestroySurfaceKHR` releases it.[^plan]
+Swapchain images are parented to the swapchain. PHP does not call `vkDestroyImage` on them. A surface made by SDL enters through `VkSurfaceKHR::fromPointer()` with no parent, so only `vkDestroySurfaceKHR` releases it.[^runtime]
 
 [^runtime]: `src/runtime.c` boxes by class and value, and walks parent pointers.
-[^plan]: Slice 4 plan, handle rules and the swapchain test.

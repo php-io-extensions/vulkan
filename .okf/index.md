@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # ext-vulkan
 
-1:1 PHP bindings of Vulkan 1.3 as exposed by the system loader. Version 0.10.0.
+1:1 PHP bindings of Vulkan 1.3 as exposed by the system loader. Version 0.11.0.
 
 # API
 

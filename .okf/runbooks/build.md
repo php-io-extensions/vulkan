@@ -6,9 +6,9 @@ tags: [vulkan, build, pi, macos]
 status: draft
 generated: { by: grok/4.7, at: 2026-10-05T09:30:00-04:00 }
 sources:
-  - id: plan
-    resource: /docs/superpowers/plans/2026-10-05-slice-4-ext-vulkan.md
-    title: Slice 4 plan
+  - id: installers
+    resource: install-macos.sh
+    title: install-macos.sh and install-debian-trixie.sh
 ---
 
 # Measured 2026-10-05

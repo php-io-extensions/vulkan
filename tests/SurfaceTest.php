@@ -62,5 +62,5 @@ it('exposes every class, method, function and constant the stubs declare', funct
 });
 
 it('reports its version', function (): void {
-    expect(phpversion('vulkan'))->toBe('0.10.0');
+    expect(phpversion('vulkan'))->toBe('0.11.0');
 });

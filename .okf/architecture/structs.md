@@ -6,9 +6,9 @@ tags: [vulkan, structs, pnext]
 status: draft
 generated: { by: grok/4.7, at: 2026-10-05T09:30:00-04:00 }
 sources:
-  - id: plan
-    resource: /docs/superpowers/plans/2026-10-05-slice-4-ext-vulkan.md
-    title: Slice 4 plan
+  - id: structs
+    resource: src/structs.c
+    title: struct marshalling and pNext chains
 ---
 
 # Translations
@@ -17,7 +17,7 @@ Properties are the C members. `sType` is not a property; each `vk_<Struct>_from`
 
 `pAllocator` parameters are typed `null`.
 
-`pNext` is `?object`. The binding links the chain and records each object before it recurses. Seeing an object already on the chain throws `ValueError` "pNext chain loops". A known struct of the wrong kind for its parent is still linked. The same struct object may appear twice in a list; that is not a `pNext` cycle. `VkRenderPassBeginInfo` passes the same clear colour twice.[^plan]
+`pNext` is `?object`. The binding links the chain and records each object before it recurses. Seeing an object already on the chain throws `ValueError` "pNext chain loops". A known struct of the wrong kind for its parent is still linked. The same struct object may appear twice in a list; that is not a `pNext` cycle. `VkRenderPassBeginInfo` passes the same clear colour twice.[^structs]
 
 `vkGetPhysicalDeviceFeatures2` is the output form of that chain. The caller passes a `VkPhysicalDeviceFeatures2` and the binding writes the driver's answers back onto that object and onto each object already linked from `pNext`. It does not replace those objects, and it leaves each `pNext` link as the caller set it. On a driver that does not recognise `VkPhysicalDevicePortabilitySubsetFeaturesKHR`, the chained object stays at the values the caller put there.
 
@@ -29,4 +29,4 @@ Scratch allocations live until the Vulkan call returns, then they are freed. SPI
 
 `VkCopyDescriptorSet`, `VkMemoryBarrier`, and `VkBufferMemoryBarrier` are not bound. A non-empty list of those is refused and the message names the struct.
 
-[^plan]: Slice 4 plan, global constraints and the clear-value rule.
+[^structs]: struct marshalling and pNext chains

@@ -6,9 +6,9 @@ tags: [vulkan, api]
 status: draft
 generated: { by: grok/4.7, at: 2026-10-05T09:30:00-04:00 }
 sources:
-  - id: plan
-    resource: /docs/superpowers/plans/2026-10-05-slice-4-ext-vulkan.md
-    title: Slice 4 plan
+  - id: stubs
+    resource: stubs/
+    title: Stub files
 ---
 
 # Groups

@@ -6,7 +6,7 @@
 passes, pipelines, descriptors, commands, sync, surfaces and swapchains, and the
 Linux dmabuf export GTK needs. Written in C against the Zend API and
 `<vulkan/vulkan.h>`, linked to the system Vulkan loader. PHP 8.4+, NTS and ZTS.
-Version 0.10.0.
+Version 0.11.0.
 
 Functions are global PHP functions under their C names. Enums and flags are PHP
 constants under their C names, values taken from the headers. Each handle is a
@@ -22,8 +22,6 @@ final class. Each struct is a final class whose properties are the C members.
   Linux-only.
 - The measured Pi is Mesa 26.2 V3DV, Vulkan headers 1.4.309, API 1.3. The Mac
   headers measured here are 1.4.357.
-- `venusian build` reads the system packages from `extra.venusian.system` in composer.json: apt packages to build with and the run-time ones a `.deb` depends on or recommends, and the Homebrew ones.
-
 ## Install
 
 Through PIE:
