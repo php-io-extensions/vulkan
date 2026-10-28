@@ -4,6 +4,7 @@
 
 * **Version**: 0.11.0 in `PHP_VULKAN_VERSION` (`php_vulkan.h`), `AGENTS.md`, README and the index; `branch-alias` `dev-main` is `0.11.x-dev`. Promoted with the Venusian 0.11 ecosystem. No API or behaviour change. Built and loaded on Homebrew PHP 8.4 NTS and ZTS (28 passed, 3 skipped each) and the Pi on 8.4 ZTS (30 passed, 1 skipped).
 * **Open — older Vulkan headers**: an x86_64 Ubuntu-family box's distribution headers are older than 1.4.309, so `configure` refuses and 0.7.1 stays installed there until newer headers (KhronosGroup/Vulkan-Headers) are installed.
+* **Coverage**: `scripts/support.php` writes `SUPPORT.md` and the README's API badge: every command of vk.xml at Vulkan-Headers v1.4.309 (the floor) that a core version or a supported, not deprecated or obsoleted extension requires for the `vulkan` API, grouped under the first that requires it; alias commands and Vulkan SC only commands are not counted. Bound when a stub declares the function of the same name. vk.xml downloads once into `scripts/.support-cache/` (gitignored); `--check` exits 1 when the list or badge is stale. 97 / 605 (16.0%).
 
 ## 2026-10-09
 

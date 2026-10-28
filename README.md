@@ -1,6 +1,7 @@
 # ext-vulkan
 
 [![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/vulkan/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/vulkan/actions/workflows/ci.yml)
+[![Vulkan API](https://img.shields.io/badge/Vulkan_API-16.0%25_%2897%2F605%29-blue?style=flat-square)](SUPPORT.md)
 
 1:1 PHP bindings of Vulkan: instance and device, memory, images, buffers, render
 passes, pipelines, descriptors, commands, sync, surfaces and swapchains, and the
@@ -143,6 +144,18 @@ $deviceNames = array_map(fn (VkExtensionProperties $e): string => $e->extensionN
 if (in_array(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, $deviceNames, true)) {
     $deviceInfo->enabledExtensionNames[] = VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME;
 }
+```
+
+## Coverage
+
+[SUPPORT.md](SUPPORT.md) lists every command of the Vulkan 1.4.309 registry, the header floor this
+extension builds against: core 1.0 to 1.4 and every supported extension that is not deprecated or
+obsoleted, aliases not counted twice, each marked bound or not; the API badge is computed from it.
+Regenerate both after a binding change, and check them:
+
+```bash
+php84 scripts/support.php           # writes SUPPORT.md and the badge
+php84 scripts/support.php --check   # exits 1 when either is stale
 ```
 
 ## Example
