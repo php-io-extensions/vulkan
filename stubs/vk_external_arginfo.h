@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 2d6e0527b8c45b8c261a884483310c1c4792b346 */
+ * Stub hash: 2fd6e4ae801b7928b3d42c44b29e57eca0eda4c1 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetMemoryFdKHR, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -146,6 +146,12 @@ static zend_class_entry *register_class_VkImageDrmFormatModifierListCreateInfoEX
 	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
 	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
 	zend_string_release(property_pNext_name);
+
+	zval property_drmFormatModifierCount_default_value;
+	ZVAL_LONG(&property_drmFormatModifierCount_default_value, 0);
+	zend_string *property_drmFormatModifierCount_name = zend_string_init("drmFormatModifierCount", sizeof("drmFormatModifierCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_drmFormatModifierCount_name, &property_drmFormatModifierCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_drmFormatModifierCount_name);
 
 	zval property_pDrmFormatModifiers_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pDrmFormatModifiers_default_value);

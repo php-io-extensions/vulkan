@@ -11,7 +11,7 @@ final class VkDeviceMemory
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -23,7 +23,7 @@ final class VkBuffer
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -35,7 +35,7 @@ final class VkImage
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -47,7 +47,7 @@ final class VkImageView
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -59,7 +59,7 @@ final class VkSampler
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -103,6 +103,8 @@ final class VkBufferCreateInfo
 
     public int $sharingMode = 0;
 
+    public int $queueFamilyIndexCount = 0;
+
     public array $pQueueFamilyIndices = [];
 }
 
@@ -144,6 +146,8 @@ final class VkImageCreateInfo
     public int $usage = 0;
 
     public int $sharingMode = 0;
+
+    public int $queueFamilyIndexCount = 0;
 
     public array $pQueueFamilyIndices = [];
 
@@ -244,38 +248,38 @@ final class VkSamplerCreateInfo
     public bool $unnormalizedCoordinates = false;
 }
 
-function vkAllocateMemory(VkDevice $device, VkMemoryAllocateInfo $pAllocateInfo, null $pAllocator, ?VkDeviceMemory &$pMemory): int {}
+function vkAllocateMemory(VkDevice $device, VkMemoryAllocateInfo $pAllocateInfo, int $pAllocator, ?VkDeviceMemory &$pMemory): int {}
 
-function vkFreeMemory(VkDevice $device, VkDeviceMemory $memory, null $pAllocator): void {}
+function vkFreeMemory(VkDevice $device, ?VkDeviceMemory $memory, int $pAllocator): void {}
 
 function vkMapMemory(VkDevice $device, VkDeviceMemory $memory, int $offset, int $size, int $flags, ?int &$ppData): int {}
 
 function vkUnmapMemory(VkDevice $device, VkDeviceMemory $memory): void {}
 
-function vkFlushMappedMemoryRanges(VkDevice $device, array $pMemoryRanges): int {}
+function vkFlushMappedMemoryRanges(VkDevice $device, int $memoryRangeCount, array $pMemoryRanges): int {}
 
-function vkInvalidateMappedMemoryRanges(VkDevice $device, array $pMemoryRanges): int {}
+function vkInvalidateMappedMemoryRanges(VkDevice $device, int $memoryRangeCount, array $pMemoryRanges): int {}
 
-function vkCreateBuffer(VkDevice $device, VkBufferCreateInfo $pCreateInfo, null $pAllocator, ?VkBuffer &$pBuffer): int {}
+function vkCreateBuffer(VkDevice $device, VkBufferCreateInfo $pCreateInfo, int $pAllocator, ?VkBuffer &$pBuffer): int {}
 
-function vkDestroyBuffer(VkDevice $device, VkBuffer $buffer, null $pAllocator): void {}
+function vkDestroyBuffer(VkDevice $device, ?VkBuffer $buffer, int $pAllocator): void {}
 
 function vkGetBufferMemoryRequirements(VkDevice $device, VkBuffer $buffer, ?VkMemoryRequirements &$pMemoryRequirements): void {}
 
 function vkBindBufferMemory(VkDevice $device, VkBuffer $buffer, VkDeviceMemory $memory, int $memoryOffset): int {}
 
-function vkCreateImage(VkDevice $device, VkImageCreateInfo $pCreateInfo, null $pAllocator, ?VkImage &$pImage): int {}
+function vkCreateImage(VkDevice $device, VkImageCreateInfo $pCreateInfo, int $pAllocator, ?VkImage &$pImage): int {}
 
-function vkDestroyImage(VkDevice $device, VkImage $image, null $pAllocator): void {}
+function vkDestroyImage(VkDevice $device, ?VkImage $image, int $pAllocator): void {}
 
 function vkGetImageMemoryRequirements(VkDevice $device, VkImage $image, ?VkMemoryRequirements &$pMemoryRequirements): void {}
 
 function vkBindImageMemory(VkDevice $device, VkImage $image, VkDeviceMemory $memory, int $memoryOffset): int {}
 
-function vkCreateImageView(VkDevice $device, VkImageViewCreateInfo $pCreateInfo, null $pAllocator, ?VkImageView &$pView): int {}
+function vkCreateImageView(VkDevice $device, VkImageViewCreateInfo $pCreateInfo, int $pAllocator, ?VkImageView &$pView): int {}
 
-function vkDestroyImageView(VkDevice $device, VkImageView $imageView, null $pAllocator): void {}
+function vkDestroyImageView(VkDevice $device, ?VkImageView $imageView, int $pAllocator): void {}
 
-function vkCreateSampler(VkDevice $device, VkSamplerCreateInfo $pCreateInfo, null $pAllocator, ?VkSampler &$pSampler): int {}
+function vkCreateSampler(VkDevice $device, VkSamplerCreateInfo $pCreateInfo, int $pAllocator, ?VkSampler &$pSampler): int {}
 
-function vkDestroySampler(VkDevice $device, VkSampler $sampler, null $pAllocator): void {}
+function vkDestroySampler(VkDevice $device, ?VkSampler $sampler, int $pAllocator): void {}

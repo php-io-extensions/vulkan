@@ -18,6 +18,20 @@ ZEND_METHOD(VkPipelineDepthStencilStateCreateInfo, __construct)
 	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "back", vulkan_ce_VkStencilOpState);
 }
 
+ZEND_METHOD(VkPipelineColorBlendStateCreateInfo, __construct)
+{
+	zval constants, zero;
+
+	ZEND_PARSE_PARAMETERS_NONE();
+	array_init_size(&constants, 4);
+	ZVAL_DOUBLE(&zero, 0.0);
+	for (int i = 0; i < 4; i++) {
+		zend_hash_next_index_insert(Z_ARRVAL(constants), &zero);
+	}
+	zend_update_property(Z_OBJCE_P(ZEND_THIS), Z_OBJ_P(ZEND_THIS), "blendConstants", sizeof("blendConstants") - 1, &constants);
+	zval_ptr_dtor(&constants);
+}
+
 ZEND_METHOD(VkRect2D, __construct)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
@@ -25,29 +39,7 @@ ZEND_METHOD(VkRect2D, __construct)
 	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "extent", vulkan_ce_VkExtent2D);
 }
 
-static bool vulkan_in(zval *zv, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch, uint32_t arg_num)
-{
-	HashTable visited;
-	bool ok;
-
-	if (Z_TYPE_P(zv) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(zv), ce)) {
-		zend_argument_type_error(arg_num, "must be of type %s", ZSTR_VAL(ce->name));
-		return false;
-	}
-	zend_hash_init(&visited, 8, NULL, NULL, 0);
-	ok = from(Z_OBJ_P(zv), dst, scratch, &visited);
-	zend_hash_destroy(&visited);
-	return ok;
-}
-
-static bool vulkan_null(zval *zv, uint32_t arg_num)
-{
-	if (Z_TYPE_P(zv) != IS_NULL) {
-		zend_argument_type_error(arg_num, "must be null");
-		return false;
-	}
-	return true;
-}
+#define ALLOCATOR(z) ((const VkAllocationCallbacks *) (uintptr_t) (z))
 
 static bool vulkan_device(zval *zv, uint64_t *out)
 {
@@ -66,24 +58,24 @@ static void vulkan_box_out(zval *out, VkResult result, uint64_t value, zend_clas
 	vulkan_assign(out, &boxed);
 }
 
-static void vulkan_destroy(zval *device, zval *handle, zval *allocator, zend_class_entry *ce, void (*destroy)(VkDevice, uint64_t))
+static void vulkan_destroy(zval *device, zval *handle, zend_long allocator, zend_class_entry *ce, void (*destroy)(VkDevice, uint64_t, const VkAllocationCallbacks *))
 {
-	uint64_t device_value, handle_value;
+	uint64_t device_value, handle_value = 0;
 
-	if (!vulkan_null(allocator, 3) || !vulkan_device(device, &device_value) || !vulkan_handle_value(handle, ce, 2, &handle_value)) {
+	if (!vulkan_device(device, &device_value) || (handle && !vulkan_handle_value(handle, ce, 2, &handle_value))) {
 		return;
 	}
-	destroy((VkDevice) (uintptr_t) device_value, handle_value);
-	vulkan_release_tree(Z_OBJ_P(handle));
+	destroy((VkDevice) (uintptr_t) device_value, handle_value, ALLOCATOR(allocator));
+	if (handle) vulkan_release_tree(Z_OBJ_P(handle));
 }
 
-static void destroy_render_pass(VkDevice device, uint64_t handle) { vkDestroyRenderPass(device, (VkRenderPass) (uintptr_t) handle, NULL); }
-static void destroy_framebuffer(VkDevice device, uint64_t handle) { vkDestroyFramebuffer(device, (VkFramebuffer) (uintptr_t) handle, NULL); }
-static void destroy_shader(VkDevice device, uint64_t handle) { vkDestroyShaderModule(device, (VkShaderModule) (uintptr_t) handle, NULL); }
-static void destroy_layout(VkDevice device, uint64_t handle) { vkDestroyPipelineLayout(device, (VkPipelineLayout) (uintptr_t) handle, NULL); }
-static void destroy_pipeline(VkDevice device, uint64_t handle) { vkDestroyPipeline(device, (VkPipeline) (uintptr_t) handle, NULL); }
-static void destroy_set_layout(VkDevice device, uint64_t handle) { vkDestroyDescriptorSetLayout(device, (VkDescriptorSetLayout) (uintptr_t) handle, NULL); }
-static void destroy_pool(VkDevice device, uint64_t handle) { vkDestroyDescriptorPool(device, (VkDescriptorPool) (uintptr_t) handle, NULL); }
+static void destroy_render_pass(VkDevice device, uint64_t handle, const VkAllocationCallbacks *allocator) { vkDestroyRenderPass(device, (VkRenderPass) (uintptr_t) handle, allocator); }
+static void destroy_framebuffer(VkDevice device, uint64_t handle, const VkAllocationCallbacks *allocator) { vkDestroyFramebuffer(device, (VkFramebuffer) (uintptr_t) handle, allocator); }
+static void destroy_shader(VkDevice device, uint64_t handle, const VkAllocationCallbacks *allocator) { vkDestroyShaderModule(device, (VkShaderModule) (uintptr_t) handle, allocator); }
+static void destroy_layout(VkDevice device, uint64_t handle, const VkAllocationCallbacks *allocator) { vkDestroyPipelineLayout(device, (VkPipelineLayout) (uintptr_t) handle, allocator); }
+static void destroy_pipeline(VkDevice device, uint64_t handle, const VkAllocationCallbacks *allocator) { vkDestroyPipeline(device, (VkPipeline) (uintptr_t) handle, allocator); }
+static void destroy_set_layout(VkDevice device, uint64_t handle, const VkAllocationCallbacks *allocator) { vkDestroyDescriptorSetLayout(device, (VkDescriptorSetLayout) (uintptr_t) handle, allocator); }
+static void destroy_pool(VkDevice device, uint64_t handle, const VkAllocationCallbacks *allocator) { vkDestroyDescriptorPool(device, (VkDescriptorPool) (uintptr_t) handle, allocator); }
 
 void vulkan_register_pipeline(int module_number)
 {
@@ -135,29 +127,29 @@ void vulkan_register_pipeline(int module_number)
 	SETUP_STRUCT(VkDescriptorSetAllocateInfo);
 	SETUP_STRUCT(VkDescriptorImageInfo);
 	SETUP_STRUCT(VkWriteDescriptorSet);
+	SETUP_STRUCT(VkCopyDescriptorSet);
 #undef SETUP_HANDLE
 #undef SETUP_STRUCT
 }
 
-static bool vulkan_create(zval *device, zval *info, zval *allocator, zval *out, zend_class_entry *info_ce, vulkan_from_fn from, size_t info_size, VkResult (*create)(VkDevice, const void *, uint64_t *), zend_class_entry *out_ce, VkResult *result_out)
+static bool vulkan_create(zval *device, zval *info, zend_long allocator, zval *out, zend_class_entry *info_ce, vulkan_from_fn from, size_t info_size, VkResult (*create)(VkDevice, const void *, const VkAllocationCallbacks *, uint64_t *), zend_class_entry *out_ce, VkResult *result_out)
 {
 	uint64_t device_value, created = 0;
 	vulkan_scratch scratch;
 	void *native;
 	VkResult result;
 
-	if (!vulkan_null(allocator, 3) || !vulkan_device(device, &device_value)) {
+	if (!vulkan_device(device, &device_value)) {
 		return false;
 	}
-	native = emalloc(info_size);
-	memset(native, 0, info_size);
+	native = ecalloc(1, info_size);
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(info, info_ce, from, native, &scratch, 2)) {
+	if (!vulkan_arg_struct(info, info_ce, from, native, &scratch)) {
 		vulkan_scratch_free(&scratch);
 		efree(native);
 		return false;
 	}
-	result = create((VkDevice) (uintptr_t) device_value, native, &created);
+	result = create((VkDevice) (uintptr_t) device_value, native, ALLOCATOR(allocator), &created);
 	vulkan_scratch_free(&scratch);
 	efree(native);
 	vulkan_box_out(out, result, created, out_ce, Z_OBJ_P(device));
@@ -165,45 +157,45 @@ static bool vulkan_create(zval *device, zval *info, zval *allocator, zval *out, 
 	return true;
 }
 
-static VkResult create_render_pass(VkDevice device, const void *info, uint64_t *out)
+static VkResult create_render_pass(VkDevice device, const void *info, const VkAllocationCallbacks *allocator, uint64_t *out)
 {
 	VkRenderPass handle = VK_NULL_HANDLE;
-	VkResult result = vkCreateRenderPass(device, info, NULL, &handle);
+	VkResult result = vkCreateRenderPass(device, info, allocator, &handle);
 	*out = (uint64_t) (uintptr_t) handle;
 	return result;
 }
-static VkResult create_framebuffer(VkDevice device, const void *info, uint64_t *out)
+static VkResult create_framebuffer(VkDevice device, const void *info, const VkAllocationCallbacks *allocator, uint64_t *out)
 {
 	VkFramebuffer handle = VK_NULL_HANDLE;
-	VkResult result = vkCreateFramebuffer(device, info, NULL, &handle);
+	VkResult result = vkCreateFramebuffer(device, info, allocator, &handle);
 	*out = (uint64_t) (uintptr_t) handle;
 	return result;
 }
-static VkResult create_shader(VkDevice device, const void *info, uint64_t *out)
+static VkResult create_shader(VkDevice device, const void *info, const VkAllocationCallbacks *allocator, uint64_t *out)
 {
 	VkShaderModule handle = VK_NULL_HANDLE;
-	VkResult result = vkCreateShaderModule(device, info, NULL, &handle);
+	VkResult result = vkCreateShaderModule(device, info, allocator, &handle);
 	*out = (uint64_t) (uintptr_t) handle;
 	return result;
 }
-static VkResult create_pipeline_layout(VkDevice device, const void *info, uint64_t *out)
+static VkResult create_pipeline_layout(VkDevice device, const void *info, const VkAllocationCallbacks *allocator, uint64_t *out)
 {
 	VkPipelineLayout handle = VK_NULL_HANDLE;
-	VkResult result = vkCreatePipelineLayout(device, info, NULL, &handle);
+	VkResult result = vkCreatePipelineLayout(device, info, allocator, &handle);
 	*out = (uint64_t) (uintptr_t) handle;
 	return result;
 }
-static VkResult create_set_layout(VkDevice device, const void *info, uint64_t *out)
+static VkResult create_set_layout(VkDevice device, const void *info, const VkAllocationCallbacks *allocator, uint64_t *out)
 {
 	VkDescriptorSetLayout handle = VK_NULL_HANDLE;
-	VkResult result = vkCreateDescriptorSetLayout(device, info, NULL, &handle);
+	VkResult result = vkCreateDescriptorSetLayout(device, info, allocator, &handle);
 	*out = (uint64_t) (uintptr_t) handle;
 	return result;
 }
-static VkResult create_pool(VkDevice device, const void *info, uint64_t *out)
+static VkResult create_pool(VkDevice device, const void *info, const VkAllocationCallbacks *allocator, uint64_t *out)
 {
 	VkDescriptorPool handle = VK_NULL_HANDLE;
-	VkResult result = vkCreateDescriptorPool(device, info, NULL, &handle);
+	VkResult result = vkCreateDescriptorPool(device, info, allocator, &handle);
 	*out = (uint64_t) (uintptr_t) handle;
 	return result;
 }
@@ -211,12 +203,12 @@ static VkResult create_pool(VkDevice device, const void *info, uint64_t *out)
 #define BIND_CREATE(php, info_ce, info_type, from_fn, create_fn, out_ce) \
 	ZEND_FUNCTION(php) \
 	{ \
-		zval *device, *info, *allocator, *out; \
+		zval *device, *info, *out; zend_long allocator; \
 		VkResult result = VK_ERROR_UNKNOWN; \
 		ZEND_PARSE_PARAMETERS_START(4, 4) \
 			Z_PARAM_OBJECT(device) \
 			Z_PARAM_OBJECT(info) \
-			Z_PARAM_ZVAL(allocator) \
+			Z_PARAM_LONG(allocator) \
 			Z_PARAM_ZVAL(out) \
 		ZEND_PARSE_PARAMETERS_END(); \
 		if (!vulkan_create(device, info, allocator, out, info_ce, from_fn, sizeof(info_type), create_fn, out_ce, &result)) { \
@@ -235,11 +227,11 @@ BIND_CREATE(vkCreateDescriptorPool, vulkan_ce_VkDescriptorPoolCreateInfo, VkDesc
 #define BIND_DESTROY(php, ce, destroy_fn) \
 	ZEND_FUNCTION(php) \
 	{ \
-		zval *device, *handle, *allocator; \
+		zval *device, *handle; zend_long allocator; \
 		ZEND_PARSE_PARAMETERS_START(3, 3) \
 			Z_PARAM_OBJECT(device) \
-			Z_PARAM_OBJECT(handle) \
-			Z_PARAM_ZVAL(allocator) \
+			Z_PARAM_OBJECT_OR_NULL(handle) \
+			Z_PARAM_LONG(allocator) \
 		ZEND_PARSE_PARAMETERS_END(); \
 		if (EG(exception)) { \
 			RETURN_THROWS(); \
@@ -260,54 +252,39 @@ BIND_DESTROY(vkDestroyDescriptorPool, vulkan_ce_VkDescriptorPool, destroy_pool)
 
 ZEND_FUNCTION(vkCreateGraphicsPipelines)
 {
-	zval *device, *cache, *infos, *allocator, *out, *item;
+	zval *device, *infos, *out;
+	zend_long cache, count, allocator;
 	uint64_t device_value;
-	uint32_t count, i;
-	VkGraphicsPipelineCreateInfo *native = NULL;
+	uint32_t i;
+	void *native;
 	VkPipeline *pipelines = NULL;
 	vulkan_scratch scratch;
-	HashTable visited;
 	VkResult result;
 	zval arr, boxed;
 
-	ZEND_PARSE_PARAMETERS_START(5, 5)
+	ZEND_PARSE_PARAMETERS_START(6, 6)
 		Z_PARAM_OBJECT(device)
-		Z_PARAM_ZVAL(cache)
+		Z_PARAM_LONG(cache)
+		Z_PARAM_LONG(count)
 		Z_PARAM_ZVAL(infos)
-		Z_PARAM_ZVAL(allocator)
+		Z_PARAM_LONG(allocator)
 		Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!vulkan_null(cache, 2) || !vulkan_null(allocator, 4) || !vulkan_device(device, &device_value)) {
+	if (!vulkan_device(device, &device_value)) {
 		RETURN_THROWS();
 	}
-	if (Z_TYPE_P(infos) != IS_ARRAY) {
-		zend_argument_type_error(3, "must be a list of VkGraphicsPipelineCreateInfo");
-		RETURN_THROWS();
-	}
-	count = zend_hash_num_elements(Z_ARRVAL_P(infos));
-	native = count ? emalloc(sizeof(*native) * count) : NULL;
-	memset(native, 0, sizeof(*native) * count);
 	vulkan_scratch_init(&scratch);
-	zend_hash_init(&visited, 8, NULL, NULL, 0);
-	i = 0;
-	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(infos), item) {
-		zend_hash_clean(&visited);
-		if (Z_TYPE_P(item) != IS_OBJECT || !vk_VkGraphicsPipelineCreateInfo_from(Z_OBJ_P(item), &native[i], &scratch, &visited)) {
-			zend_hash_destroy(&visited);
-			vulkan_scratch_free(&scratch);
-			efree(native);
-			RETURN_THROWS();
-		}
-		i++;
-	} ZEND_HASH_FOREACH_END();
-	zend_hash_destroy(&visited);
-	pipelines = count ? emalloc(sizeof(*pipelines) * count) : NULL;
-	result = vkCreateGraphicsPipelines((VkDevice) (uintptr_t) device_value, VK_NULL_HANDLE, count, native, NULL, pipelines);
+	if (!vulkan_arg_structs(infos, count, 3, 4, vulkan_ce_VkGraphicsPipelineCreateInfo, sizeof(VkGraphicsPipelineCreateInfo), vk_VkGraphicsPipelineCreateInfo_from, &native, &scratch)) {
+		vulkan_scratch_free(&scratch);
+		RETURN_THROWS();
+	}
+	/* Vulkan writes createInfoCount handles. */
+	pipelines = (uint32_t) count ? safe_emalloc((uint32_t) count, sizeof(*pipelines), 0) : NULL;
+	result = vkCreateGraphicsPipelines((VkDevice) (uintptr_t) device_value, (VkPipelineCache) (uintptr_t) cache, (uint32_t) count, native, ALLOCATOR(allocator), pipelines);
 	vulkan_scratch_free(&scratch);
-	efree(native);
-	array_init_size(&arr, count);
-	for (i = 0; i < count; i++) {
+	array_init_size(&arr, (uint32_t) count);
+	for (i = 0; i < (uint32_t) count; i++) {
 		vulkan_box(&boxed, (uint64_t) (uintptr_t) pipelines[i], vulkan_ce_VkPipeline, Z_OBJ_P(device));
 		zend_hash_next_index_insert(Z_ARRVAL(arr), &boxed);
 	}
@@ -340,7 +317,7 @@ ZEND_FUNCTION(vkAllocateDescriptorSets)
 		RETURN_THROWS();
 	}
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(info, vulkan_ce_VkDescriptorSetAllocateInfo, vk_VkDescriptorSetAllocateInfo_from, &allocate, &scratch, 2)) {
+	if (!vulkan_arg_struct(info, vulkan_ce_VkDescriptorSetAllocateInfo, vk_VkDescriptorSetAllocateInfo_from, &allocate, &scratch)) {
 		vulkan_scratch_free(&scratch);
 		RETURN_THROWS();
 	}
@@ -363,56 +340,29 @@ ZEND_FUNCTION(vkAllocateDescriptorSets)
 
 ZEND_FUNCTION(vkUpdateDescriptorSets)
 {
-	zval *device, *writes, *copies, *item;
+	zval *device, *writes, *copies;
+	zend_long write_count, copy_count;
 	uint64_t device_value;
-	uint32_t count, i;
-	VkWriteDescriptorSet *native = NULL;
+	void *native_writes, *native_copies;
 	vulkan_scratch scratch;
-	HashTable visited;
 
-	ZEND_PARSE_PARAMETERS_START(3, 3)
+	ZEND_PARSE_PARAMETERS_START(5, 5)
 		Z_PARAM_OBJECT(device)
+		Z_PARAM_LONG(write_count)
 		Z_PARAM_ZVAL(writes)
+		Z_PARAM_LONG(copy_count)
 		Z_PARAM_ZVAL(copies)
 	ZEND_PARSE_PARAMETERS_END();
 
 	if (!vulkan_device(device, &device_value)) {
 		RETURN_THROWS();
 	}
-	if (Z_TYPE_P(copies) != IS_ARRAY) {
-		zend_argument_type_error(3, "must be a list");
-		RETURN_THROWS();
-	}
-	if (zend_hash_num_elements(Z_ARRVAL_P(copies)) != 0) {
-		zend_argument_value_error(3, "VkCopyDescriptorSet is not bound");
-		RETURN_THROWS();
-	}
-	if (Z_TYPE_P(writes) != IS_ARRAY) {
-		zend_argument_type_error(2, "must be a list of VkWriteDescriptorSet");
-		RETURN_THROWS();
-	}
-	count = zend_hash_num_elements(Z_ARRVAL_P(writes));
-	native = count ? emalloc(sizeof(*native) * count) : NULL;
-	memset(native, 0, sizeof(*native) * (count ? count : 0));
 	vulkan_scratch_init(&scratch);
-	zend_hash_init(&visited, 4, NULL, NULL, 0);
-	i = 0;
-	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(writes), item) {
-		zend_hash_clean(&visited);
-		if (Z_TYPE_P(item) != IS_OBJECT || !vk_VkWriteDescriptorSet_from(Z_OBJ_P(item), &native[i], &scratch, &visited)) {
-			zend_hash_destroy(&visited);
-			vulkan_scratch_free(&scratch);
-			if (native != NULL) {
-				efree(native);
-			}
-			RETURN_THROWS();
-		}
-		i++;
-	} ZEND_HASH_FOREACH_END();
-	zend_hash_destroy(&visited);
-	vkUpdateDescriptorSets((VkDevice) (uintptr_t) device_value, count, native, 0, NULL);
-	vulkan_scratch_free(&scratch);
-	if (native != NULL) {
-		efree(native);
+	if (!vulkan_arg_structs(writes, write_count, 2, 3, vulkan_ce_VkWriteDescriptorSet, sizeof(VkWriteDescriptorSet), vk_VkWriteDescriptorSet_from, &native_writes, &scratch)
+		|| !vulkan_arg_structs(copies, copy_count, 4, 5, vulkan_ce_VkCopyDescriptorSet, sizeof(VkCopyDescriptorSet), vk_VkCopyDescriptorSet_from, &native_copies, &scratch)) {
+		vulkan_scratch_free(&scratch);
+		RETURN_THROWS();
 	}
+	vkUpdateDescriptorSets((VkDevice) (uintptr_t) device_value, (uint32_t) write_count, native_writes, (uint32_t) copy_count, native_copies);
+	vulkan_scratch_free(&scratch);
 }

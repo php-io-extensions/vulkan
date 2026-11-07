@@ -1,17 +1,17 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: b1a301d5307767b09c776f97505e127ca9fbc1e9 */
+ * Stub hash: 63e8e48c34d13ce199b54eeae643bb9316bb979c */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateCommandPool, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkCommandPoolCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pCommandPool, VkCommandPool, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyCommandPool, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, commandPool, VkCommandPool, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, commandPool, VkCommandPool, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkAllocateCommandBuffers, 0, 3, IS_LONG, 0)
@@ -20,9 +20,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkAllocateCommandBuffers, 0, 3, 
 	ZEND_ARG_TYPE_INFO(1, pCommandBuffers, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkFreeCommandBuffers, 0, 3, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkFreeCommandBuffers, 0, 4, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, commandPool, VkCommandPool, 0)
+	ZEND_ARG_TYPE_INFO(0, commandBufferCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pCommandBuffers, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
@@ -56,15 +57,17 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBindPipeline, 0, 3, IS_VOID
 	ZEND_ARG_OBJ_INFO(0, pipeline, VkPipeline, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdSetViewport, 0, 3, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdSetViewport, 0, 4, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_TYPE_INFO(0, firstViewport, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, viewportCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pViewports, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdSetScissor, 0, 3, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdSetScissor, 0, 4, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_TYPE_INFO(0, firstScissor, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, scissorCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pScissors, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
@@ -74,9 +77,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdSetStencilReference, 0, 3, 
 	ZEND_ARG_TYPE_INFO(0, reference, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBindVertexBuffers, 0, 4, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBindVertexBuffers, 0, 5, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_TYPE_INFO(0, firstBinding, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, bindingCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pBuffers, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, pOffsets, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
@@ -88,12 +92,14 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBindIndexBuffer, 0, 4, IS_V
 	ZEND_ARG_TYPE_INFO(0, indexType, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBindDescriptorSets, 0, 6, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBindDescriptorSets, 0, 8, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_TYPE_INFO(0, pipelineBindPoint, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, layout, VkPipelineLayout, 0)
 	ZEND_ARG_TYPE_INFO(0, firstSet, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, descriptorSetCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pDescriptorSets, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, dynamicOffsetCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pDynamicOffsets, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
@@ -123,50 +129,59 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdDrawIndexed, 0, 6, IS_VOID,
 	ZEND_ARG_TYPE_INFO(0, firstInstance, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdClearAttachments, 0, 3, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdClearAttachments, 0, 5, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, attachmentCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pAttachments, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, rectCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pRects, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdCopyBufferToImage, 0, 5, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdCopyBufferToImage, 0, 6, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_OBJ_INFO(0, srcBuffer, VkBuffer, 0)
 	ZEND_ARG_OBJ_INFO(0, dstImage, VkImage, 0)
 	ZEND_ARG_TYPE_INFO(0, dstImageLayout, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, regionCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pRegions, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdCopyImageToBuffer, 0, 5, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdCopyImageToBuffer, 0, 6, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_OBJ_INFO(0, srcImage, VkImage, 0)
 	ZEND_ARG_TYPE_INFO(0, srcImageLayout, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, dstBuffer, VkBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, regionCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pRegions, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBlitImage, 0, 7, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBlitImage, 0, 8, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_OBJ_INFO(0, srcImage, VkImage, 0)
 	ZEND_ARG_TYPE_INFO(0, srcImageLayout, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, dstImage, VkImage, 0)
 	ZEND_ARG_TYPE_INFO(0, dstImageLayout, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, regionCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pRegions, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, filter, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdPipelineBarrier, 0, 7, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdPipelineBarrier, 0, 10, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_TYPE_INFO(0, srcStageMask, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, dstStageMask, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, dependencyFlags, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, memoryBarrierCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pMemoryBarriers, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, bufferMemoryBarrierCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pBufferMemoryBarriers, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, imageMemoryBarrierCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pImageMemoryBarriers, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkQueueSubmit, 0, 3, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkQueueSubmit, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, queue, VkQueue, 0)
+	ZEND_ARG_TYPE_INFO(0, submitCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pSubmits, IS_ARRAY, 0)
 	ZEND_ARG_OBJ_INFO(0, fence, VkFence, 1)
 ZEND_END_ARG_INFO()
@@ -178,14 +193,14 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateFence, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkFenceCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pFence, VkFence, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyFence, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, fence, VkFence, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, fence, VkFence, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetFenceStatus, 0, 2, IS_LONG, 0)
@@ -193,13 +208,15 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetFenceStatus, 0, 2, IS_LONG,
 	ZEND_ARG_OBJ_INFO(0, fence, VkFence, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkResetFences, 0, 2, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkResetFences, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_TYPE_INFO(0, fenceCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pFences, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkWaitForFences, 0, 4, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkWaitForFences, 0, 5, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_TYPE_INFO(0, fenceCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pFences, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, waitAll, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, timeout, IS_LONG, 0)
@@ -208,14 +225,14 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateSemaphore, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkSemaphoreCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pSemaphore, VkSemaphore, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroySemaphore, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, semaphore, VkSemaphore, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, semaphore, VkSemaphore, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_VkCommandPool___construct, 0, 0, 0)
@@ -224,7 +241,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkCommandPool_pointer, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkCommandPool_fromPointer, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkCommandPool_fromPointer, 0, 1, IS_STATIC, 1)
 	ZEND_ARG_TYPE_INFO(0, pointer, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -542,9 +559,9 @@ static zend_class_entry *register_class_VkCommandBufferInheritanceInfo(void)
 	zend_string_release(property_framebuffer_name);
 
 	zval property_occlusionQueryEnable_default_value;
-	ZVAL_LONG(&property_occlusionQueryEnable_default_value, 0);
+	ZVAL_FALSE(&property_occlusionQueryEnable_default_value);
 	zend_string *property_occlusionQueryEnable_name = zend_string_init("occlusionQueryEnable", sizeof("occlusionQueryEnable") - 1, 1);
-	zend_declare_typed_property(class_entry, property_occlusionQueryEnable_name, &property_occlusionQueryEnable_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_declare_typed_property(class_entry, property_occlusionQueryEnable_name, &property_occlusionQueryEnable_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
 	zend_string_release(property_occlusionQueryEnable_name);
 
 	zval property_queryFlags_default_value;
@@ -686,6 +703,12 @@ static zend_class_entry *register_class_VkRenderPassBeginInfo(void)
 	zend_string *property_renderArea_class_VkRect2D = zend_string_init("VkRect2D", sizeof("VkRect2D")-1, 1);
 	zend_declare_typed_property(class_entry, property_renderArea_name, &property_renderArea_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_renderArea_class_VkRect2D, 0, 0));
 	zend_string_release(property_renderArea_name);
+
+	zval property_clearValueCount_default_value;
+	ZVAL_LONG(&property_clearValueCount_default_value, 0);
+	zend_string *property_clearValueCount_name = zend_string_init("clearValueCount", sizeof("clearValueCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_clearValueCount_name, &property_clearValueCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_clearValueCount_name);
 
 	zval property_pClearValues_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pClearValues_default_value);
@@ -871,6 +894,65 @@ static zend_class_entry *register_class_VkMemoryBarrier(void)
 	return class_entry;
 }
 
+static zend_class_entry *register_class_VkBufferMemoryBarrier(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkBufferMemoryBarrier", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_srcAccessMask_default_value;
+	ZVAL_LONG(&property_srcAccessMask_default_value, 0);
+	zend_string *property_srcAccessMask_name = zend_string_init("srcAccessMask", sizeof("srcAccessMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_srcAccessMask_name, &property_srcAccessMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_srcAccessMask_name);
+
+	zval property_dstAccessMask_default_value;
+	ZVAL_LONG(&property_dstAccessMask_default_value, 0);
+	zend_string *property_dstAccessMask_name = zend_string_init("dstAccessMask", sizeof("dstAccessMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dstAccessMask_name, &property_dstAccessMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dstAccessMask_name);
+
+	zval property_srcQueueFamilyIndex_default_value;
+	ZVAL_LONG(&property_srcQueueFamilyIndex_default_value, 0);
+	zend_string *property_srcQueueFamilyIndex_name = zend_string_init("srcQueueFamilyIndex", sizeof("srcQueueFamilyIndex") - 1, 1);
+	zend_declare_typed_property(class_entry, property_srcQueueFamilyIndex_name, &property_srcQueueFamilyIndex_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_srcQueueFamilyIndex_name);
+
+	zval property_dstQueueFamilyIndex_default_value;
+	ZVAL_LONG(&property_dstQueueFamilyIndex_default_value, 0);
+	zend_string *property_dstQueueFamilyIndex_name = zend_string_init("dstQueueFamilyIndex", sizeof("dstQueueFamilyIndex") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dstQueueFamilyIndex_name, &property_dstQueueFamilyIndex_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dstQueueFamilyIndex_name);
+
+	zval property_buffer_default_value;
+	ZVAL_NULL(&property_buffer_default_value);
+	zend_string *property_buffer_name = zend_string_init("buffer", sizeof("buffer") - 1, 1);
+	zend_string *property_buffer_class_VkBuffer = zend_string_init("VkBuffer", sizeof("VkBuffer")-1, 1);
+	zend_declare_typed_property(class_entry, property_buffer_name, &property_buffer_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_buffer_class_VkBuffer, 0, MAY_BE_NULL));
+	zend_string_release(property_buffer_name);
+
+	zval property_offset_default_value;
+	ZVAL_LONG(&property_offset_default_value, 0);
+	zend_string *property_offset_name = zend_string_init("offset", sizeof("offset") - 1, 1);
+	zend_declare_typed_property(class_entry, property_offset_name, &property_offset_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_offset_name);
+
+	zval property_size_default_value;
+	ZVAL_LONG(&property_size_default_value, 0);
+	zend_string *property_size_name = zend_string_init("size", sizeof("size") - 1, 1);
+	zend_declare_typed_property(class_entry, property_size_name, &property_size_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_size_name);
+
+	return class_entry;
+}
+
 static zend_class_entry *register_class_VkImageMemoryBarrier(void)
 {
 	zend_class_entry ce, *class_entry;
@@ -950,6 +1032,12 @@ static zend_class_entry *register_class_VkSubmitInfo(void)
 	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
 	zend_string_release(property_pNext_name);
 
+	zval property_waitSemaphoreCount_default_value;
+	ZVAL_LONG(&property_waitSemaphoreCount_default_value, 0);
+	zend_string *property_waitSemaphoreCount_name = zend_string_init("waitSemaphoreCount", sizeof("waitSemaphoreCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_waitSemaphoreCount_name, &property_waitSemaphoreCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_waitSemaphoreCount_name);
+
 	zval property_pWaitSemaphores_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pWaitSemaphores_default_value);
 	zend_string *property_pWaitSemaphores_name = zend_string_init("pWaitSemaphores", sizeof("pWaitSemaphores") - 1, 1);
@@ -962,11 +1050,23 @@ static zend_class_entry *register_class_VkSubmitInfo(void)
 	zend_declare_typed_property(class_entry, property_pWaitDstStageMask_name, &property_pWaitDstStageMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
 	zend_string_release(property_pWaitDstStageMask_name);
 
+	zval property_commandBufferCount_default_value;
+	ZVAL_LONG(&property_commandBufferCount_default_value, 0);
+	zend_string *property_commandBufferCount_name = zend_string_init("commandBufferCount", sizeof("commandBufferCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_commandBufferCount_name, &property_commandBufferCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_commandBufferCount_name);
+
 	zval property_pCommandBuffers_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pCommandBuffers_default_value);
 	zend_string *property_pCommandBuffers_name = zend_string_init("pCommandBuffers", sizeof("pCommandBuffers") - 1, 1);
 	zend_declare_typed_property(class_entry, property_pCommandBuffers_name, &property_pCommandBuffers_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
 	zend_string_release(property_pCommandBuffers_name);
+
+	zval property_signalSemaphoreCount_default_value;
+	ZVAL_LONG(&property_signalSemaphoreCount_default_value, 0);
+	zend_string *property_signalSemaphoreCount_name = zend_string_init("signalSemaphoreCount", sizeof("signalSemaphoreCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_signalSemaphoreCount_name, &property_signalSemaphoreCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_signalSemaphoreCount_name);
 
 	zval property_pSignalSemaphores_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pSignalSemaphores_default_value);

@@ -2,20 +2,6 @@
 #include "structs.h"
 #include "../stubs/vk_external_arginfo.h"
 
-static bool vulkan_in(zval *zv, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch)
-{
-	HashTable visited;
-	bool ok;
-	if (Z_TYPE_P(zv) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(zv), ce)) {
-		zend_type_error("must be of type %s", ZSTR_VAL(ce->name));
-		return false;
-	}
-	zend_hash_init(&visited, 4, NULL, NULL, 0);
-	ok = from(Z_OBJ_P(zv), dst, scratch, &visited);
-	zend_hash_destroy(&visited);
-	return ok;
-}
-
 void vulkan_register_external(int module_number)
 {
 	(void) module_number;
@@ -52,13 +38,11 @@ ZEND_FUNCTION(vkGetMemoryFdKHR)
 	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(info) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
 	get_fd = (PFN_vkGetMemoryFdKHR) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkGetMemoryFdKHR");
-	if (get_fd == NULL) {
-		ZVAL_NULL(&boxed);
-		vulkan_assign(out, &boxed);
-		RETURN_LONG((zend_long) VK_ERROR_EXTENSION_NOT_PRESENT);
+	if (!vulkan_proc((void (*)(void)) get_fd, "vkGetMemoryFdKHR")) {
+		RETURN_THROWS();
 	}
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(info, vulkan_ce_VkMemoryGetFdInfoKHR, vk_VkMemoryGetFdInfoKHR_from, &get_info, &scratch)) {
+	if (!vulkan_arg_struct(info, vulkan_ce_VkMemoryGetFdInfoKHR, vk_VkMemoryGetFdInfoKHR_from, &get_info, &scratch)) {
 		vulkan_scratch_free(&scratch);
 		RETURN_THROWS();
 	}
@@ -82,10 +66,8 @@ ZEND_FUNCTION(vkGetImageDrmFormatModifierPropertiesEXT)
 	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(image) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || !vulkan_handle_value(image, vulkan_ce_VkImage, 2, &image_value)) RETURN_THROWS();
 	get_props = (PFN_vkGetImageDrmFormatModifierPropertiesEXT) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkGetImageDrmFormatModifierPropertiesEXT");
-	if (get_props == NULL) {
-		ZVAL_NULL(&boxed);
-		vulkan_assign(out, &boxed);
-		RETURN_LONG((zend_long) VK_ERROR_EXTENSION_NOT_PRESENT);
+	if (!vulkan_proc((void (*)(void)) get_props, "vkGetImageDrmFormatModifierPropertiesEXT")) {
+		RETURN_THROWS();
 	}
 	memset(&props, 0, sizeof(props));
 	props.sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_PROPERTIES_EXT;
@@ -108,7 +90,7 @@ ZEND_FUNCTION(vkGetImageSubresourceLayout)
 	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(image) Z_PARAM_OBJECT(subresource) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || !vulkan_handle_value(image, vulkan_ce_VkImage, 2, &image_value)) RETURN_THROWS();
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(subresource, vulkan_ce_VkImageSubresource, vk_VkImageSubresource_from, &native, &scratch)) {
+	if (!vulkan_arg_struct(subresource, vulkan_ce_VkImageSubresource, vk_VkImageSubresource_from, &native, &scratch)) {
 		vulkan_scratch_free(&scratch);
 		RETURN_THROWS();
 	}

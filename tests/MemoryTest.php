@@ -10,18 +10,18 @@ it('maps host-visible memory to an address, writes, flushes, invalidates and rea
     expect(vkMapMemory($device, $memory, 0, VK_WHOLE_SIZE, 0, $address))->toBe(VK_SUCCESS)
         ->and($address)->toBeGreaterThan(0);
 
-    vk_write_mapped($address, $bytes);
+    mappedWrite($address, $bytes);
     $range = new VkMappedMemoryRange();
     $range->memory = $memory;
     $range->size = VK_WHOLE_SIZE;
 
-    expect(vkFlushMappedMemoryRanges($device, [$range]))->toBe(VK_SUCCESS)
-        ->and(vkInvalidateMappedMemoryRanges($device, [$range]))->toBe(VK_SUCCESS)
-        ->and(vk_read_mapped($address, 256))->toBe($bytes);
+    expect(vkFlushMappedMemoryRanges($device, 1, [$range]))->toBe(VK_SUCCESS)
+        ->and(vkInvalidateMappedMemoryRanges($device, 1, [$range]))->toBe(VK_SUCCESS)
+        ->and(mappedRead($address, 256))->toBe($bytes);
 
     vkUnmapMemory($device, $memory);
-    vkDestroyBuffer($device, $buffer, null);
-    vkFreeMemory($device, $memory, null);
+    vkDestroyBuffer($device, $buffer, 0);
+    vkFreeMemory($device, $memory, 0);
 });
 
 it('makes a 4x colour image, a 4x stencil image and their views', function (): void {
@@ -37,27 +37,30 @@ it('makes a 4x colour image, a 4x stencil image and their views', function (): v
         ->and($stencilView)->toBeInstanceOf(VkImageView::class)
         ->and($requirements->size)->toBeGreaterThanOrEqual(8 * 8 * 4 * 4);
 
-    vkDestroyImageView($device, $colorView, null);
-    vkDestroyImageView($device, $stencilView, null);
-    vkDestroyImage($device, $color, null);
-    vkDestroyImage($device, $stencil, null);
-    vkFreeMemory($device, $colorMemory, null);
-    vkFreeMemory($device, $stencilMemory, null);
+    vkDestroyImageView($device, $colorView, 0);
+    vkDestroyImageView($device, $stencilView, 0);
+    vkDestroyImage($device, $color, 0);
+    vkDestroyImage($device, $stencil, 0);
+    vkFreeMemory($device, $colorMemory, 0);
+    vkFreeMemory($device, $stencilMemory, 0);
 });
 
-it('makes a sampler and refuses a freed memory object', function (): void {
+it('makes a sampler, and a freed memory object reads 0 and frees again as NULL', function (): void {
     [, , $device] = gpu();
     $info = new VkSamplerCreateInfo();
     $info->magFilter = VK_FILTER_NEAREST;
     $info->minFilter = VK_FILTER_LINEAR;
 
-    expect(vkCreateSampler($device, $info, null, $sampler))->toBe(VK_SUCCESS);
-    vkDestroySampler($device, $sampler, null);
+    expect(vkCreateSampler($device, $info, 0, $sampler))->toBe(VK_SUCCESS);
+    vkDestroySampler($device, $sampler, 0);
 
     [$buffer, $memory] = hostBuffer(64, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-    vkDestroyBuffer($device, $buffer, null);
-    vkFreeMemory($device, $memory, null);
-    expect(fn () => vkMapMemory($device, $memory, 0, 64, 0, $address))->toThrow(ValueError::class, 'VkDeviceMemory has been destroyed');
+    vkDestroyBuffer($device, $buffer, 0);
+    vkFreeMemory($device, $memory, 0);
+    vkFreeMemory($device, $memory, 0);
+
+    expect($memory->pointer())->toBe(0)
+        ->and($buffer->pointer())->toBe(0);
 });
 
 it('allocates an image\'s memory dedicated to it', function (): void {
@@ -71,7 +74,7 @@ it('allocates an image\'s memory dedicated to it', function (): void {
     $info->samples = VK_SAMPLE_COUNT_1_BIT;
     $info->tiling = VK_IMAGE_TILING_OPTIMAL;
     $info->usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    vkCreateImage($device, $info, null, $image);
+    vkCreateImage($device, $info, 0, $image);
     vkGetImageMemoryRequirements($device, $image, $requirements);
     $dedicated = new VkMemoryDedicatedAllocateInfo();
     $dedicated->image = $image;
@@ -80,17 +83,9 @@ it('allocates an image\'s memory dedicated to it', function (): void {
     $allocate->allocationSize = $requirements->size;
     $allocate->memoryTypeIndex = memoryType($requirements->memoryTypeBits, 0);
 
-    expect(vkAllocateMemory($device, $allocate, null, $memory))->toBe(VK_SUCCESS)
+    expect(vkAllocateMemory($device, $allocate, 0, $memory))->toBe(VK_SUCCESS)
         ->and(vkBindImageMemory($device, $image, $memory, 0))->toBe(VK_SUCCESS);
 
-    vkDestroyImage($device, $image, null);
-    vkFreeMemory($device, $memory, null);
-});
-
-it('names the file the Vulkan loader was loaded from', function (): void {
-    $path = vk_loader_path();
-
-    expect($path)->toBeString()
-        ->and(is_file($path))->toBeTrue()
-        ->and(basename($path))->toContain('vulkan');
+    vkDestroyImage($device, $image, 0);
+    vkFreeMemory($device, $memory, 0);
 });

@@ -1,10 +1,10 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: fc6e1a35fd292d6f7ea29b3e42d5626c8d3fa8b8 */
+ * Stub hash: 5f2b5128f70370f0cc2c79c4c901af61b48d34c2 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateMetalSurfaceEXT, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, instance, VkInstance, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkMetalSurfaceCreateInfoEXT, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pSurface, VkSurfaceKHR, 1)
 ZEND_END_ARG_INFO()
 

@@ -10,54 +10,73 @@ it('builds the 4x render pass and both flat pipelines', function (): void {
         ->and(flatPipeline($pass, $layout, true, VK_COMPARE_OP_NOT_EQUAL, VK_STENCIL_OP_ZERO))->toBeInstanceOf(VkPipeline::class);
 });
 
-it('refuses SPIR-V that is not whole words', function (): void {
+it('refuses a codeSize past the SPIR-V string', function (): void {
     $info = new VkShaderModuleCreateInfo();
-    $info->code = "\x03\x02\x23";
+    $info->pCode = "\x03\x02\x23\x07";
+    $info->codeSize = 8;
     [, , $device] = gpu();
 
-    vkCreateShaderModule($device, $info, null, $module);
-})->throws(ValueError::class, 'multiple of 4');
+    vkCreateShaderModule($device, $info, 0, $module);
+})->throws(ValueError::class, 'VkShaderModuleCreateInfo::$pCode holds 4 bytes, fewer than the 8 Vulkan reads');
 
-it('lays out, pools, allocates and writes a combined image sampler', function (): void {
+it('refuses a struct count past its list', function (): void {
+    $info = new VkPipelineLayoutCreateInfo();
+    $info->pushConstantRangeCount = 2;
+    $info->pPushConstantRanges = [new VkPushConstantRange()];
+    [, , $device] = gpu();
+
+    vkCreatePipelineLayout($device, $info, 0, $layout);
+})->throws(ValueError::class, 'VkPipelineLayoutCreateInfo::$pPushConstantRanges holds 1 values, fewer than its count 2');
+
+it('lays out, pools, allocates, writes and copies combined image samplers', function (): void {
     [, , $device] = gpu();
     $binding = new VkDescriptorSetLayoutBinding();
     $binding->descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     $binding->descriptorCount = 1;
     $binding->stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
     $layoutInfo = new VkDescriptorSetLayoutCreateInfo();
+    $layoutInfo->bindingCount = 1;
     $layoutInfo->pBindings = [$binding];
-    vkCreateDescriptorSetLayout($device, $layoutInfo, null, $setLayout);
+    vkCreateDescriptorSetLayout($device, $layoutInfo, 0, $setLayout);
     $size = new VkDescriptorPoolSize();
     $size->type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    $size->descriptorCount = 1;
+    $size->descriptorCount = 2;
     $poolInfo = new VkDescriptorPoolCreateInfo();
-    $poolInfo->maxSets = 1;
+    $poolInfo->maxSets = 2;
+    $poolInfo->poolSizeCount = 1;
     $poolInfo->pPoolSizes = [$size];
-    vkCreateDescriptorPool($device, $poolInfo, null, $pool);
+    vkCreateDescriptorPool($device, $poolInfo, 0, $pool);
     $allocate = new VkDescriptorSetAllocateInfo();
     $allocate->descriptorPool = $pool;
-    $allocate->pSetLayouts = [$setLayout];
+    $allocate->descriptorSetCount = 2;
+    $allocate->pSetLayouts = [$setLayout, $setLayout];
 
-    expect(vkAllocateDescriptorSets($device, $allocate, $sets))->toBe(VK_SUCCESS)->and($sets)->toHaveCount(1);
+    expect(vkAllocateDescriptorSets($device, $allocate, $sets))->toBe(VK_SUCCESS)->and($sets)->toHaveCount(2);
 
     [$image, $memory] = image2D(VK_FORMAT_R8G8B8A8_UNORM, 4, 4, VK_IMAGE_USAGE_SAMPLED_BIT);
-    vkCreateSampler($device, new VkSamplerCreateInfo(), null, $sampler);
+    vkCreateSampler($device, new VkSamplerCreateInfo(), 0, $sampler);
     $imageInfo = new VkDescriptorImageInfo();
     $imageInfo->sampler = $sampler;
     $imageInfo->imageView = view2D($image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
     $imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     $write = new VkWriteDescriptorSet();
     $write->dstSet = $sets[0];
+    $write->descriptorCount = 1;
     $write->descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     $write->pImageInfo = [$imageInfo];
-    vkUpdateDescriptorSets($device, [$write], []);
+    $copy = new VkCopyDescriptorSet();
+    $copy->srcSet = $sets[0];
+    $copy->dstSet = $sets[1];
+    $copy->descriptorCount = 1;
+    vkUpdateDescriptorSets($device, 1, [$write], 0, []);
+    vkUpdateDescriptorSets($device, 0, [], 1, [$copy]);
 
-    vkDestroyDescriptorPool($device, $pool, null);
-    expect(fn () => $sets[0]->pointer())->toThrow(ValueError::class, 'VkDescriptorSet has been destroyed');
+    vkDestroyDescriptorPool($device, $pool, 0);
+    expect($sets[0]->pointer())->toBe(0)->and($sets[1]->pointer())->toBe(0);
 
-    vkDestroyDescriptorSetLayout($device, $setLayout, null);
-    vkDestroySampler($device, $sampler, null);
-    vkDestroyImageView($device, $imageInfo->imageView, null);
-    vkDestroyImage($device, $image, null);
-    vkFreeMemory($device, $memory, null);
+    vkDestroyDescriptorSetLayout($device, $setLayout, 0);
+    vkDestroySampler($device, $sampler, 0);
+    vkDestroyImageView($device, $imageInfo->imageView, 0);
+    vkDestroyImage($device, $image, 0);
+    vkFreeMemory($device, $memory, 0);
 });

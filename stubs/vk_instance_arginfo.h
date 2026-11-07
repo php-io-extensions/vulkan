@@ -1,25 +1,27 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 15eefd32137669a0228c8ae8789808f29a4f825c */
+ * Stub hash: 96a0ee28e45968263e81c603388c52b39d4c9e07 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateInstance, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkInstanceCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pInstance, VkInstance, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyInstance, 0, 2, IS_VOID, 0)
-	ZEND_ARG_OBJ_INFO(0, instance, VkInstance, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, instance, VkInstance, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkEnumerateInstanceExtensionProperties, 0, 2, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkEnumerateInstanceExtensionProperties, 0, 3, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pLayerName, IS_STRING, 1)
-	ZEND_ARG_TYPE_INFO(1, pProperties, IS_ARRAY, 1)
+	ZEND_ARG_TYPE_INFO(1, pPropertyCount, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(ZEND_SEND_PREFER_REF, pProperties, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkEnumeratePhysicalDevices, 0, 2, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkEnumeratePhysicalDevices, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, instance, VkInstance, 0)
-	ZEND_ARG_TYPE_INFO(1, pPhysicalDevices, IS_ARRAY, 1)
+	ZEND_ARG_TYPE_INFO(1, pPhysicalDeviceCount, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(ZEND_SEND_PREFER_REF, pPhysicalDevices, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceProperties, 0, 2, IS_VOID, 0)
@@ -27,9 +29,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceProperties, 0
 	ZEND_ARG_OBJ_INFO(1, pProperties, VkPhysicalDeviceProperties, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceQueueFamilyProperties, 0, 2, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceQueueFamilyProperties, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
-	ZEND_ARG_TYPE_INFO(1, pQueueFamilyProperties, IS_ARRAY, 1)
+	ZEND_ARG_TYPE_INFO(1, pQueueFamilyPropertyCount, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(ZEND_SEND_PREFER_REF, pQueueFamilyProperties, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceMemoryProperties, 0, 2, IS_VOID, 0)
@@ -43,22 +46,23 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceFormatPropert
 	ZEND_ARG_OBJ_INFO(1, pFormatProperties, VkFormatProperties, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkEnumerateDeviceExtensionProperties, 0, 3, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkEnumerateDeviceExtensionProperties, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
 	ZEND_ARG_TYPE_INFO(0, pLayerName, IS_STRING, 1)
-	ZEND_ARG_TYPE_INFO(1, pProperties, IS_ARRAY, 1)
+	ZEND_ARG_TYPE_INFO(1, pPropertyCount, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(ZEND_SEND_PREFER_REF, pProperties, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateDevice, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkDeviceCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pDevice, VkDevice, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyDevice, 0, 2, IS_VOID, 0)
-	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetDeviceQueue, 0, 4, IS_VOID, 0)
@@ -83,7 +87,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkInstance_pointer, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkInstance_fromPointer, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkInstance_fromPointer, 0, 1, IS_STATIC, 1)
 	ZEND_ARG_TYPE_INFO(0, pointer, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -320,11 +324,11 @@ static zend_class_entry *register_class_VkInstanceCreateInfo(void)
 	zend_declare_typed_property(class_entry, property_enabledLayerCount_name, &property_enabledLayerCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_enabledLayerCount_name);
 
-	zval property_enabledLayerNames_default_value;
-	ZVAL_EMPTY_ARRAY(&property_enabledLayerNames_default_value);
-	zend_string *property_enabledLayerNames_name = zend_string_init("enabledLayerNames", sizeof("enabledLayerNames") - 1, 1);
-	zend_declare_typed_property(class_entry, property_enabledLayerNames_name, &property_enabledLayerNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
-	zend_string_release(property_enabledLayerNames_name);
+	zval property_ppEnabledLayerNames_default_value;
+	ZVAL_EMPTY_ARRAY(&property_ppEnabledLayerNames_default_value);
+	zend_string *property_ppEnabledLayerNames_name = zend_string_init("ppEnabledLayerNames", sizeof("ppEnabledLayerNames") - 1, 1);
+	zend_declare_typed_property(class_entry, property_ppEnabledLayerNames_name, &property_ppEnabledLayerNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_ppEnabledLayerNames_name);
 
 	zval property_enabledExtensionCount_default_value;
 	ZVAL_LONG(&property_enabledExtensionCount_default_value, 0);
@@ -332,11 +336,11 @@ static zend_class_entry *register_class_VkInstanceCreateInfo(void)
 	zend_declare_typed_property(class_entry, property_enabledExtensionCount_name, &property_enabledExtensionCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_enabledExtensionCount_name);
 
-	zval property_enabledExtensionNames_default_value;
-	ZVAL_EMPTY_ARRAY(&property_enabledExtensionNames_default_value);
-	zend_string *property_enabledExtensionNames_name = zend_string_init("enabledExtensionNames", sizeof("enabledExtensionNames") - 1, 1);
-	zend_declare_typed_property(class_entry, property_enabledExtensionNames_name, &property_enabledExtensionNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
-	zend_string_release(property_enabledExtensionNames_name);
+	zval property_ppEnabledExtensionNames_default_value;
+	ZVAL_EMPTY_ARRAY(&property_ppEnabledExtensionNames_default_value);
+	zend_string *property_ppEnabledExtensionNames_name = zend_string_init("ppEnabledExtensionNames", sizeof("ppEnabledExtensionNames") - 1, 1);
+	zend_declare_typed_property(class_entry, property_ppEnabledExtensionNames_name, &property_ppEnabledExtensionNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_ppEnabledExtensionNames_name);
 
 	return class_entry;
 }
@@ -365,6 +369,12 @@ static zend_class_entry *register_class_VkDeviceQueueCreateInfo(void)
 	zend_string *property_queueFamilyIndex_name = zend_string_init("queueFamilyIndex", sizeof("queueFamilyIndex") - 1, 1);
 	zend_declare_typed_property(class_entry, property_queueFamilyIndex_name, &property_queueFamilyIndex_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_queueFamilyIndex_name);
+
+	zval property_queueCount_default_value;
+	ZVAL_LONG(&property_queueCount_default_value, 0);
+	zend_string *property_queueCount_name = zend_string_init("queueCount", sizeof("queueCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_queueCount_name, &property_queueCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_queueCount_name);
 
 	zval property_pQueuePriorities_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pQueuePriorities_default_value);
@@ -863,6 +873,12 @@ static zend_class_entry *register_class_VkDeviceCreateInfo(void)
 	zend_declare_typed_property(class_entry, property_flags_name, &property_flags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_flags_name);
 
+	zval property_queueCreateInfoCount_default_value;
+	ZVAL_LONG(&property_queueCreateInfoCount_default_value, 0);
+	zend_string *property_queueCreateInfoCount_name = zend_string_init("queueCreateInfoCount", sizeof("queueCreateInfoCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_queueCreateInfoCount_name, &property_queueCreateInfoCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_queueCreateInfoCount_name);
+
 	zval property_pQueueCreateInfos_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pQueueCreateInfos_default_value);
 	zend_string *property_pQueueCreateInfos_name = zend_string_init("pQueueCreateInfos", sizeof("pQueueCreateInfos") - 1, 1);
@@ -875,11 +891,11 @@ static zend_class_entry *register_class_VkDeviceCreateInfo(void)
 	zend_declare_typed_property(class_entry, property_enabledLayerCount_name, &property_enabledLayerCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_enabledLayerCount_name);
 
-	zval property_enabledLayerNames_default_value;
-	ZVAL_EMPTY_ARRAY(&property_enabledLayerNames_default_value);
-	zend_string *property_enabledLayerNames_name = zend_string_init("enabledLayerNames", sizeof("enabledLayerNames") - 1, 1);
-	zend_declare_typed_property(class_entry, property_enabledLayerNames_name, &property_enabledLayerNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
-	zend_string_release(property_enabledLayerNames_name);
+	zval property_ppEnabledLayerNames_default_value;
+	ZVAL_EMPTY_ARRAY(&property_ppEnabledLayerNames_default_value);
+	zend_string *property_ppEnabledLayerNames_name = zend_string_init("ppEnabledLayerNames", sizeof("ppEnabledLayerNames") - 1, 1);
+	zend_declare_typed_property(class_entry, property_ppEnabledLayerNames_name, &property_ppEnabledLayerNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_ppEnabledLayerNames_name);
 
 	zval property_enabledExtensionCount_default_value;
 	ZVAL_LONG(&property_enabledExtensionCount_default_value, 0);
@@ -887,11 +903,11 @@ static zend_class_entry *register_class_VkDeviceCreateInfo(void)
 	zend_declare_typed_property(class_entry, property_enabledExtensionCount_name, &property_enabledExtensionCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_enabledExtensionCount_name);
 
-	zval property_enabledExtensionNames_default_value;
-	ZVAL_EMPTY_ARRAY(&property_enabledExtensionNames_default_value);
-	zend_string *property_enabledExtensionNames_name = zend_string_init("enabledExtensionNames", sizeof("enabledExtensionNames") - 1, 1);
-	zend_declare_typed_property(class_entry, property_enabledExtensionNames_name, &property_enabledExtensionNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
-	zend_string_release(property_enabledExtensionNames_name);
+	zval property_ppEnabledExtensionNames_default_value;
+	ZVAL_EMPTY_ARRAY(&property_ppEnabledExtensionNames_default_value);
+	zend_string *property_ppEnabledExtensionNames_name = zend_string_init("ppEnabledExtensionNames", sizeof("ppEnabledExtensionNames") - 1, 1);
+	zend_declare_typed_property(class_entry, property_ppEnabledExtensionNames_name, &property_ppEnabledExtensionNames_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_ppEnabledExtensionNames_name);
 
 	zval property_pEnabledFeatures_default_value;
 	ZVAL_NULL(&property_pEnabledFeatures_default_value);
@@ -1769,11 +1785,23 @@ static zend_class_entry *register_class_VkPhysicalDeviceMemoryProperties(void)
 	INIT_CLASS_ENTRY(ce, "VkPhysicalDeviceMemoryProperties", NULL);
 	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
 
+	zval property_memoryTypeCount_default_value;
+	ZVAL_LONG(&property_memoryTypeCount_default_value, 0);
+	zend_string *property_memoryTypeCount_name = zend_string_init("memoryTypeCount", sizeof("memoryTypeCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_memoryTypeCount_name, &property_memoryTypeCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_memoryTypeCount_name);
+
 	zval property_memoryTypes_default_value;
 	ZVAL_EMPTY_ARRAY(&property_memoryTypes_default_value);
 	zend_string *property_memoryTypes_name = zend_string_init("memoryTypes", sizeof("memoryTypes") - 1, 1);
 	zend_declare_typed_property(class_entry, property_memoryTypes_name, &property_memoryTypes_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
 	zend_string_release(property_memoryTypes_name);
+
+	zval property_memoryHeapCount_default_value;
+	ZVAL_LONG(&property_memoryHeapCount_default_value, 0);
+	zend_string *property_memoryHeapCount_name = zend_string_init("memoryHeapCount", sizeof("memoryHeapCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_memoryHeapCount_name, &property_memoryHeapCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_memoryHeapCount_name);
 
 	zval property_memoryHeaps_default_value;
 	ZVAL_EMPTY_ARRAY(&property_memoryHeaps_default_value);

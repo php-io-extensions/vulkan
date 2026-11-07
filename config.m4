@@ -3,7 +3,17 @@ PHP_ARG_ENABLE([vulkan],
   [AS_HELP_STRING([--enable-vulkan], [Enable the Vulkan bindings])],
   [no])
 
+PHP_ARG_ENABLE([vulkan-probes],
+  [whether to build the vulkan probe switch],
+  [AS_HELP_STRING([--enable-vulkan-probes],
+    [Build the VULKAN_PROBE_OFF switch that tests/Probes drives: env VULKAN_PROBE_OFF=<site id> turns that kept refusal off. Never for a release build])],
+  [no],
+  [no])
+
 if test "$PHP_VULKAN" != "no"; then
+  if test "$PHP_VULKAN_PROBES" != "no"; then
+    AC_DEFINE([VULKAN_PROBES], [1], [Kept refusal sites can be turned off through env VULKAN_PROBE_OFF])
+  fi
   PKG_CHECK_MODULES([VULKAN], [vulkan >= 1.3])
   PHP_EVAL_INCLINE([$VULKAN_CFLAGS])
 

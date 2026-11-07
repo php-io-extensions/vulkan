@@ -13,13 +13,13 @@ sources:
 
 # Identity
 
-`vulkan_handle` stores the native value as `uint64_t` and a `zend_object *` parent. The identity table is one hash per class, keyed by that value. `fromPointer` returns the live object of that class, or boxes a new one with no parent. Address 0 is refused. A value of 0 means the PHP handle has been released.[^runtime]
+`vulkan_handle` stores the native value as `uint64_t` and a `zend_object *` parent. The identity table is one hash per class, keyed by that value. `fromPointer` returns the live object of that class, or boxes a new one with no parent. `fromPointer(0)` is `null`; `pointer()` of a released handle is 0. A value of 0 means the PHP handle has been released.[^runtime]
 
 Dropping the last PHP reference does not destroy the native object. The child holds a reference to its parent so the parent object stays alive while a child does.
 
 # Release
 
-`vulkan_release_tree` releases the object and every live handle whose parent chain reaches it. The set is computed before any parent pointer is cleared. A released handle passed to any binding throws `ValueError` "`Name has been destroyed`" before the driver is called.
+`vulkan_release_tree` releases the object and every live handle whose parent chain reaches it. The set is computed before any parent pointer is cleared. A released handle goes to Vulkan as `VK_NULL_HANDLE`, as `null` does. A released dispatchable handle (`VkInstance`, `VkPhysicalDevice`, `VkDevice`, `VkQueue`, `VkCommandBuffer`) is refused with `ValueError` "`Name has been released`" (site `vulkan-null-dispatchable`): the loader reads its dispatch table through it. `vkDestroyInstance` and `vkDestroyDevice` take a released one as `NULL`, which C allows. Destroy functions take `null`.
 
 | Destroy or free | Releases |
 |---|---|

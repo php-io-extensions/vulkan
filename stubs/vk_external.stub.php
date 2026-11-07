@@ -43,6 +43,8 @@ final class VkImageDrmFormatModifierListCreateInfoEXT
 {
     public ?object $pNext = null;
 
+    public int $drmFormatModifierCount = 0;
+
     public array $pDrmFormatModifiers = [];
 }
 

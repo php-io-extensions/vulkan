@@ -151,7 +151,7 @@ if ! "$PHP_BIN_REAL" build/gen_stub.php stubs >>"$LOG_FILE" 2>&1; then
     die "gen_stub.php failed. See ${LOG_FILE}."
 fi
 export PKG_CONFIG_PATH="/usr/lib/$(gcc -dumpmachine)/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
-if ! ./configure --enable-vulkan "--with-php-config=${RESOLVED_PHP_CONFIG}" >>"$LOG_FILE" 2>&1; then
+if ! ./configure --enable-vulkan ${VULKAN_CONFIGURE:-} "--with-php-config=${RESOLVED_PHP_CONFIG}" >>"$LOG_FILE" 2>&1; then
     show_failure_logs
     die "configure failed. See ${LOG_FILE}."
 fi

@@ -12,4 +12,4 @@ final class VkMetalSurfaceCreateInfoEXT
     public int $pLayer = 0;
 }
 
-function vkCreateMetalSurfaceEXT(VkInstance $instance, VkMetalSurfaceCreateInfoEXT $pCreateInfo, null $pAllocator, ?VkSurfaceKHR &$pSurface): int {}
+function vkCreateMetalSurfaceEXT(VkInstance $instance, VkMetalSurfaceCreateInfoEXT $pCreateInfo, int $pAllocator, ?VkSurfaceKHR &$pSurface): int {}

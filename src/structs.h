@@ -30,6 +30,19 @@ extern zend_class_entry *vulkan_ce_VkQueue;
 
 bool vulkan_pnext(zend_object *obj, const void **out, vulkan_scratch *scratch, HashTable *visited);
 
+/*
+ * Function arguments that are a C count and its list. Each helper builds count items from the
+ * first count elements of list (argument list_arg); a count past the list is refused. The arrays
+ * live in scratch. An empty count gives NULL.
+ */
+bool vulkan_arg_count(zend_long count, uint32_t n, uint32_t count_arg, uint32_t list_arg);
+bool vulkan_arg_structs(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, zend_class_entry *ce, size_t size, vulkan_from_fn from, void **out, vulkan_scratch *scratch);
+bool vulkan_arg_handles(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, zend_class_entry *ce, uint64_t **out, vulkan_scratch *scratch);
+bool vulkan_arg_u32s(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, uint32_t **out, vulkan_scratch *scratch);
+bool vulkan_arg_u64s(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, uint64_t **out, vulkan_scratch *scratch);
+/* A struct object argument into dst, with its own pNext bookkeeping. */
+bool vulkan_arg_struct(zval *zv, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch);
+
 bool vk_VkApplicationInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkApplicationInfo_to(const void *raw, zval *rv);
 bool vk_VkInstanceCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
@@ -161,6 +174,7 @@ void vk_VkDescriptorSetAllocateInfo_to(const void *raw, zval *rv);
 bool vk_VkDescriptorImageInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkDescriptorImageInfo_to(const void *raw, zval *rv);
 bool vk_VkWriteDescriptorSet_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+bool vk_VkCopyDescriptorSet_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkWriteDescriptorSet_to(const void *raw, zval *rv);
 bool vk_VkViewport_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkViewport_to(const void *raw, zval *rv);
@@ -201,6 +215,7 @@ extern zend_class_entry *vulkan_ce_VkDescriptorPoolCreateInfo;
 extern zend_class_entry *vulkan_ce_VkDescriptorSetAllocateInfo;
 extern zend_class_entry *vulkan_ce_VkDescriptorImageInfo;
 extern zend_class_entry *vulkan_ce_VkWriteDescriptorSet;
+extern zend_class_entry *vulkan_ce_VkCopyDescriptorSet;
 extern zend_class_entry *vulkan_ce_VkViewport;
 extern zend_class_entry *vulkan_ce_VkOffset2D;
 extern zend_class_entry *vulkan_ce_VkExtent2D;
@@ -239,6 +254,7 @@ void vk_VkBufferImageCopy_to(const void *raw, zval *rv);
 bool vk_VkImageBlit_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkImageBlit_to(const void *raw, zval *rv);
 bool vk_VkMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+bool vk_VkBufferMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkMemoryBarrier_to(const void *raw, zval *rv);
 bool vk_VkImageMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkImageMemoryBarrier_to(const void *raw, zval *rv);
@@ -265,6 +281,7 @@ extern zend_class_entry *vulkan_ce_VkImageSubresourceLayers;
 extern zend_class_entry *vulkan_ce_VkBufferImageCopy;
 extern zend_class_entry *vulkan_ce_VkImageBlit;
 extern zend_class_entry *vulkan_ce_VkMemoryBarrier;
+extern zend_class_entry *vulkan_ce_VkBufferMemoryBarrier;
 extern zend_class_entry *vulkan_ce_VkImageMemoryBarrier;
 extern zend_class_entry *vulkan_ce_VkSubmitInfo;
 extern zend_class_entry *vulkan_ce_VkFenceCreateInfo;

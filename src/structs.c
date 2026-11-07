@@ -66,6 +66,7 @@ zend_class_entry *vulkan_ce_VkDescriptorPoolCreateInfo;
 zend_class_entry *vulkan_ce_VkDescriptorSetAllocateInfo;
 zend_class_entry *vulkan_ce_VkDescriptorImageInfo;
 zend_class_entry *vulkan_ce_VkWriteDescriptorSet;
+zend_class_entry *vulkan_ce_VkCopyDescriptorSet;
 zend_class_entry *vulkan_ce_VkViewport;
 zend_class_entry *vulkan_ce_VkOffset2D;
 zend_class_entry *vulkan_ce_VkExtent2D;
@@ -91,6 +92,7 @@ zend_class_entry *vulkan_ce_VkImageSubresourceLayers;
 zend_class_entry *vulkan_ce_VkBufferImageCopy;
 zend_class_entry *vulkan_ce_VkImageBlit;
 zend_class_entry *vulkan_ce_VkMemoryBarrier;
+zend_class_entry *vulkan_ce_VkBufferMemoryBarrier;
 zend_class_entry *vulkan_ce_VkImageMemoryBarrier;
 zend_class_entry *vulkan_ce_VkSubmitInfo;
 zend_class_entry *vulkan_ce_VkFenceCreateInfo;
@@ -175,8 +177,11 @@ static bool vulkan_struct_list(zend_object *obj, const char *name, zend_class_en
 		return false;
 	}
 
-	n = zend_hash_num_elements(Z_ARRVAL_P(zv));
-	*count = n;
+	if (!vulkan_list_count(obj, name, *count, zend_hash_num_elements(Z_ARRVAL_P(zv)), 0, 0)) {
+		return false;
+	}
+	/* Built from the list's items; Vulkan reads the count member. */
+	n = *count < zend_hash_num_elements(Z_ARRVAL_P(zv)) ? *count : zend_hash_num_elements(Z_ARRVAL_P(zv));
 	if (n == 0) {
 		*out = NULL;
 		return true;
@@ -185,6 +190,9 @@ static bool vulkan_struct_list(zend_object *obj, const char *name, zend_class_en
 	stored = vulkan_scratch_alloc(scratch, size * n);
 	i = 0;
 	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), item) {
+		if (i == n) {
+			break;
+		}
 		if (Z_TYPE_P(item) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(item), ce)) {
 			zend_type_error("%s::$%s must be a list of %s", ZSTR_VAL(obj->ce->name), name, ZSTR_VAL(ce->name));
 			return false;
@@ -213,13 +221,16 @@ static bool vulkan_counted_struct(zend_object *obj, const char *name, zend_class
 		return false;
 	}
 
-	n = zend_hash_num_elements(Z_ARRVAL_P(zv));
-	if (n > max) {
-		zend_value_error("%s::$%s holds at most %u values", ZSTR_VAL(obj->ce->name), name, max);
+	/* The C array holds max elements: the copy stops there, the count member keeps its value. */
+	n = *count < max ? *count : max;
+	if (!vulkan_list_count(obj, name, n, zend_hash_num_elements(Z_ARRVAL_P(zv)), 0, 0)) {
 		return false;
 	}
 	i = 0;
 	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), item) {
+		if (i == n) {
+			break;
+		}
 		if (Z_TYPE_P(item) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(item), ce)) {
 			zend_type_error("%s::$%s must be a list of %s", ZSTR_VAL(obj->ce->name), name, ZSTR_VAL(ce->name));
 			return false;
@@ -229,7 +240,6 @@ static bool vulkan_counted_struct(zend_object *obj, const char *name, zend_class
 		}
 		i++;
 	} ZEND_HASH_FOREACH_END();
-	*count = n;
 	return true;
 }
 
@@ -385,6 +395,7 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkDescriptorSetAllocateInfo, sizeof(VkDescriptorSetAllocateInfo), vk_VkDescriptorSetAllocateInfo_from },
 	{ &vulkan_ce_VkDescriptorImageInfo, sizeof(VkDescriptorImageInfo), vk_VkDescriptorImageInfo_from },
 	{ &vulkan_ce_VkWriteDescriptorSet, sizeof(VkWriteDescriptorSet), vk_VkWriteDescriptorSet_from },
+	{ &vulkan_ce_VkCopyDescriptorSet, sizeof(VkCopyDescriptorSet), vk_VkCopyDescriptorSet_from },
 	{ &vulkan_ce_VkCommandPoolCreateInfo, sizeof(VkCommandPoolCreateInfo), vk_VkCommandPoolCreateInfo_from },
 	{ &vulkan_ce_VkCommandBufferAllocateInfo, sizeof(VkCommandBufferAllocateInfo), vk_VkCommandBufferAllocateInfo_from },
 	{ &vulkan_ce_VkCommandBufferInheritanceInfo, sizeof(VkCommandBufferInheritanceInfo), vk_VkCommandBufferInheritanceInfo_from },
@@ -398,6 +409,7 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkBufferImageCopy, sizeof(VkBufferImageCopy), vk_VkBufferImageCopy_from },
 	{ &vulkan_ce_VkImageBlit, sizeof(VkImageBlit), vk_VkImageBlit_from },
 	{ &vulkan_ce_VkMemoryBarrier, sizeof(VkMemoryBarrier), vk_VkMemoryBarrier_from },
+	{ &vulkan_ce_VkBufferMemoryBarrier, sizeof(VkBufferMemoryBarrier), vk_VkBufferMemoryBarrier_from },
 	{ &vulkan_ce_VkImageMemoryBarrier, sizeof(VkImageMemoryBarrier), vk_VkImageMemoryBarrier_from },
 	{ &vulkan_ce_VkSubmitInfo, sizeof(VkSubmitInfo), vk_VkSubmitInfo_from },
 	{ &vulkan_ce_VkFenceCreateInfo, sizeof(VkFenceCreateInfo), vk_VkFenceCreateInfo_from },
@@ -537,13 +549,13 @@ bool vk_VkInstanceCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *s
 	if (!vulkan_u32(obj, "enabledLayerCount", &dst->enabledLayerCount)) {
 		return false;
 	}
-	if (!vulkan_string_list(obj, "enabledLayerNames", &dst->ppEnabledLayerNames, &dst->enabledLayerCount, scratch)) {
+	if (!vulkan_string_list(obj, "ppEnabledLayerNames", &dst->ppEnabledLayerNames, &dst->enabledLayerCount, scratch)) {
 		return false;
 	}
 	if (!vulkan_u32(obj, "enabledExtensionCount", &dst->enabledExtensionCount)) {
 		return false;
 	}
-	if (!vulkan_string_list(obj, "enabledExtensionNames", &dst->ppEnabledExtensionNames, &dst->enabledExtensionCount, scratch)) {
+	if (!vulkan_string_list(obj, "ppEnabledExtensionNames", &dst->ppEnabledExtensionNames, &dst->enabledExtensionCount, scratch)) {
 		return false;
 	}
 	return true;
@@ -559,9 +571,9 @@ void vk_VkInstanceCreateInfo_to(const void *raw, zval *rv)
 	vulkan_set_long(obj, "flags", (zend_long) src->flags);
 	/* struct_ptr pApplicationInfo is an input */
 	vulkan_set_long(obj, "enabledLayerCount", (zend_long) src->enabledLayerCount);
-	/* string_list enabledLayerNames is an input */
+	/* string_list ppEnabledLayerNames is an input */
 	vulkan_set_long(obj, "enabledExtensionCount", (zend_long) src->enabledExtensionCount);
-	/* string_list enabledExtensionNames is an input */
+	/* string_list ppEnabledExtensionNames is an input */
 	}
 }
 
@@ -580,6 +592,9 @@ bool vk_VkDeviceQueueCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch
 		return false;
 	}
 	if (!vulkan_u32(obj, "queueFamilyIndex", &dst->queueFamilyIndex)) {
+		return false;
+	}
+	if (!vulkan_u32(obj, "queueCount", &dst->queueCount)) {
 		return false;
 	}
 	if (!vulkan_float_list(obj, "pQueuePriorities", &dst->pQueuePriorities, &dst->queueCount, scratch)) {
@@ -969,19 +984,22 @@ bool vk_VkDeviceCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scr
 	if (!vulkan_u32(obj, "flags", &dst->flags)) {
 		return false;
 	}
+	if (!vulkan_u32(obj, "queueCreateInfoCount", &dst->queueCreateInfoCount)) {
+		return false;
+	}
 	if (!vulkan_struct_list(obj, "pQueueCreateInfos", vulkan_ce_VkDeviceQueueCreateInfo, sizeof(VkDeviceQueueCreateInfo), vk_VkDeviceQueueCreateInfo_from, (void **) &dst->pQueueCreateInfos, &dst->queueCreateInfoCount, scratch, visited)) {
 		return false;
 	}
 	if (!vulkan_u32(obj, "enabledLayerCount", &dst->enabledLayerCount)) {
 		return false;
 	}
-	if (!vulkan_string_list(obj, "enabledLayerNames", &dst->ppEnabledLayerNames, &dst->enabledLayerCount, scratch)) {
+	if (!vulkan_string_list(obj, "ppEnabledLayerNames", &dst->ppEnabledLayerNames, &dst->enabledLayerCount, scratch)) {
 		return false;
 	}
 	if (!vulkan_u32(obj, "enabledExtensionCount", &dst->enabledExtensionCount)) {
 		return false;
 	}
-	if (!vulkan_string_list(obj, "enabledExtensionNames", &dst->ppEnabledExtensionNames, &dst->enabledExtensionCount, scratch)) {
+	if (!vulkan_string_list(obj, "ppEnabledExtensionNames", &dst->ppEnabledExtensionNames, &dst->enabledExtensionCount, scratch)) {
 		return false;
 	}
 	if (!vulkan_struct_ptr(obj, "pEnabledFeatures", vulkan_ce_VkPhysicalDeviceFeatures, sizeof(VkPhysicalDeviceFeatures), vk_VkPhysicalDeviceFeatures_from, (void **) &dst->pEnabledFeatures, scratch, visited)) {
@@ -1000,9 +1018,9 @@ void vk_VkDeviceCreateInfo_to(const void *raw, zval *rv)
 	vulkan_set_long(obj, "flags", (zend_long) src->flags);
 	/* struct_list pQueueCreateInfos is an input */
 	vulkan_set_long(obj, "enabledLayerCount", (zend_long) src->enabledLayerCount);
-	/* string_list enabledLayerNames is an input */
+	/* string_list ppEnabledLayerNames is an input */
 	vulkan_set_long(obj, "enabledExtensionCount", (zend_long) src->enabledExtensionCount);
-	/* string_list enabledExtensionNames is an input */
+	/* string_list ppEnabledExtensionNames is an input */
 	/* struct_ptr pEnabledFeatures is an input */
 	}
 }
@@ -1671,6 +1689,9 @@ bool vk_VkPhysicalDeviceMemoryProperties_from(zend_object *obj, void *raw, vulka
 	if (!vulkan_enter(obj, visited)) {
 		return false;
 	}
+	if (!vulkan_u32(obj, "memoryTypeCount", &dst->memoryTypeCount) || !vulkan_u32(obj, "memoryHeapCount", &dst->memoryHeapCount)) {
+		return false;
+	}
 	if (!vulkan_counted_struct(obj, "memoryTypes", vulkan_ce_VkMemoryType, vk_VkMemoryType_from, dst->memoryTypes, sizeof(VkMemoryType), 32, &dst->memoryTypeCount, scratch, visited)) {
 		return false;
 	}
@@ -1686,6 +1707,8 @@ void vk_VkPhysicalDeviceMemoryProperties_to(const void *raw, zval *rv)
 	object_init_ex(rv, vulkan_ce_VkPhysicalDeviceMemoryProperties);
 	{
 		zend_object *obj = Z_OBJ_P(rv);
+	vulkan_set_long(obj, "memoryTypeCount", (zend_long) src->memoryTypeCount);
+	vulkan_set_long(obj, "memoryHeapCount", (zend_long) src->memoryHeapCount);
 	vulkan_set_struct_array(obj, "memoryTypes", src->memoryTypes, src->memoryTypeCount, sizeof(VkMemoryType), vk_VkMemoryType_to);
 	vulkan_set_struct_array(obj, "memoryHeaps", src->memoryHeaps, src->memoryHeapCount, sizeof(VkMemoryHeap), vk_VkMemoryHeap_to);
 	}

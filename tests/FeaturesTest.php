@@ -19,7 +19,7 @@ it('fills the core features and a chained portability-subset struct in place', f
             ->and($portability->pointPolygons)->toBeFalse()
             ->and($portability->separateStencilMaskRef)->toBeTrue();
     } else {
-        // Not a portability driver: Vulkan leaves the struct it does not know untouched.
+        // Not a portability implementation: Vulkan leaves the struct it does not know untouched.
         expect($portability->triangleFans)->toBeFalse()
             ->and($portability->events)->toBeFalse();
     }
@@ -55,7 +55,8 @@ it('reads the present id and present wait features through the chain', function 
 
     vkGetPhysicalDeviceFeatures2($physical, $features);
 
-    vkEnumerateDeviceExtensionProperties($physical, null, $available);
+    vkEnumerateDeviceExtensionProperties($physical, null, $count, null);
+    vkEnumerateDeviceExtensionProperties($physical, null, $count, $available);
     $names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
     expect($id->presentId)->toBe(in_array(VK_KHR_PRESENT_ID_EXTENSION_NAME, $names, true))
         ->and($wait->presentWait)->toBe(in_array(VK_KHR_PRESENT_WAIT_EXTENSION_NAME, $names, true));

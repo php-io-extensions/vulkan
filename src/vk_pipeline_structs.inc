@@ -1,84 +1,55 @@
 
-static bool vulkan_optional_floats(zend_object *obj, const char *name, float *dst, uint32_t count)
+/* False after throwing; *is_null tells whether property name holds null (a NULL pointer in C). */
+static bool vulkan_prop_is_null(zend_object *obj, const char *name, bool *is_null)
 {
 	zval *zv = zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL);
 
 	if (zv == NULL || EG(exception) != NULL) {
 		return false;
 	}
-	if (Z_TYPE_P(zv) == IS_ARRAY && zend_hash_num_elements(Z_ARRVAL_P(zv)) == 0) {
-		return true;
-	}
-	return vulkan_fixed_floats(obj, name, dst, count);
+	*is_null = Z_TYPE_P(zv) == IS_NULL;
+	return true;
 }
 
+/* A list C lets be NULL whatever its count: null is NULL, a list gives *count items. */
 static bool vulkan_opt_struct_list(zend_object *obj, const char *name, zend_class_entry *ce, size_t size, vulkan_from_fn from, void **out, uint32_t *count, vulkan_scratch *scratch, HashTable *visited)
 {
 	zval *zv = zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL);
-	uint32_t listed = 0;
 
 	if (zv == NULL || EG(exception) != NULL) {
 		return false;
 	}
-	if (Z_TYPE_P(zv) != IS_ARRAY) {
-		zend_type_error("%s::$%s must be a list", ZSTR_VAL(obj->ce->name), name);
-		return false;
-	}
-	if (zend_hash_num_elements(Z_ARRVAL_P(zv)) == 0) {
+	if (Z_TYPE_P(zv) == IS_NULL) {
 		*out = NULL;
 		return true;
 	}
-	return vulkan_struct_list(obj, name, ce, size, from, out, &listed, scratch, visited) && (*count = listed, true);
-}
-
-static bool vulkan_resolve_list(zend_object *obj, const char *name, zend_class_entry *ce, vulkan_from_fn from, void **out, uint32_t color_count, vulkan_scratch *scratch, HashTable *visited)
-{
-	zval *zv = zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL);
-	uint32_t listed = 0;
-
-	if (zv == NULL || EG(exception) != NULL) {
-		return false;
-	}
-	if (Z_TYPE_P(zv) != IS_ARRAY) {
-		zend_type_error("%s::$%s must be a list", ZSTR_VAL(obj->ce->name), name);
-		return false;
-	}
-	if (zend_hash_num_elements(Z_ARRVAL_P(zv)) == 0) {
-		*out = NULL;
-		return true;
-	}
-	if (!vulkan_struct_list(obj, name, ce, sizeof(VkAttachmentReference), from, out, &listed, scratch, visited)) {
-		return false;
-	}
-	if (listed != color_count) {
-		zend_value_error("%s::$%s must match the colour attachments", ZSTR_VAL(obj->ce->name), name);
-		return false;
-	}
-	(void) ce;
-	return true;
+	return vulkan_struct_list(obj, name, ce, size, from, out, count, scratch, visited);
 }
 
 static bool vulkan_spirv(zend_object *obj, VkShaderModuleCreateInfo *dst, vulkan_scratch *scratch)
 {
-	zval *zv = zend_read_property(obj->ce, obj, "code", sizeof("code") - 1, 0, NULL);
+	zval *zv;
 	void *copy;
 
+	if (!vulkan_size(obj, "codeSize", &dst->codeSize)) {
+		return false;
+	}
+	zv = zend_read_property(obj->ce, obj, "pCode", sizeof("pCode") - 1, 0, NULL);
 	if (zv == NULL || EG(exception) != NULL) {
 		return false;
 	}
 	if (Z_TYPE_P(zv) != IS_STRING) {
-		zend_type_error("VkShaderModuleCreateInfo::$code must be a string");
+		zend_type_error("VkShaderModuleCreateInfo::$pCode must be a string");
 		return false;
 	}
-	if ((Z_STRLEN_P(zv) % 4) != 0) {
-		zend_value_error("SPIR-V code must be a multiple of 4 bytes");
+	if (!vulkan_bytes_length(Z_STRLEN_P(zv), dst->codeSize, 0, "VkShaderModuleCreateInfo::$pCode")) {
 		return false;
 	}
-	copy = vulkan_scratch_alloc(scratch, Z_STRLEN_P(zv) == 0 ? 1 : Z_STRLEN_P(zv));
-	if (Z_STRLEN_P(zv) > 0) {
-		memcpy(copy, Z_STRVAL_P(zv), Z_STRLEN_P(zv));
+	/* Copied so the words are 4-byte aligned. */
+	copy = vulkan_scratch_alloc(scratch, dst->codeSize);
+	if (dst->codeSize > 0) {
+		memcpy(copy, Z_STRVAL_P(zv), dst->codeSize);
 	}
-	dst->codeSize = Z_STRLEN_P(zv);
 	dst->pCode = (const uint32_t *) copy;
 	return true;
 }
@@ -126,13 +97,18 @@ bool vk_VkSubpassDescription_from(zend_object *obj, void *raw, vulkan_scratch *s
 {
 	VkSubpassDescription *dst = raw;
 	const uint32_t *u32s = NULL;
+	uint32_t resolve_count;
 	memset(dst, 0, sizeof(*dst));
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
 	if (!vulkan_u32(obj, "pipelineBindPoint", &dst->pipelineBindPoint)) return false;
+	if (!vulkan_u32(obj, "inputAttachmentCount", &dst->inputAttachmentCount)) return false;
 	if (!vulkan_struct_list(obj, "pInputAttachments", vulkan_ce_VkAttachmentReference, sizeof(VkAttachmentReference), vk_VkAttachmentReference_from, (void **) &dst->pInputAttachments, &dst->inputAttachmentCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "colorAttachmentCount", &dst->colorAttachmentCount)) return false;
 	if (!vulkan_struct_list(obj, "pColorAttachments", vulkan_ce_VkAttachmentReference, sizeof(VkAttachmentReference), vk_VkAttachmentReference_from, (void **) &dst->pColorAttachments, &dst->colorAttachmentCount, scratch, visited)) return false;
-	if (!vulkan_resolve_list(obj, "pResolveAttachments", vulkan_ce_VkAttachmentReference, vk_VkAttachmentReference_from, (void **) &dst->pResolveAttachments, dst->colorAttachmentCount, scratch, visited)) return false;
+	resolve_count = dst->colorAttachmentCount;
+	if (!vulkan_opt_struct_list(obj, "pResolveAttachments", vulkan_ce_VkAttachmentReference, sizeof(VkAttachmentReference), vk_VkAttachmentReference_from, (void **) &dst->pResolveAttachments, &resolve_count, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "preserveAttachmentCount", &dst->preserveAttachmentCount)) return false;
 	if (!vulkan_struct_ptr(obj, "pDepthStencilAttachment", vulkan_ce_VkAttachmentReference, sizeof(VkAttachmentReference), vk_VkAttachmentReference_from, (void **) &dst->pDepthStencilAttachment, scratch, visited)) return false;
 	if (!vulkan_u32_list(obj, "pPreserveAttachments", &u32s, &dst->preserveAttachmentCount, scratch)) return false;
 	dst->pPreserveAttachments = (const uint32_t *) u32s;
@@ -174,8 +150,11 @@ bool vk_VkRenderPassCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch 
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "attachmentCount", &dst->attachmentCount)) return false;
 	if (!vulkan_struct_list(obj, "pAttachments", vulkan_ce_VkAttachmentDescription, sizeof(VkAttachmentDescription), vk_VkAttachmentDescription_from, (void **) &dst->pAttachments, &dst->attachmentCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "subpassCount", &dst->subpassCount)) return false;
 	if (!vulkan_struct_list(obj, "pSubpasses", vulkan_ce_VkSubpassDescription, sizeof(VkSubpassDescription), vk_VkSubpassDescription_from, (void **) &dst->pSubpasses, &dst->subpassCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "dependencyCount", &dst->dependencyCount)) return false;
 	if (!vulkan_struct_list(obj, "pDependencies", vulkan_ce_VkSubpassDependency, sizeof(VkSubpassDependency), vk_VkSubpassDependency_from, (void **) &dst->pDependencies, &dst->dependencyCount, scratch, visited)) return false;
 	return true;
 }
@@ -198,6 +177,7 @@ bool vk_VkFramebufferCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
 	if (!vulkan_handle_prop(obj, "renderPass", vulkan_ce_VkRenderPass, &handle_tmp)) return false;
 	dst->renderPass = (VkRenderPass) (uintptr_t) handle_tmp;
+	if (!vulkan_u32(obj, "attachmentCount", &dst->attachmentCount)) return false;
 	if (!vulkan_handle_list(obj, "pAttachments", vulkan_ce_VkImageView, &handles, &dst->attachmentCount, scratch)) return false;
 	dst->pAttachments = handles == NULL ? NULL : (VkImageView const *) handles;
 	if (!vulkan_u32(obj, "width", &dst->width)) return false;
@@ -256,8 +236,10 @@ bool vk_VkPipelineLayoutCreateInfo_from(zend_object *obj, void *raw, vulkan_scra
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "setLayoutCount", &dst->setLayoutCount)) return false;
 	if (!vulkan_handle_list(obj, "pSetLayouts", vulkan_ce_VkDescriptorSetLayout, &handles, &dst->setLayoutCount, scratch)) return false;
 	dst->pSetLayouts = handles == NULL ? NULL : (VkDescriptorSetLayout const *) handles;
+	if (!vulkan_u32(obj, "pushConstantRangeCount", &dst->pushConstantRangeCount)) return false;
 	if (!vulkan_struct_list(obj, "pPushConstantRanges", vulkan_ce_VkPushConstantRange, sizeof(VkPushConstantRange), vk_VkPushConstantRange_from, (void **) &dst->pPushConstantRanges, &dst->pushConstantRangeCount, scratch, visited)) return false;
 	return true;
 }
@@ -333,7 +315,9 @@ bool vk_VkPipelineVertexInputStateCreateInfo_from(zend_object *obj, void *raw, v
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "vertexBindingDescriptionCount", &dst->vertexBindingDescriptionCount)) return false;
 	if (!vulkan_struct_list(obj, "pVertexBindingDescriptions", vulkan_ce_VkVertexInputBindingDescription, sizeof(VkVertexInputBindingDescription), vk_VkVertexInputBindingDescription_from, (void **) &dst->pVertexBindingDescriptions, &dst->vertexBindingDescriptionCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "vertexAttributeDescriptionCount", &dst->vertexAttributeDescriptionCount)) return false;
 	if (!vulkan_struct_list(obj, "pVertexAttributeDescriptions", vulkan_ce_VkVertexInputAttributeDescription, sizeof(VkVertexInputAttributeDescription), vk_VkVertexInputAttributeDescription_from, (void **) &dst->pVertexAttributeDescriptions, &dst->vertexAttributeDescriptionCount, scratch, visited)) return false;
 	return true;
 }
@@ -353,7 +337,7 @@ bool vk_VkPipelineInputAssemblyStateCreateInfo_from(zend_object *obj, void *raw,
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
 	if (!vulkan_u32(obj, "topology", &dst->topology)) return false;
-	if (!vulkan_u32(obj, "primitiveRestartEnable", &dst->primitiveRestartEnable)) return false;
+	if (!vulkan_bool32(obj, "primitiveRestartEnable", &dst->primitiveRestartEnable)) return false;
 	return true;
 }
 
@@ -392,12 +376,12 @@ bool vk_VkPipelineRasterizationStateCreateInfo_from(zend_object *obj, void *raw,
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
-	if (!vulkan_u32(obj, "depthClampEnable", &dst->depthClampEnable)) return false;
-	if (!vulkan_u32(obj, "rasterizerDiscardEnable", &dst->rasterizerDiscardEnable)) return false;
+	if (!vulkan_bool32(obj, "depthClampEnable", &dst->depthClampEnable)) return false;
+	if (!vulkan_bool32(obj, "rasterizerDiscardEnable", &dst->rasterizerDiscardEnable)) return false;
 	if (!vulkan_u32(obj, "polygonMode", &dst->polygonMode)) return false;
 	if (!vulkan_u32(obj, "cullMode", &dst->cullMode)) return false;
 	if (!vulkan_u32(obj, "frontFace", &dst->frontFace)) return false;
-	if (!vulkan_u32(obj, "depthBiasEnable", &dst->depthBiasEnable)) return false;
+	if (!vulkan_bool32(obj, "depthBiasEnable", &dst->depthBiasEnable)) return false;
 	if (!vulkan_float(obj, "depthBiasConstantFactor", &dst->depthBiasConstantFactor)) return false;
 	if (!vulkan_float(obj, "depthBiasClamp", &dst->depthBiasClamp)) return false;
 	if (!vulkan_float(obj, "depthBiasSlopeFactor", &dst->depthBiasSlopeFactor)) return false;
@@ -415,19 +399,23 @@ bool vk_VkPipelineMultisampleStateCreateInfo_from(zend_object *obj, void *raw, v
 {
 	VkPipelineMultisampleStateCreateInfo *dst = raw;
 	const uint32_t *u32s = NULL;
-	uint32_t ignored_count = 0;
+	uint32_t mask_count;
+	bool is_null;
 	memset(dst, 0, sizeof(*dst));
 	dst->sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
 	if (!vulkan_u32(obj, "rasterizationSamples", &dst->rasterizationSamples)) return false;
-	if (!vulkan_u32(obj, "sampleShadingEnable", &dst->sampleShadingEnable)) return false;
+	if (!vulkan_bool32(obj, "sampleShadingEnable", &dst->sampleShadingEnable)) return false;
 	if (!vulkan_float(obj, "minSampleShading", &dst->minSampleShading)) return false;
-	if (!vulkan_u32_list(obj, "pSampleMask", &u32s, &ignored_count, scratch)) return false;
+	/* C reads ceil(rasterizationSamples / 32) words, or nothing from NULL. */
+	mask_count = (dst->rasterizationSamples + 31) / 32;
+	if (!vulkan_prop_is_null(obj, "pSampleMask", &is_null)) return false;
+	if (!is_null && !vulkan_u32_list(obj, "pSampleMask", &u32s, &mask_count, scratch)) return false;
 	dst->pSampleMask = (const uint32_t *) u32s;
-	if (!vulkan_u32(obj, "alphaToCoverageEnable", &dst->alphaToCoverageEnable)) return false;
-	if (!vulkan_u32(obj, "alphaToOneEnable", &dst->alphaToOneEnable)) return false;
+	if (!vulkan_bool32(obj, "alphaToCoverageEnable", &dst->alphaToCoverageEnable)) return false;
+	if (!vulkan_bool32(obj, "alphaToOneEnable", &dst->alphaToOneEnable)) return false;
 	return true;
 }
 
@@ -466,11 +454,11 @@ bool vk_VkPipelineDepthStencilStateCreateInfo_from(zend_object *obj, void *raw, 
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
-	if (!vulkan_u32(obj, "depthTestEnable", &dst->depthTestEnable)) return false;
-	if (!vulkan_u32(obj, "depthWriteEnable", &dst->depthWriteEnable)) return false;
+	if (!vulkan_bool32(obj, "depthTestEnable", &dst->depthTestEnable)) return false;
+	if (!vulkan_bool32(obj, "depthWriteEnable", &dst->depthWriteEnable)) return false;
 	if (!vulkan_u32(obj, "depthCompareOp", &dst->depthCompareOp)) return false;
-	if (!vulkan_u32(obj, "depthBoundsTestEnable", &dst->depthBoundsTestEnable)) return false;
-	if (!vulkan_u32(obj, "stencilTestEnable", &dst->stencilTestEnable)) return false;
+	if (!vulkan_bool32(obj, "depthBoundsTestEnable", &dst->depthBoundsTestEnable)) return false;
+	if (!vulkan_bool32(obj, "stencilTestEnable", &dst->stencilTestEnable)) return false;
 	if (!vulkan_struct_value(obj, "front", vulkan_ce_VkStencilOpState, vk_VkStencilOpState_from, &dst->front, scratch, visited)) return false;
 	if (!vulkan_struct_value(obj, "back", vulkan_ce_VkStencilOpState, vk_VkStencilOpState_from, &dst->back, scratch, visited)) return false;
 	if (!vulkan_float(obj, "minDepthBounds", &dst->minDepthBounds)) return false;
@@ -489,7 +477,7 @@ bool vk_VkPipelineColorBlendAttachmentState_from(zend_object *obj, void *raw, vu
 	VkPipelineColorBlendAttachmentState *dst = raw;
 	memset(dst, 0, sizeof(*dst));
 	if (!vulkan_enter(obj, visited)) return false;
-	if (!vulkan_u32(obj, "blendEnable", &dst->blendEnable)) return false;
+	if (!vulkan_bool32(obj, "blendEnable", &dst->blendEnable)) return false;
 	if (!vulkan_u32(obj, "srcColorBlendFactor", &dst->srcColorBlendFactor)) return false;
 	if (!vulkan_u32(obj, "dstColorBlendFactor", &dst->dstColorBlendFactor)) return false;
 	if (!vulkan_u32(obj, "colorBlendOp", &dst->colorBlendOp)) return false;
@@ -514,10 +502,11 @@ bool vk_VkPipelineColorBlendStateCreateInfo_from(zend_object *obj, void *raw, vu
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
-	if (!vulkan_u32(obj, "logicOpEnable", &dst->logicOpEnable)) return false;
+	if (!vulkan_bool32(obj, "logicOpEnable", &dst->logicOpEnable)) return false;
 	if (!vulkan_u32(obj, "logicOp", &dst->logicOp)) return false;
+	if (!vulkan_u32(obj, "attachmentCount", &dst->attachmentCount)) return false;
 	if (!vulkan_struct_list(obj, "pAttachments", vulkan_ce_VkPipelineColorBlendAttachmentState, sizeof(VkPipelineColorBlendAttachmentState), vk_VkPipelineColorBlendAttachmentState_from, (void **) &dst->pAttachments, &dst->attachmentCount, scratch, visited)) return false;
-	if (!vulkan_optional_floats(obj, "blendConstants", dst->blendConstants, 4)) return false;
+	if (!vulkan_fixed_floats(obj, "blendConstants", dst->blendConstants, 4)) return false;
 	return true;
 }
 
@@ -536,6 +525,7 @@ bool vk_VkPipelineDynamicStateCreateInfo_from(zend_object *obj, void *raw, vulka
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "dynamicStateCount", &dst->dynamicStateCount)) return false;
 	if (!vulkan_u32_list(obj, "pDynamicStates", &u32s, &dst->dynamicStateCount, scratch)) return false;
 	dst->pDynamicStates = (const VkDynamicState *) u32s;
 	return true;
@@ -574,6 +564,7 @@ bool vk_VkGraphicsPipelineCreateInfo_from(zend_object *obj, void *raw, vulkan_sc
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "stageCount", &dst->stageCount)) return false;
 	if (!vulkan_struct_list(obj, "pStages", vulkan_ce_VkPipelineShaderStageCreateInfo, sizeof(VkPipelineShaderStageCreateInfo), vk_VkPipelineShaderStageCreateInfo_from, (void **) &dst->pStages, &dst->stageCount, scratch, visited)) return false;
 	if (!vulkan_struct_ptr(obj, "pVertexInputState", vulkan_ce_VkPipelineVertexInputStateCreateInfo, sizeof(VkPipelineVertexInputStateCreateInfo), vk_VkPipelineVertexInputStateCreateInfo_from, (void **) &dst->pVertexInputState, scratch, visited)) return false;
 	if (!vulkan_struct_ptr(obj, "pInputAssemblyState", vulkan_ce_VkPipelineInputAssemblyStateCreateInfo, sizeof(VkPipelineInputAssemblyStateCreateInfo), vk_VkPipelineInputAssemblyStateCreateInfo_from, (void **) &dst->pInputAssemblyState, scratch, visited)) return false;
@@ -605,14 +596,17 @@ bool vk_VkDescriptorSetLayoutBinding_from(zend_object *obj, void *raw, vulkan_sc
 {
 	VkDescriptorSetLayoutBinding *dst = raw;
 	uint64_t *handles = NULL;
-	uint32_t ignored_count = 0;
+	uint32_t sampler_count;
+	bool is_null;
 	memset(dst, 0, sizeof(*dst));
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_u32(obj, "binding", &dst->binding)) return false;
 	if (!vulkan_u32(obj, "descriptorType", &dst->descriptorType)) return false;
 	if (!vulkan_u32(obj, "descriptorCount", &dst->descriptorCount)) return false;
 	if (!vulkan_u32(obj, "stageFlags", &dst->stageFlags)) return false;
-	if (!vulkan_handle_list(obj, "pImmutableSamplers", vulkan_ce_VkSampler, &handles, &ignored_count, scratch)) return false;
+	sampler_count = dst->descriptorCount;
+	if (!vulkan_prop_is_null(obj, "pImmutableSamplers", &is_null)) return false;
+	if (!is_null && !vulkan_handle_list(obj, "pImmutableSamplers", vulkan_ce_VkSampler, &handles, &sampler_count, scratch)) return false;
 	dst->pImmutableSamplers = handles == NULL ? NULL : (VkSampler const *) handles;
 	return true;
 }
@@ -631,6 +625,7 @@ bool vk_VkDescriptorSetLayoutCreateInfo_from(zend_object *obj, void *raw, vulkan
 	if (!vulkan_enter(obj, visited)) return false;
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "bindingCount", &dst->bindingCount)) return false;
 	if (!vulkan_struct_list(obj, "pBindings", vulkan_ce_VkDescriptorSetLayoutBinding, sizeof(VkDescriptorSetLayoutBinding), vk_VkDescriptorSetLayoutBinding_from, (void **) &dst->pBindings, &dst->bindingCount, scratch, visited)) return false;
 	return true;
 }
@@ -666,6 +661,7 @@ bool vk_VkDescriptorPoolCreateInfo_from(zend_object *obj, void *raw, vulkan_scra
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
 	if (!vulkan_u32(obj, "maxSets", &dst->maxSets)) return false;
+	if (!vulkan_u32(obj, "poolSizeCount", &dst->poolSizeCount)) return false;
 	if (!vulkan_struct_list(obj, "pPoolSizes", vulkan_ce_VkDescriptorPoolSize, sizeof(VkDescriptorPoolSize), vk_VkDescriptorPoolSize_from, (void **) &dst->pPoolSizes, &dst->poolSizeCount, scratch, visited)) return false;
 	return true;
 }
@@ -687,6 +683,7 @@ bool vk_VkDescriptorSetAllocateInfo_from(zend_object *obj, void *raw, vulkan_scr
 	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
 	if (!vulkan_handle_prop(obj, "descriptorPool", vulkan_ce_VkDescriptorPool, &handle_tmp)) return false;
 	dst->descriptorPool = (VkDescriptorPool) (uintptr_t) handle_tmp;
+	if (!vulkan_u32(obj, "descriptorSetCount", &dst->descriptorSetCount)) return false;
 	if (!vulkan_handle_list(obj, "pSetLayouts", vulkan_ce_VkDescriptorSetLayout, &handles, &dst->descriptorSetCount, scratch)) return false;
 	dst->pSetLayouts = handles == NULL ? NULL : (VkDescriptorSetLayout const *) handles;
 	return true;
@@ -731,7 +728,8 @@ bool vk_VkWriteDescriptorSet_from(zend_object *obj, void *raw, vulkan_scratch *s
 	if (!vulkan_u32(obj, "dstBinding", &dst->dstBinding)) return false;
 	if (!vulkan_u32(obj, "dstArrayElement", &dst->dstArrayElement)) return false;
 	if (!vulkan_u32(obj, "descriptorType", &dst->descriptorType)) return false;
-	if (!vulkan_struct_list(obj, "pImageInfo", vulkan_ce_VkDescriptorImageInfo, sizeof(VkDescriptorImageInfo), vk_VkDescriptorImageInfo_from, (void **) &dst->pImageInfo, &dst->descriptorCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "descriptorCount", &dst->descriptorCount)) return false;
+	if (!vulkan_opt_struct_list(obj, "pImageInfo", vulkan_ce_VkDescriptorImageInfo, sizeof(VkDescriptorImageInfo), vk_VkDescriptorImageInfo_from, (void **) &dst->pImageInfo, &dst->descriptorCount, scratch, visited)) return false;
 	return true;
 }
 
@@ -807,4 +805,24 @@ void vk_VkRect2D_to(const void *raw, zval *rv)
 {
 	(void) raw;
 	object_init_ex(rv, vulkan_ce_VkRect2D);
+}
+
+bool vk_VkCopyDescriptorSet_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkCopyDescriptorSet *dst = raw;
+	uint64_t handle_tmp;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_handle_prop(obj, "srcSet", vulkan_ce_VkDescriptorSet, &handle_tmp)) return false;
+	dst->srcSet = (VkDescriptorSet) (uintptr_t) handle_tmp;
+	if (!vulkan_u32(obj, "srcBinding", &dst->srcBinding)) return false;
+	if (!vulkan_u32(obj, "srcArrayElement", &dst->srcArrayElement)) return false;
+	if (!vulkan_handle_prop(obj, "dstSet", vulkan_ce_VkDescriptorSet, &handle_tmp)) return false;
+	dst->dstSet = (VkDescriptorSet) (uintptr_t) handle_tmp;
+	if (!vulkan_u32(obj, "dstBinding", &dst->dstBinding)) return false;
+	if (!vulkan_u32(obj, "dstArrayElement", &dst->dstArrayElement)) return false;
+	if (!vulkan_u32(obj, "descriptorCount", &dst->descriptorCount)) return false;
+	return true;
 }

@@ -1,17 +1,17 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: c4d0a1e986974eca19704f8b58ec69ab2d938869 */
+ * Stub hash: 2e275df949497e330aee2a775f95c737fee01c77 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkAllocateMemory, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pAllocateInfo, VkMemoryAllocateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pMemory, VkDeviceMemory, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkFreeMemory, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, memory, VkDeviceMemory, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, memory, VkDeviceMemory, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkMapMemory, 0, 6, IS_LONG, 0)
@@ -28,8 +28,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkUnmapMemory, 0, 2, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, memory, VkDeviceMemory, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkFlushMappedMemoryRanges, 0, 2, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkFlushMappedMemoryRanges, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_TYPE_INFO(0, memoryRangeCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pMemoryRanges, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
@@ -38,14 +39,14 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateBuffer, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkBufferCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pBuffer, VkBuffer, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyBuffer, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, buffer, VkBuffer, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, buffer, VkBuffer, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetBufferMemoryRequirements, 0, 3, IS_VOID, 0)
@@ -64,14 +65,14 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateImage, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkImageCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pImage, VkImage, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyImage, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, image, VkImage, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, image, VkImage, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetImageMemoryRequirements, 0, 3, IS_VOID, 0)
@@ -90,27 +91,27 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateImageView, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkImageViewCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pView, VkImageView, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyImageView, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, imageView, VkImageView, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, imageView, VkImageView, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateSampler, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkSamplerCreateInfo, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pSampler, VkSampler, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroySampler, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, sampler, VkSampler, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, sampler, VkSampler, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_VkDeviceMemory___construct, 0, 0, 0)
@@ -119,7 +120,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkDeviceMemory_pointer, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkDeviceMemory_fromPointer, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkDeviceMemory_fromPointer, 0, 1, IS_STATIC, 1)
 	ZEND_ARG_TYPE_INFO(0, pointer, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -404,6 +405,12 @@ static zend_class_entry *register_class_VkBufferCreateInfo(void)
 	zend_declare_typed_property(class_entry, property_sharingMode_name, &property_sharingMode_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_sharingMode_name);
 
+	zval property_queueFamilyIndexCount_default_value;
+	ZVAL_LONG(&property_queueFamilyIndexCount_default_value, 0);
+	zend_string *property_queueFamilyIndexCount_name = zend_string_init("queueFamilyIndexCount", sizeof("queueFamilyIndexCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_queueFamilyIndexCount_name, &property_queueFamilyIndexCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_queueFamilyIndexCount_name);
+
 	zval property_pQueueFamilyIndices_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pQueueFamilyIndices_default_value);
 	zend_string *property_pQueueFamilyIndices_name = zend_string_init("pQueueFamilyIndices", sizeof("pQueueFamilyIndices") - 1, 1);
@@ -514,6 +521,12 @@ static zend_class_entry *register_class_VkImageCreateInfo(void)
 	zend_string *property_sharingMode_name = zend_string_init("sharingMode", sizeof("sharingMode") - 1, 1);
 	zend_declare_typed_property(class_entry, property_sharingMode_name, &property_sharingMode_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_sharingMode_name);
+
+	zval property_queueFamilyIndexCount_default_value;
+	ZVAL_LONG(&property_queueFamilyIndexCount_default_value, 0);
+	zend_string *property_queueFamilyIndexCount_name = zend_string_init("queueFamilyIndexCount", sizeof("queueFamilyIndexCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_queueFamilyIndexCount_name, &property_queueFamilyIndexCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_queueFamilyIndexCount_name);
 
 	zval property_pQueueFamilyIndices_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pQueueFamilyIndices_default_value);

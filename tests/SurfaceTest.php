@@ -51,8 +51,16 @@ it('exposes every class, method, function and constant the stubs declare', funct
     }
 
     foreach (stubFiles() as $stub) {
+        $metalOnly = false;
         foreach (file($stub) as $line) {
-            if (preg_match('/^function\s+(\w+)/', $line, $m)) {
+            // The Metal extension name is registered only where vulkan_metal.h is built (macOS).
+            if (str_starts_with($line, '#ifdef VK_USE_PLATFORM_METAL_EXT')) {
+                $metalOnly = PHP_OS_FAMILY !== 'Darwin';
+            } elseif (str_starts_with($line, '#endif')) {
+                $metalOnly = false;
+            } elseif ($metalOnly) {
+                continue;
+            } elseif (preg_match('/^function\s+(\w+)/', $line, $m)) {
                 expect(function_exists($m[1]))->toBeTrue("{$m[1]}() is missing");
             } elseif (preg_match('/^const\s+(\w+)/', $line, $m)) {
                 expect(defined($m[1]))->toBeTrue("{$m[1]} is missing");
@@ -62,5 +70,5 @@ it('exposes every class, method, function and constant the stubs declare', funct
 });
 
 it('reports its version', function (): void {
-    expect(phpversion('vulkan'))->toBe('0.11.0');
+    expect(phpversion('vulkan'))->toBe('0.11.1');
 });

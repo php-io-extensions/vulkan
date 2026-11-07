@@ -21,23 +21,24 @@ it('fills a triangle by stencil-then-cover into a 4x image, resolves in the pass
     [$blitted, $blittedMemory] = image2D(VK_FORMAT_R8G8B8A8_UNORM, 8, 8, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
     $framebufferInfo = new VkFramebufferCreateInfo();
     $framebufferInfo->renderPass = $pass;
+    $framebufferInfo->attachmentCount = 3;
     $framebufferInfo->pAttachments = [
         view2D($msaa, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT),
         view2D($stencil, stencilFormat(), VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT),
         view2D($resolved, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT),
     ];
     [$framebufferInfo->width, $framebufferInfo->height, $framebufferInfo->layers] = [8, 8, 1];
-    vkCreateFramebuffer($device, $framebufferInfo, null, $framebuffer);
+    vkCreateFramebuffer($device, $framebufferInfo, 0, $framebuffer);
 
     // The triangle (-1,-1), (1,-1), (-1,1), then a cover quad as two triangles.
     $points = pack('g18', -1.0, -1.0, 1.0, -1.0, -1.0, 1.0,   -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0);
     [$vertices, $verticesMemory] = hostBuffer(strlen($points), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
     vkMapMemory($device, $verticesMemory, 0, VK_WHOLE_SIZE, 0, $address);
-    vk_write_mapped($address, $points);
+    mappedWrite($address, $points);
     $range = new VkMappedMemoryRange();
     $range->memory = $verticesMemory;
     $range->size = VK_WHOLE_SIZE;
-    vkFlushMappedMemoryRanges($device, [$range]);
+    vkFlushMappedMemoryRanges($device, 1, [$range]);
     vkUnmapMemory($device, $verticesMemory);
     [$readback, $readbackMemory] = hostBuffer(512, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
@@ -52,6 +53,7 @@ it('fills a triangle by stencil-then-cover into a 4x image, resolves in the pass
     $begin->renderPass = $pass;
     $begin->framebuffer = $framebuffer;
     [$begin->renderArea->extent->width, $begin->renderArea->extent->height] = [8, 8];
+    $begin->clearValueCount = 3;
     $begin->pClearValues = [$clearColor, $clearStencil, $clearColor];
     $viewport = new VkViewport();
     [$viewport->width, $viewport->height, $viewport->maxDepth] = [8.0, 8.0, 1.0];
@@ -60,9 +62,9 @@ it('fills a triangle by stencil-then-cover into a 4x image, resolves in the pass
 
     $cmd = commands();
     vkCmdBeginRenderPass($cmd, $begin, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport($cmd, 0, [$viewport]);
-    vkCmdSetScissor($cmd, 0, [$scissor]);
-    vkCmdBindVertexBuffers($cmd, 0, [$vertices], [0]);
+    vkCmdSetViewport($cmd, 0, 1, [$viewport]);
+    vkCmdSetScissor($cmd, 0, 1, [$scissor]);
+    vkCmdBindVertexBuffers($cmd, 0, 1, [$vertices], [0]);
     // Stencil: invert where the triangle covers, no colour written.
     vkCmdBindPipeline($cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, $stencilPipeline);
     vkCmdDraw($cmd, 3, 1, 0, 0);
@@ -83,22 +85,22 @@ it('fills a triangle by stencil-then-cover into a 4x image, resolves in the pass
     $corner = tap(new VkOffset3D(), fn (VkOffset3D $o) => [$o->x, $o->y, $o->z] = [8, 8, 1]);
     $blit->srcOffsets = [new VkOffset3D(), $corner];
     $blit->dstOffsets = [new VkOffset3D(), $corner];
-    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, [], [], [layoutBarrier($blitted, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, VK_ACCESS_TRANSFER_WRITE_BIT)]);
-    vkCmdBlitImage($cmd, $resolved, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $blitted, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, [$blit], VK_FILTER_NEAREST);
-    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, [], [], [layoutBarrier($blitted, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT)]);
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, [], 0, [], 1, [layoutBarrier($blitted, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, VK_ACCESS_TRANSFER_WRITE_BIT)]);
+    vkCmdBlitImage($cmd, $resolved, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $blitted, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, [$blit], VK_FILTER_NEAREST);
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, [], 0, [], 1, [layoutBarrier($blitted, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT)]);
     foreach ([$resolved, $blitted] as $i => $image) {
         $copy = new VkBufferImageCopy();
         $copy->bufferOffset = $i * 256;
         $copy->imageSubresource = $layers;
         [$copy->imageExtent->width, $copy->imageExtent->height, $copy->imageExtent->depth] = [8, 8, 1];
-        vkCmdCopyImageToBuffer($cmd, $image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $readback, [$copy]);
+        vkCmdCopyImageToBuffer($cmd, $image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $readback, 1, [$copy]);
     }
     submitAndWait($cmd);
 
     vkMapMemory($device, $readbackMemory, 0, VK_WHOLE_SIZE, 0, $address);
     $range->memory = $readbackMemory;
-    vkInvalidateMappedMemoryRanges($device, [$range]);
-    $both = vk_read_mapped($address, 512);
+    vkInvalidateMappedMemoryRanges($device, 1, [$range]);
+    $both = mappedRead($address, 512);
     vkUnmapMemory($device, $readbackMemory);
     [$pixels, $copied] = [substr($both, 0, 256), substr($both, 256)];
 

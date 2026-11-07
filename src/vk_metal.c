@@ -35,7 +35,8 @@ void vulkan_register_metal(int module_number)
 
 ZEND_FUNCTION(vkCreateMetalSurfaceEXT)
 {
-	zval *instance, *info, *allocator, *out;
+	zval *instance, *info, *out;
+	zend_long allocator;
 	uint64_t instance_value;
 	VkMetalSurfaceCreateInfoEXT create;
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
@@ -43,15 +44,10 @@ ZEND_FUNCTION(vkCreateMetalSurfaceEXT)
 	vulkan_scratch scratch;
 	VkResult result;
 	zval boxed;
-	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(instance) Z_PARAM_OBJECT(info) Z_PARAM_ZVAL(allocator) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
-	if (Z_TYPE_P(allocator) != IS_NULL) { zend_argument_type_error(3, "must be null"); RETURN_THROWS(); }
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(instance) Z_PARAM_OBJECT(info) Z_PARAM_LONG(allocator) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(instance, vulkan_ce_VkInstance, 1, &instance_value)) RETURN_THROWS();
 	create_surface = (PFN_vkCreateMetalSurfaceEXT) vkGetInstanceProcAddr((VkInstance) (uintptr_t) instance_value, "vkCreateMetalSurfaceEXT");
-	if (create_surface == NULL) {
-		ZVAL_NULL(&boxed);
-		vulkan_assign(out, &boxed);
-		RETURN_LONG((zend_long) VK_ERROR_EXTENSION_NOT_PRESENT);
-	}
+	if (!vulkan_proc((void (*)(void)) create_surface, "vkCreateMetalSurfaceEXT")) RETURN_THROWS();
 	vulkan_scratch_init(&scratch);
 	if (!vulkan_enter(Z_OBJ_P(info), NULL)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
 	{
@@ -64,7 +60,7 @@ ZEND_FUNCTION(vkCreateMetalSurfaceEXT)
 		}
 		zend_hash_destroy(&visited);
 	}
-	result = create_surface((VkInstance) (uintptr_t) instance_value, &create, NULL, &surface);
+	result = create_surface((VkInstance) (uintptr_t) instance_value, &create, (const VkAllocationCallbacks *) (uintptr_t) allocator, &surface);
 	vulkan_scratch_free(&scratch);
 	if (result == VK_SUCCESS) vulkan_box(&boxed, (uint64_t) (uintptr_t) surface, vulkan_ce_VkSurfaceKHR, Z_OBJ_P(instance));
 	else ZVAL_NULL(&boxed);

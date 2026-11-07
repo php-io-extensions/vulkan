@@ -35,38 +35,6 @@ ZEND_METHOD(VkHdrMetadataEXT, __construct)
 	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "whitePoint", vulkan_ce_VkXYColorEXT);
 }
 
-static bool vulkan_in(zval *zv, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch)
-{
-	HashTable visited;
-	bool ok;
-	if (Z_TYPE_P(zv) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(zv), ce)) {
-		zend_type_error("must be of type %s", ZSTR_VAL(ce->name));
-		return false;
-	}
-	zend_hash_init(&visited, 4, NULL, NULL, 0);
-	ok = from(Z_OBJ_P(zv), dst, scratch, &visited);
-	zend_hash_destroy(&visited);
-	return ok;
-}
-
-static VkResult vulkan_enumerate(uint32_t *count, void **items, size_t elem, VkResult (*call)(uint32_t *count, void *data, void *ctx), void *ctx)
-{
-	VkResult result;
-	int spins = 0;
-	*items = NULL;
-	do {
-		uint32_t probe = 0;
-		result = call(&probe, NULL, ctx);
-		if (result < 0) return result;
-		if (*items) efree(*items);
-		*items = probe ? emalloc(elem * probe) : NULL;
-		*count = probe;
-		result = call(count, *items, ctx);
-		spins++;
-	} while (result == VK_INCOMPLETE && spins < 8);
-	return result;
-}
-
 void vulkan_register_surface(int module_number)
 {
 	(void) module_number;
@@ -135,91 +103,79 @@ ZEND_FUNCTION(vkGetPhysicalDeviceSurfaceCapabilitiesKHR)
 	RETURN_LONG((zend_long) result);
 }
 
-typedef struct { VkPhysicalDevice physical; VkSurfaceKHR surface; } vulkan_surface_query;
-
-static VkResult query_formats(uint32_t *count, void *data, void *ctx)
-{
-	vulkan_surface_query *query = ctx;
-	return vkGetPhysicalDeviceSurfaceFormatsKHR(query->physical, query->surface, count, data);
-}
-static VkResult query_modes(uint32_t *count, void *data, void *ctx)
-{
-	vulkan_surface_query *query = ctx;
-	return vkGetPhysicalDeviceSurfacePresentModesKHR(query->physical, query->surface, count, data);
-}
-static VkResult query_images(uint32_t *count, void *data, void *ctx)
-{
-	VkDevice *device = ((void **) ctx)[0];
-	VkSwapchainKHR *swapchain = ((void **) ctx)[1];
-	return vkGetSwapchainImagesKHR(*device, *swapchain, count, data);
-}
+#define ALLOCATOR(z) ((const VkAllocationCallbacks *) (uintptr_t) (z))
 
 ZEND_FUNCTION(vkGetPhysicalDeviceSurfaceFormatsKHR)
 {
-	zval *physical, *surface, *out;
+	zval *physical, *surface, *count, *out;
 	uint64_t physical_value, surface_value;
-	vulkan_surface_query query;
 	VkSurfaceFormatKHR *items = NULL;
-	uint32_t count = 0;
+	uint32_t n, i;
+	bool want;
 	VkResult result;
 	zval arr, item;
-	uint32_t i;
-	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(physical) Z_PARAM_OBJECT(surface) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(physical) Z_PARAM_OBJECT(surface) Z_PARAM_ZVAL(count) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &physical_value) || !vulkan_handle_value(surface, vulkan_ce_VkSurfaceKHR, 2, &surface_value)) RETURN_THROWS();
-	query.physical = (VkPhysicalDevice) (uintptr_t) physical_value;
-	query.surface = (VkSurfaceKHR) (uintptr_t) surface_value;
-	result = vulkan_enumerate(&count, (void **) &items, sizeof(*items), query_formats, &query);
-	if (result < 0) { if (items) efree(items); RETURN_LONG((zend_long) result); }
-	array_init_size(&arr, count);
-	for (i = 0; i < count; i++) {
-		vk_VkSurfaceFormatKHR_to(&items[i], &item);
-		zend_hash_next_index_insert(Z_ARRVAL(arr), &item);
+	want = vulkan_enum_in(count, out, &n);
+	if (want) items = safe_emalloc(n ? n : 1, sizeof(*items), 0);
+	result = vkGetPhysicalDeviceSurfaceFormatsKHR((VkPhysicalDevice) (uintptr_t) physical_value, (VkSurfaceKHR) (uintptr_t) surface_value, &n, items);
+	vulkan_enum_count_out(count, n);
+	if (want) {
+		if (result < 0) n = 0;
+		array_init_size(&arr, n);
+		for (i = 0; i < n; i++) {
+			vk_VkSurfaceFormatKHR_to(&items[i], &item);
+			zend_hash_next_index_insert(Z_ARRVAL(arr), &item);
+		}
+		efree(items);
+		vulkan_assign(out, &arr);
 	}
-	if (items) efree(items);
-	vulkan_assign(out, &arr);
 	RETURN_LONG((zend_long) result);
 }
 
 ZEND_FUNCTION(vkGetPhysicalDeviceSurfacePresentModesKHR)
 {
-	zval *physical, *surface, *out;
+	zval *physical, *surface, *count, *out;
 	uint64_t physical_value, surface_value;
-	vulkan_surface_query query;
 	VkPresentModeKHR *items = NULL;
-	uint32_t count = 0, i;
+	uint32_t n, i;
+	bool want;
 	VkResult result;
 	zval arr, item;
-	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(physical) Z_PARAM_OBJECT(surface) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(physical) Z_PARAM_OBJECT(surface) Z_PARAM_ZVAL(count) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &physical_value) || !vulkan_handle_value(surface, vulkan_ce_VkSurfaceKHR, 2, &surface_value)) RETURN_THROWS();
-	query.physical = (VkPhysicalDevice) (uintptr_t) physical_value;
-	query.surface = (VkSurfaceKHR) (uintptr_t) surface_value;
-	result = vulkan_enumerate(&count, (void **) &items, sizeof(*items), query_modes, &query);
-	if (result < 0) { if (items) efree(items); RETURN_LONG((zend_long) result); }
-	array_init_size(&arr, count);
-	for (i = 0; i < count; i++) {
-		ZVAL_LONG(&item, (zend_long) items[i]);
-		zend_hash_next_index_insert(Z_ARRVAL(arr), &item);
+	want = vulkan_enum_in(count, out, &n);
+	if (want) items = safe_emalloc(n ? n : 1, sizeof(*items), 0);
+	result = vkGetPhysicalDeviceSurfacePresentModesKHR((VkPhysicalDevice) (uintptr_t) physical_value, (VkSurfaceKHR) (uintptr_t) surface_value, &n, items);
+	vulkan_enum_count_out(count, n);
+	if (want) {
+		if (result < 0) n = 0;
+		array_init_size(&arr, n);
+		for (i = 0; i < n; i++) {
+			ZVAL_LONG(&item, (zend_long) items[i]);
+			zend_hash_next_index_insert(Z_ARRVAL(arr), &item);
+		}
+		efree(items);
+		vulkan_assign(out, &arr);
 	}
-	if (items) efree(items);
-	vulkan_assign(out, &arr);
 	RETURN_LONG((zend_long) result);
 }
 
 ZEND_FUNCTION(vkCreateSwapchainKHR)
 {
-	zval *device, *info, *allocator, *out;
+	zval *device, *info, *out;
+	zend_long allocator;
 	uint64_t device_value;
 	VkSwapchainCreateInfoKHR create;
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	vulkan_scratch scratch;
 	VkResult result;
 	zval boxed;
-	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(info) Z_PARAM_ZVAL(allocator) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
-	if (Z_TYPE_P(allocator) != IS_NULL) { zend_argument_type_error(3, "must be null"); RETURN_THROWS(); }
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(info) Z_PARAM_LONG(allocator) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(info, vulkan_ce_VkSwapchainCreateInfoKHR, vk_VkSwapchainCreateInfoKHR_from, &create, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
-	result = vkCreateSwapchainKHR((VkDevice) (uintptr_t) device_value, &create, NULL, &swapchain);
+	if (!vulkan_arg_struct(info, vulkan_ce_VkSwapchainCreateInfoKHR, vk_VkSwapchainCreateInfoKHR_from, &create, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+	result = vkCreateSwapchainKHR((VkDevice) (uintptr_t) device_value, &create, ALLOCATOR(allocator), &swapchain);
 	vulkan_scratch_free(&scratch);
 	if (result == VK_SUCCESS) vulkan_box(&boxed, (uint64_t) (uintptr_t) swapchain, vulkan_ce_VkSwapchainKHR, Z_OBJ_P(device));
 	else ZVAL_NULL(&boxed);
@@ -229,41 +185,40 @@ ZEND_FUNCTION(vkCreateSwapchainKHR)
 
 ZEND_FUNCTION(vkDestroySwapchainKHR)
 {
-	zval *device, *swapchain, *allocator;
-	uint64_t device_value, swapchain_value;
-	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(swapchain) Z_PARAM_ZVAL(allocator) ZEND_PARSE_PARAMETERS_END();
-	if (Z_TYPE_P(allocator) != IS_NULL) { zend_argument_type_error(3, "must be null"); RETURN_THROWS(); }
-	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || !vulkan_handle_value(swapchain, vulkan_ce_VkSwapchainKHR, 2, &swapchain_value)) RETURN_THROWS();
-	vkDestroySwapchainKHR((VkDevice) (uintptr_t) device_value, (VkSwapchainKHR) (uintptr_t) swapchain_value, NULL);
-	vulkan_release_tree(Z_OBJ_P(swapchain));
+	zval *device, *swapchain;
+	zend_long allocator;
+	uint64_t device_value, swapchain_value = 0;
+	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT_OR_NULL(swapchain) Z_PARAM_LONG(allocator) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || (swapchain && !vulkan_handle_value(swapchain, vulkan_ce_VkSwapchainKHR, 2, &swapchain_value))) RETURN_THROWS();
+	vkDestroySwapchainKHR((VkDevice) (uintptr_t) device_value, (VkSwapchainKHR) (uintptr_t) swapchain_value, ALLOCATOR(allocator));
+	if (swapchain) vulkan_release_tree(Z_OBJ_P(swapchain));
 }
 
 ZEND_FUNCTION(vkGetSwapchainImagesKHR)
 {
-	zval *device, *swapchain, *out;
+	zval *device, *swapchain, *count, *out;
 	uint64_t device_value, swapchain_value;
-	VkDevice device_handle;
-	VkSwapchainKHR swapchain_handle;
-	void *ctx[2];
 	VkImage *items = NULL;
-	uint32_t count = 0, i;
+	uint32_t n, i;
+	bool want;
 	VkResult result;
 	zval arr, boxed;
-	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(swapchain) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(swapchain) Z_PARAM_ZVAL(count) Z_PARAM_ZVAL(out) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || !vulkan_handle_value(swapchain, vulkan_ce_VkSwapchainKHR, 2, &swapchain_value)) RETURN_THROWS();
-	device_handle = (VkDevice) (uintptr_t) device_value;
-	swapchain_handle = (VkSwapchainKHR) (uintptr_t) swapchain_value;
-	ctx[0] = &device_handle;
-	ctx[1] = &swapchain_handle;
-	result = vulkan_enumerate(&count, (void **) &items, sizeof(*items), query_images, ctx);
-	if (result < 0) { if (items) efree(items); RETURN_LONG((zend_long) result); }
-	array_init_size(&arr, count);
-	for (i = 0; i < count; i++) {
-		vulkan_box(&boxed, (uint64_t) (uintptr_t) items[i], vulkan_ce_VkImage, Z_OBJ_P(swapchain));
-		zend_hash_next_index_insert(Z_ARRVAL(arr), &boxed);
+	want = vulkan_enum_in(count, out, &n);
+	if (want) items = safe_emalloc(n ? n : 1, sizeof(*items), 0);
+	result = vkGetSwapchainImagesKHR((VkDevice) (uintptr_t) device_value, (VkSwapchainKHR) (uintptr_t) swapchain_value, &n, items);
+	vulkan_enum_count_out(count, n);
+	if (want) {
+		if (result < 0) n = 0;
+		array_init_size(&arr, n);
+		for (i = 0; i < n; i++) {
+			vulkan_box(&boxed, (uint64_t) (uintptr_t) items[i], vulkan_ce_VkImage, Z_OBJ_P(swapchain));
+			zend_hash_next_index_insert(Z_ARRVAL(arr), &boxed);
+		}
+		efree(items);
+		vulkan_assign(out, &arr);
 	}
-	if (items) efree(items);
-	vulkan_assign(out, &arr);
 	RETURN_LONG((zend_long) result);
 }
 
@@ -276,14 +231,13 @@ ZEND_FUNCTION(vkAcquireNextImageKHR)
 	VkResult result;
 	zval boxed;
 	ZEND_PARSE_PARAMETERS_START(6, 6)
-		Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(swapchain) Z_PARAM_LONG(timeout) Z_PARAM_ZVAL(semaphore) Z_PARAM_ZVAL(fence) Z_PARAM_ZVAL(out)
+		Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(swapchain) Z_PARAM_LONG(timeout) Z_PARAM_OBJECT_OR_NULL(semaphore) Z_PARAM_OBJECT_OR_NULL(fence) Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || !vulkan_handle_value(swapchain, vulkan_ce_VkSwapchainKHR, 2, &swapchain_value)) RETURN_THROWS();
-	if (Z_TYPE_P(semaphore) != IS_NULL && !vulkan_handle_value(semaphore, vulkan_ce_VkSemaphore, 4, &semaphore_value)) RETURN_THROWS();
-	if (Z_TYPE_P(fence) != IS_NULL && !vulkan_handle_value(fence, vulkan_ce_VkFence, 5, &fence_value)) RETURN_THROWS();
+	if (semaphore && !vulkan_handle_value(semaphore, vulkan_ce_VkSemaphore, 4, &semaphore_value)) RETURN_THROWS();
+	if (fence && !vulkan_handle_value(fence, vulkan_ce_VkFence, 5, &fence_value)) RETURN_THROWS();
 	result = vkAcquireNextImageKHR((VkDevice) (uintptr_t) device_value, (VkSwapchainKHR) (uintptr_t) swapchain_value, (uint64_t) timeout, (VkSemaphore) (uintptr_t) semaphore_value, (VkFence) (uintptr_t) fence_value, &index);
-	if (result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR) ZVAL_LONG(&boxed, (zend_long) index);
-	else ZVAL_NULL(&boxed);
+	ZVAL_LONG(&boxed, (zend_long) index);
 	vulkan_assign(out, &boxed);
 	RETURN_LONG((zend_long) result);
 }
@@ -298,7 +252,7 @@ ZEND_FUNCTION(vkQueuePresentKHR)
 	ZEND_PARSE_PARAMETERS_START(2, 2) Z_PARAM_OBJECT(queue) Z_PARAM_OBJECT(info) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(queue, vulkan_ce_VkQueue, 1, &queue_value)) RETURN_THROWS();
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(info, vulkan_ce_VkPresentInfoKHR, vk_VkPresentInfoKHR_from, &present, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+	if (!vulkan_arg_struct(info, vulkan_ce_VkPresentInfoKHR, vk_VkPresentInfoKHR_from, &present, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
 	result = vkQueuePresentKHR((VkQueue) (uintptr_t) queue_value, &present);
 	vulkan_scratch_free(&scratch);
 	RETURN_LONG((zend_long) result);
@@ -306,15 +260,14 @@ ZEND_FUNCTION(vkQueuePresentKHR)
 
 ZEND_FUNCTION(vkDestroySurfaceKHR)
 {
-	zval *instance, *surface, *allocator;
-	uint64_t instance_value, surface_value;
-	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(instance) Z_PARAM_OBJECT(surface) Z_PARAM_ZVAL(allocator) ZEND_PARSE_PARAMETERS_END();
-	if (Z_TYPE_P(allocator) != IS_NULL) { zend_argument_type_error(3, "must be null"); RETURN_THROWS(); }
-	if (!vulkan_handle_value(instance, vulkan_ce_VkInstance, 1, &instance_value) || !vulkan_handle_value(surface, vulkan_ce_VkSurfaceKHR, 2, &surface_value)) RETURN_THROWS();
-	vkDestroySurfaceKHR((VkInstance) (uintptr_t) instance_value, (VkSurfaceKHR) (uintptr_t) surface_value, NULL);
-	vulkan_release_tree(Z_OBJ_P(surface));
+	zval *instance, *surface;
+	zend_long allocator;
+	uint64_t instance_value, surface_value = 0;
+	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(instance) Z_PARAM_OBJECT_OR_NULL(surface) Z_PARAM_LONG(allocator) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_handle_value(instance, vulkan_ce_VkInstance, 1, &instance_value) || (surface && !vulkan_handle_value(surface, vulkan_ce_VkSurfaceKHR, 2, &surface_value))) RETURN_THROWS();
+	vkDestroySurfaceKHR((VkInstance) (uintptr_t) instance_value, (VkSurfaceKHR) (uintptr_t) surface_value, ALLOCATOR(allocator));
+	if (surface) vulkan_release_tree(Z_OBJ_P(surface));
 }
-
 ZEND_FUNCTION(vkWaitForPresentKHR)
 {
 	zval *device, *swapchain;
@@ -325,46 +278,30 @@ ZEND_FUNCTION(vkWaitForPresentKHR)
 	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(swapchain) Z_PARAM_LONG(present_id) Z_PARAM_LONG(timeout) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value) || !vulkan_handle_value(swapchain, vulkan_ce_VkSwapchainKHR, 2, &swapchain_value)) RETURN_THROWS();
 	wait = (PFN_vkWaitForPresentKHR) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkWaitForPresentKHR");
-	if (wait == NULL) {
-		RETURN_LONG((zend_long) VK_ERROR_EXTENSION_NOT_PRESENT);
-	}
+	if (!vulkan_proc((void (*)(void)) wait, "vkWaitForPresentKHR")) RETURN_THROWS();
 	RETURN_LONG((zend_long) wait((VkDevice) (uintptr_t) device_value, (VkSwapchainKHR) (uintptr_t) swapchain_value, (uint64_t) present_id, (uint64_t) timeout));
 }
 
+
 ZEND_FUNCTION(vkSetHdrMetadataEXT)
 {
-	zval *device, *item;
-	HashTable *swapchains, *metadata;
-	uint64_t device_value, handle;
+	zval *device, *swapchains, *metadata;
+	zend_long count;
+	uint64_t device_value, *chains;
+	void *metas;
 	PFN_vkSetHdrMetadataEXT set;
-	VkSwapchainKHR *chains;
-	VkHdrMetadataEXT *metas;
 	vulkan_scratch scratch;
-	uint32_t count, i = 0;
 
-	ZEND_PARSE_PARAMETERS_START(3, 3) Z_PARAM_OBJECT(device) Z_PARAM_ARRAY_HT(swapchains) Z_PARAM_ARRAY_HT(metadata) ZEND_PARSE_PARAMETERS_END();
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(device) Z_PARAM_LONG(count) Z_PARAM_ZVAL(swapchains) Z_PARAM_ZVAL(metadata) ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
-	count = zend_hash_num_elements(swapchains);
-	if (count != zend_hash_num_elements(metadata)) {
-		zend_argument_value_error(3, "must hold one VkHdrMetadataEXT per swapchain");
+	set = (PFN_vkSetHdrMetadataEXT) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkSetHdrMetadataEXT");
+	if (!vulkan_proc((void (*)(void)) set, "vkSetHdrMetadataEXT")) RETURN_THROWS();
+	vulkan_scratch_init(&scratch);
+	if (!vulkan_arg_handles(swapchains, count, 2, 3, vulkan_ce_VkSwapchainKHR, &chains, &scratch)
+		|| !vulkan_arg_structs(metadata, count, 2, 4, vulkan_ce_VkHdrMetadataEXT, sizeof(VkHdrMetadataEXT), vk_VkHdrMetadataEXT_from, &metas, &scratch)) {
+		vulkan_scratch_free(&scratch);
 		RETURN_THROWS();
 	}
-	set = (PFN_vkSetHdrMetadataEXT) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkSetHdrMetadataEXT");
-	if (set == NULL) {
-		RETURN_FALSE;
-	}
-	vulkan_scratch_init(&scratch);
-	chains = vulkan_scratch_alloc(&scratch, sizeof(VkSwapchainKHR) * (count ? count : 1));
-	metas = vulkan_scratch_alloc(&scratch, sizeof(VkHdrMetadataEXT) * (count ? count : 1));
-	ZEND_HASH_FOREACH_VAL(swapchains, item) {
-		if (!vulkan_handle_value(item, vulkan_ce_VkSwapchainKHR, 2, &handle)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
-		chains[i++] = (VkSwapchainKHR) (uintptr_t) handle;
-	} ZEND_HASH_FOREACH_END();
-	i = 0;
-	ZEND_HASH_FOREACH_VAL(metadata, item) {
-		if (!vulkan_in(item, vulkan_ce_VkHdrMetadataEXT, vk_VkHdrMetadataEXT_from, &metas[i++], &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
-	} ZEND_HASH_FOREACH_END();
-	set((VkDevice) (uintptr_t) device_value, count, chains, metas);
+	set((VkDevice) (uintptr_t) device_value, (uint32_t) count, (const VkSwapchainKHR *) chains, metas);
 	vulkan_scratch_free(&scratch);
-	RETURN_TRUE;
 }

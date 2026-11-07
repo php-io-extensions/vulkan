@@ -80,11 +80,12 @@ bool vk_VkSwapchainCreateInfoKHR_from(zend_object *obj, void *raw, vulkan_scratc
 		&& vulkan_u32(obj, "imageArrayLayers", &dst->imageArrayLayers)
 		&& vulkan_u32(obj, "imageUsage", &dst->imageUsage)
 		&& vulkan_u32(obj, "imageSharingMode", &dst->imageSharingMode)
+		&& vulkan_u32(obj, "queueFamilyIndexCount", &dst->queueFamilyIndexCount)
 		&& vulkan_u32_list(obj, "pQueueFamilyIndices", &dst->pQueueFamilyIndices, &dst->queueFamilyIndexCount, scratch)
 		&& vulkan_u32(obj, "preTransform", &dst->preTransform)
 		&& vulkan_u32(obj, "compositeAlpha", &dst->compositeAlpha)
 		&& vulkan_u32(obj, "presentMode", &dst->presentMode)
-		&& vulkan_u32(obj, "clipped", &dst->clipped);
+		&& vulkan_bool32(obj, "clipped", &dst->clipped);
 }
 void vk_VkSwapchainCreateInfoKHR_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkSwapchainCreateInfoKHR); }
 
@@ -93,18 +94,16 @@ bool vk_VkPresentInfoKHR_from(zend_object *obj, void *raw, vulkan_scratch *scrat
 	VkPresentInfoKHR *dst = raw;
 	uint64_t *waits = NULL, *chains = NULL;
 	const uint32_t *indices = NULL;
-	uint32_t index_count = 0;
+	uint32_t index_count;
 
 	memset(dst, 0, sizeof(*dst));
 	dst->sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "waitSemaphoreCount", &dst->waitSemaphoreCount) || !vulkan_u32(obj, "swapchainCount", &dst->swapchainCount)) return false;
+	index_count = dst->swapchainCount;
 	if (!vulkan_handle_list(obj, "pWaitSemaphores", vulkan_ce_VkSemaphore, &waits, &dst->waitSemaphoreCount, scratch)) return false;
 	if (!vulkan_handle_list(obj, "pSwapchains", vulkan_ce_VkSwapchainKHR, &chains, &dst->swapchainCount, scratch)) return false;
 	if (!vulkan_u32_list(obj, "pImageIndices", &indices, &index_count, scratch)) return false;
-	if (index_count != dst->swapchainCount) {
-		zend_value_error("VkPresentInfoKHR::$pImageIndices must be the same length");
-		return false;
-	}
 	dst->pWaitSemaphores = (const VkSemaphore *) waits;
 	dst->pSwapchains = (const VkSwapchainKHR *) chains;
 	dst->pImageIndices = indices;
@@ -126,7 +125,7 @@ bool vk_VkPresentRegionKHR_from(zend_object *obj, void *raw, vulkan_scratch *scr
 {
 	VkPresentRegionKHR *dst = raw;
 	memset(dst, 0, sizeof(*dst));
-	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_enter(obj, visited) || !vulkan_u32(obj, "rectangleCount", &dst->rectangleCount)) return false;
 	return vulkan_struct_list(obj, "pRectangles", vulkan_ce_VkRectLayerKHR, sizeof(VkRectLayerKHR), vk_VkRectLayerKHR_from, (void **) &dst->pRectangles, &dst->rectangleCount, scratch, visited);
 }
 
@@ -135,7 +134,7 @@ bool vk_VkPresentRegionsKHR_from(zend_object *obj, void *raw, vulkan_scratch *sc
 	VkPresentRegionsKHR *dst = raw;
 	memset(dst, 0, sizeof(*dst));
 	dst->sType = VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR;
-	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited) || !vulkan_u32(obj, "swapchainCount", &dst->swapchainCount)) return false;
 	return vulkan_struct_list(obj, "pRegions", vulkan_ce_VkPresentRegionKHR, sizeof(VkPresentRegionKHR), vk_VkPresentRegionKHR_from, (void **) &dst->pRegions, &dst->swapchainCount, scratch, visited);
 }
 
@@ -144,7 +143,7 @@ bool vk_VkPresentIdKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch
 	VkPresentIdKHR *dst = raw;
 	memset(dst, 0, sizeof(*dst));
 	dst->sType = VK_STRUCTURE_TYPE_PRESENT_ID_KHR;
-	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited) || !vulkan_u32(obj, "swapchainCount", &dst->swapchainCount)) return false;
 	return vulkan_u64_list(obj, "pPresentIds", &dst->pPresentIds, &dst->swapchainCount, scratch);
 }
 

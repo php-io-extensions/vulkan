@@ -11,7 +11,7 @@ final class VkRenderPass
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -23,7 +23,7 @@ final class VkFramebuffer
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -35,7 +35,7 @@ final class VkShaderModule
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -47,7 +47,7 @@ final class VkPipelineLayout
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -59,7 +59,7 @@ final class VkPipeline
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -71,7 +71,7 @@ final class VkDescriptorSetLayout
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -83,7 +83,7 @@ final class VkDescriptorPool
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -95,7 +95,7 @@ final class VkDescriptorSet
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -141,13 +141,19 @@ final class VkSubpassDescription
 
     public int $pipelineBindPoint = 0;
 
+    public int $inputAttachmentCount = 0;
+
     public array $pInputAttachments = [];
+
+    public int $colorAttachmentCount = 0;
 
     public array $pColorAttachments = [];
 
-    public array $pResolveAttachments = [];
+    public ?array $pResolveAttachments = null;
 
     public ?VkAttachmentReference $pDepthStencilAttachment = null;
+
+    public int $preserveAttachmentCount = 0;
 
     public array $pPreserveAttachments = [];
 }
@@ -181,9 +187,15 @@ final class VkRenderPassCreateInfo
 
     public int $flags = 0;
 
+    public int $attachmentCount = 0;
+
     public array $pAttachments = [];
 
+    public int $subpassCount = 0;
+
     public array $pSubpasses = [];
+
+    public int $dependencyCount = 0;
 
     public array $pDependencies = [];
 }
@@ -198,6 +210,8 @@ final class VkFramebufferCreateInfo
     public int $flags = 0;
 
     public ?VkRenderPass $renderPass = null;
+
+    public int $attachmentCount = 0;
 
     public array $pAttachments = [];
 
@@ -217,7 +231,9 @@ final class VkShaderModuleCreateInfo
 
     public int $flags = 0;
 
-    public string $code = '';
+    public int $codeSize = 0;
+
+    public string $pCode = '';
 }
 
 /**
@@ -241,7 +257,11 @@ final class VkPipelineLayoutCreateInfo
 
     public int $flags = 0;
 
+    public int $setLayoutCount = 0;
+
     public array $pSetLayouts = [];
+
+    public int $pushConstantRangeCount = 0;
 
     public array $pPushConstantRanges = [];
 }
@@ -297,7 +317,11 @@ final class VkPipelineVertexInputStateCreateInfo
 
     public int $flags = 0;
 
+    public int $vertexBindingDescriptionCount = 0;
+
     public array $pVertexBindingDescriptions = [];
+
+    public int $vertexAttributeDescriptionCount = 0;
 
     public array $pVertexAttributeDescriptions = [];
 }
@@ -313,7 +337,7 @@ final class VkPipelineInputAssemblyStateCreateInfo
 
     public int $topology = 0;
 
-    public int $primitiveRestartEnable = 0;
+    public bool $primitiveRestartEnable = false;
 }
 
 /**
@@ -327,11 +351,11 @@ final class VkPipelineViewportStateCreateInfo
 
     public int $viewportCount = 0;
 
-    public array $pViewports = [];
+    public ?array $pViewports = null;
 
     public int $scissorCount = 0;
 
-    public array $pScissors = [];
+    public ?array $pScissors = null;
 }
 
 /**
@@ -343,9 +367,9 @@ final class VkPipelineRasterizationStateCreateInfo
 
     public int $flags = 0;
 
-    public int $depthClampEnable = 0;
+    public bool $depthClampEnable = false;
 
-    public int $rasterizerDiscardEnable = 0;
+    public bool $rasterizerDiscardEnable = false;
 
     public int $polygonMode = 0;
 
@@ -353,7 +377,7 @@ final class VkPipelineRasterizationStateCreateInfo
 
     public int $frontFace = 0;
 
-    public int $depthBiasEnable = 0;
+    public bool $depthBiasEnable = false;
 
     public float $depthBiasConstantFactor = 0.0;
 
@@ -375,15 +399,15 @@ final class VkPipelineMultisampleStateCreateInfo
 
     public int $rasterizationSamples = 0;
 
-    public int $sampleShadingEnable = 0;
+    public bool $sampleShadingEnable = false;
 
     public float $minSampleShading = 0.0;
 
-    public array $pSampleMask = [];
+    public ?array $pSampleMask = null;
 
-    public int $alphaToCoverageEnable = 0;
+    public bool $alphaToCoverageEnable = false;
 
-    public int $alphaToOneEnable = 0;
+    public bool $alphaToOneEnable = false;
 }
 
 /**
@@ -415,15 +439,15 @@ final class VkPipelineDepthStencilStateCreateInfo
 
     public int $flags = 0;
 
-    public int $depthTestEnable = 0;
+    public bool $depthTestEnable = false;
 
-    public int $depthWriteEnable = 0;
+    public bool $depthWriteEnable = false;
 
     public int $depthCompareOp = 0;
 
-    public int $depthBoundsTestEnable = 0;
+    public bool $depthBoundsTestEnable = false;
 
-    public int $stencilTestEnable = 0;
+    public bool $stencilTestEnable = false;
 
     public VkStencilOpState $front;
 
@@ -441,7 +465,7 @@ final class VkPipelineDepthStencilStateCreateInfo
  */
 final class VkPipelineColorBlendAttachmentState
 {
-    public int $blendEnable = 0;
+    public bool $blendEnable = false;
 
     public int $srcColorBlendFactor = 0;
 
@@ -467,13 +491,17 @@ final class VkPipelineColorBlendStateCreateInfo
 
     public int $flags = 0;
 
-    public int $logicOpEnable = 0;
+    public bool $logicOpEnable = false;
 
     public int $logicOp = 0;
+
+    public int $attachmentCount = 0;
 
     public array $pAttachments = [];
 
     public array $blendConstants = [];
+
+    public function __construct() {}
 }
 
 /**
@@ -484,6 +512,8 @@ final class VkPipelineDynamicStateCreateInfo
     public ?object $pNext = null;
 
     public int $flags = 0;
+
+    public int $dynamicStateCount = 0;
 
     public array $pDynamicStates = [];
 }
@@ -508,6 +538,8 @@ final class VkGraphicsPipelineCreateInfo
     public ?object $pNext = null;
 
     public int $flags = 0;
+
+    public int $stageCount = 0;
 
     public array $pStages = [];
 
@@ -553,7 +585,7 @@ final class VkDescriptorSetLayoutBinding
 
     public int $stageFlags = 0;
 
-    public array $pImmutableSamplers = [];
+    public ?array $pImmutableSamplers = null;
 }
 
 /**
@@ -564,6 +596,8 @@ final class VkDescriptorSetLayoutCreateInfo
     public ?object $pNext = null;
 
     public int $flags = 0;
+
+    public int $bindingCount = 0;
 
     public array $pBindings = [];
 }
@@ -589,6 +623,8 @@ final class VkDescriptorPoolCreateInfo
 
     public int $maxSets = 0;
 
+    public int $poolSizeCount = 0;
+
     public array $pPoolSizes = [];
 }
 
@@ -600,6 +636,8 @@ final class VkDescriptorSetAllocateInfo
     public ?object $pNext = null;
 
     public ?VkDescriptorPool $descriptorPool = null;
+
+    public int $descriptorSetCount = 0;
 
     public array $pSetLayouts = [];
 }
@@ -631,7 +669,9 @@ final class VkWriteDescriptorSet
 
     public int $descriptorType = 0;
 
-    public array $pImageInfo = [];
+    public int $descriptorCount = 0;
+
+    public ?array $pImageInfo = null;
 }
 
 /**
@@ -684,35 +724,54 @@ final class VkRect2D
     public function __construct() {}
 }
 
-function vkCreateRenderPass(VkDevice $device, VkRenderPassCreateInfo $pCreateInfo, null $pAllocator, ?VkRenderPass &$pRenderPass): int {}
+/** @not-serializable */
+final class VkCopyDescriptorSet
+{
+    public ?object $pNext = null;
 
-function vkDestroyRenderPass(VkDevice $device, VkRenderPass $renderPass, null $pAllocator): void {}
+    public ?VkDescriptorSet $srcSet = null;
 
-function vkCreateFramebuffer(VkDevice $device, VkFramebufferCreateInfo $pCreateInfo, null $pAllocator, ?VkFramebuffer &$pFramebuffer): int {}
+    public int $srcBinding = 0;
 
-function vkDestroyFramebuffer(VkDevice $device, VkFramebuffer $framebuffer, null $pAllocator): void {}
+    public int $srcArrayElement = 0;
 
-function vkCreateShaderModule(VkDevice $device, VkShaderModuleCreateInfo $pCreateInfo, null $pAllocator, ?VkShaderModule &$pShaderModule): int {}
+    public ?VkDescriptorSet $dstSet = null;
 
-function vkDestroyShaderModule(VkDevice $device, VkShaderModule $shaderModule, null $pAllocator): void {}
+    public int $dstBinding = 0;
 
-function vkCreatePipelineLayout(VkDevice $device, VkPipelineLayoutCreateInfo $pCreateInfo, null $pAllocator, ?VkPipelineLayout &$pPipelineLayout): int {}
+    public int $dstArrayElement = 0;
 
-function vkDestroyPipelineLayout(VkDevice $device, VkPipelineLayout $pipelineLayout, null $pAllocator): void {}
+    public int $descriptorCount = 0;
+}
 
-function vkCreateGraphicsPipelines(VkDevice $device, null $pipelineCache, array $pCreateInfos, null $pAllocator, ?array &$pPipelines): int {}
+function vkCreateRenderPass(VkDevice $device, VkRenderPassCreateInfo $pCreateInfo, int $pAllocator, ?VkRenderPass &$pRenderPass): int {}
 
-function vkDestroyPipeline(VkDevice $device, VkPipeline $pipeline, null $pAllocator): void {}
+function vkDestroyRenderPass(VkDevice $device, ?VkRenderPass $renderPass, int $pAllocator): void {}
 
-function vkCreateDescriptorSetLayout(VkDevice $device, VkDescriptorSetLayoutCreateInfo $pCreateInfo, null $pAllocator, ?VkDescriptorSetLayout &$pSetLayout): int {}
+function vkCreateFramebuffer(VkDevice $device, VkFramebufferCreateInfo $pCreateInfo, int $pAllocator, ?VkFramebuffer &$pFramebuffer): int {}
 
-function vkDestroyDescriptorSetLayout(VkDevice $device, VkDescriptorSetLayout $descriptorSetLayout, null $pAllocator): void {}
+function vkDestroyFramebuffer(VkDevice $device, ?VkFramebuffer $framebuffer, int $pAllocator): void {}
 
-function vkCreateDescriptorPool(VkDevice $device, VkDescriptorPoolCreateInfo $pCreateInfo, null $pAllocator, ?VkDescriptorPool &$pDescriptorPool): int {}
+function vkCreateShaderModule(VkDevice $device, VkShaderModuleCreateInfo $pCreateInfo, int $pAllocator, ?VkShaderModule &$pShaderModule): int {}
 
-function vkDestroyDescriptorPool(VkDevice $device, VkDescriptorPool $descriptorPool, null $pAllocator): void {}
+function vkDestroyShaderModule(VkDevice $device, ?VkShaderModule $shaderModule, int $pAllocator): void {}
+
+function vkCreatePipelineLayout(VkDevice $device, VkPipelineLayoutCreateInfo $pCreateInfo, int $pAllocator, ?VkPipelineLayout &$pPipelineLayout): int {}
+
+function vkDestroyPipelineLayout(VkDevice $device, ?VkPipelineLayout $pipelineLayout, int $pAllocator): void {}
+
+function vkCreateGraphicsPipelines(VkDevice $device, int $pipelineCache, int $createInfoCount, array $pCreateInfos, int $pAllocator, ?array &$pPipelines): int {}
+
+function vkDestroyPipeline(VkDevice $device, ?VkPipeline $pipeline, int $pAllocator): void {}
+
+function vkCreateDescriptorSetLayout(VkDevice $device, VkDescriptorSetLayoutCreateInfo $pCreateInfo, int $pAllocator, ?VkDescriptorSetLayout &$pSetLayout): int {}
+
+function vkDestroyDescriptorSetLayout(VkDevice $device, ?VkDescriptorSetLayout $descriptorSetLayout, int $pAllocator): void {}
+
+function vkCreateDescriptorPool(VkDevice $device, VkDescriptorPoolCreateInfo $pCreateInfo, int $pAllocator, ?VkDescriptorPool &$pDescriptorPool): int {}
+
+function vkDestroyDescriptorPool(VkDevice $device, ?VkDescriptorPool $descriptorPool, int $pAllocator): void {}
 
 function vkAllocateDescriptorSets(VkDevice $device, VkDescriptorSetAllocateInfo $pAllocateInfo, ?array &$pDescriptorSets): int {}
 
-function vkUpdateDescriptorSets(VkDevice $device, array $pDescriptorWrites, array $pDescriptorCopies): void {}
-
+function vkUpdateDescriptorSets(VkDevice $device, int $descriptorWriteCount, array $pDescriptorWrites, int $descriptorCopyCount, array $pDescriptorCopies): void {}

@@ -7,7 +7,7 @@
 passes, pipelines, descriptors, commands, sync, surfaces and swapchains, and the
 Linux dmabuf export GTK needs. Written in C against the Zend API and
 `<vulkan/vulkan.h>`, linked to the system Vulkan loader. PHP 8.4+, NTS and ZTS.
-Version 0.11.0.
+Version 0.11.1.
 
 Functions are global PHP functions under their C names. Enums and flags are PHP
 constants under their C names, values taken from the headers. Each handle is a
@@ -43,55 +43,53 @@ tells you to `brew install vulkan-loader vulkan-headers molten-vk`.
 
 ## Translations
 
-Bindings are 1:1. There are no defaults and no composites. The only translations:
+Bindings are 1:1. Every parameter and member of the C call is there, counts
+included. There are no defaults, no composites and no helper functions. The
+translations:
 
-- A pointer + count pair is one PHP list.
-- The enumerate-twice calls (`vkEnumerate*`, `vkGet*Properties` with a count,
-  `vkGetSwapchainImagesKHR`) fill a by-reference list. The binding calls twice
-  and retries while the result is `VK_INCOMPLETE`.
-- An out-handle or out-struct is a by-reference parameter.
+- A C array is a PHP list. Its count stays a separate argument or member, as in
+  C. Vulkan reads `count` elements; the binding builds the list into a C array.
+- Enumerate calls take `?int &$count` and `?array &$list`, as C's two calls:
+  pass `null` for the list to get the count, then pass the count and a variable
+  to get up to that many. `VK_INCOMPLETE` is returned as in C.
+- An out-handle, out-struct or out-int is a by-reference parameter.
 - `sType` is not a property. Each struct class fills its own.
-- `pNext` is `?object`, a chain of struct objects. A chain that loops is a
-  `ValueError` before the binding walks it. A struct of the wrong kind for its
-  parent is linked as given.
-- `vkGetPhysicalDeviceFeatures2` takes the `VkPhysicalDeviceFeatures2` object
-  and fills it in place, including the structs already linked on `pNext`. The
-  call does not replace those objects.
-- `pAllocator` is `null`. There is no custom allocator.
-- `VkShaderModuleCreateInfo::$code` is one string. `codeSize` is its length. A
-  length that is not a multiple of 4 is a `ValueError`.
-- `vkCmdPushConstants` takes a string. A string shorter than `size` is a
-  `ValueError`.
+- `pNext` is `?object`, a chain of struct objects.
+- `VkBool32` is `bool`.
+- `pAllocator` and `pipelineCache` are `int` addresses; `0` is `NULL`.
+- SPIR-V is `VkShaderModuleCreateInfo::$codeSize` plus the string `$pCode`.
+  Push constants are a string.
 - Results are the `VkResult` int, as in C.
-- `vkMapMemory` writes the mapped address to `$ppData` (`int`). PHP reads and
-  writes that address with `vk_read_mapped(int $address, int $size): string` and
-  `vk_write_mapped(int $address, string $bytes): void`. Address 0 is refused.
-  Any other address is trusted. `vkFlushMappedMemoryRanges` and
-  `vkInvalidateMappedMemoryRanges` are what make non-coherent memory correct.
-- `vkGetMemoryFdKHR` hands out a file descriptor the caller owns.
-  `vk_close_fd(int $fd): void` closes it; a descriptor that is not open (closed
-  already) is a `ValueError`.
-- `vk_loader_path(): ?string` names the file the Vulkan loader this extension
-  calls was loaded from (`dladdr` of `vkGetInstanceProcAddr`), so another
-  library that loads a loader itself (Qt's `QVulkanInstance`) can be pointed at
-  the same one.
-- `VkMemoryDedicatedAllocateInfo` chains on `VkMemoryAllocateInfo`: an
-  exported image allocated dedicated works on drivers that require it.
+- `vkMapMemory` writes the mapped address to `$ppData` (`int`). Read and write
+  it with FFI (`FFI::cdef()->cast('uint8_t *', $address)`, `FFI::memcpy`,
+  `FFI::string`). `vkGetMemoryFdKHR` hands out a descriptor the caller closes.
 
-`VkCopyDescriptorSet` and `VkBufferMemoryBarrier` are not bound.
-`vkUpdateDescriptorSets` refuses a non-empty copy list. `vkCmdPipelineBarrier`
-takes `VkMemoryBarrier`s and `VkImageMemoryBarrier`s and refuses a non-empty
-buffer-barrier list; a list holding another class is a `TypeError`.
+## Refusals
+
+The binding declines to make the call only where making it would crash the
+process. Each refusal has a probe in `tests/Probes` that shows the crash with
+the refusal switched off (`--enable-vulkan-probes`).
+
+| Site | Throws | Refused call |
+|---|---|---|
+| `vulkan-list-count` | `ValueError` | a count past its list: Vulkan reads past the C array |
+| `vulkan-bytes-length` | `ValueError` | `codeSize` or push-constant `size` past the string |
+| `vulkan-null-dispatchable` | `ValueError` | a released instance, physical device, device, queue or command buffer: the loader reads its dispatch table through it |
+| `vulkan-no-proc` | `Error` | an extension command `vkGetDeviceProcAddr` gave as `NULL` |
+
+Everything else goes to Vulkan as given, including values the validation
+layers would reject.
 
 ## Handles and parents
 
 Handles are `final`, not constructable, not cloneable, not serializable, with
-`pointer(): int` and `static fromPointer(int $pointer): static`. Address 0 is
-refused. One PHP object per class and native value.
+`pointer(): int` and `static fromPointer(int $pointer): ?static`.
+`fromPointer(0)` is `null`. One PHP object per class and native value.
 
-Destroying a parent releases every PHP handle whose parent chain reaches it.
-After `vkDestroyDevice`, a `VkBuffer` or `VkQueue` from that device throws
-`ValueError` ("VkBuffer has been destroyed") instead of reaching the driver.
+Destroying a parent releases every PHP handle whose parent chain reaches it. A
+released handle's `pointer()` is 0 and it goes to Vulkan as `VK_NULL_HANDLE`.
+A released dispatchable handle is refused (see [Refusals](#refusals)). Destroy
+functions take `null`, as in C.
 `vkDestroyCommandPool` releases its command buffers. `vkDestroyDescriptorPool`
 releases its descriptor sets. Swapchain images are owned by the swapchain:
 `vkDestroySwapchainKHR` releases them, and PHP does not destroy them.
@@ -115,7 +113,7 @@ instance created with `VK_KHR_portability_enumeration` and
 that extension. `vkGetPhysicalDeviceFeatures2` with a
 `VkPhysicalDevicePortabilitySubsetFeaturesKHR` chained on
 `VkPhysicalDeviceFeatures2::$pNext` reports what the subset forbids.
-`triangleFans` is one of those flags; read it from the driver.
+`triangleFans` is one of those flags; read it from the device.
 
 A surface over ext-metal uses `CAMetalLayer::pointer()` as
 `VkMetalSurfaceCreateInfoEXT::$pLayer`, with `VK_KHR_surface` and
@@ -128,21 +126,23 @@ neither name is present, so the same code leaves the create infos alone:
 $app = new VkApplicationInfo();
 $app->pApplicationName = 'ext-vulkan tests';
 $app->apiVersion = VK_API_VERSION_1_3;
-vkEnumerateInstanceExtensionProperties(null, $available);
+vkEnumerateInstanceExtensionProperties(null, $count, null);
+vkEnumerateInstanceExtensionProperties(null, $count, $available);
 $names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
-$extensions = [];
 $instanceInfo = new VkInstanceCreateInfo();
 $instanceInfo->pApplicationInfo = $app;
 if (in_array(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME, $names, true)) {
-    $extensions[] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+    $instanceInfo->ppEnabledExtensionNames = [VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME];
+    $instanceInfo->enabledExtensionCount = 1;
     $instanceInfo->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 }
-$instanceInfo->enabledExtensionNames = $extensions;
 
-vkEnumerateDeviceExtensionProperties($physical, null, $deviceExtensions);
+vkEnumerateDeviceExtensionProperties($physical, null, $count, null);
+vkEnumerateDeviceExtensionProperties($physical, null, $count, $deviceExtensions);
 $deviceNames = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $deviceExtensions);
 if (in_array(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, $deviceNames, true)) {
-    $deviceInfo->enabledExtensionNames[] = VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME;
+    $deviceInfo->ppEnabledExtensionNames[] = VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME;
+    $deviceInfo->enabledExtensionCount++;
 }
 ```
 
@@ -168,9 +168,10 @@ $app = new VkApplicationInfo();
 $app->apiVersion = VK_API_VERSION_1_3;
 $instanceInfo = new VkInstanceCreateInfo();
 $instanceInfo->pApplicationInfo = $app;
-vkCreateInstance($instanceInfo, null, $instance);
+vkCreateInstance($instanceInfo, 0, $instance);
 
-vkEnumeratePhysicalDevices($instance, $devices);
+vkEnumeratePhysicalDevices($instance, $count, null);
+vkEnumeratePhysicalDevices($instance, $count, $devices);
 foreach ($devices as $candidate) {
     vkGetPhysicalDeviceProperties($candidate, $properties);
     if ($properties->deviceType !== VK_PHYSICAL_DEVICE_TYPE_CPU) {
@@ -178,17 +179,20 @@ foreach ($devices as $candidate) {
         break;
     }
 }
-vkGetPhysicalDeviceQueueFamilyProperties($physical, $families);
+vkGetPhysicalDeviceQueueFamilyProperties($physical, $count, null);
+vkGetPhysicalDeviceQueueFamilyProperties($physical, $count, $families);
 $family = array_key_first(array_filter(
     $families,
     fn (VkQueueFamilyProperties $family): bool => ($family->queueFlags & VK_QUEUE_GRAPHICS_BIT) !== 0,
 ));
 $queueInfo = new VkDeviceQueueCreateInfo();
 $queueInfo->queueFamilyIndex = $family;
+$queueInfo->queueCount = 1;
 $queueInfo->pQueuePriorities = [1.0];
 $deviceInfo = new VkDeviceCreateInfo();
+$deviceInfo->queueCreateInfoCount = 1;
 $deviceInfo->pQueueCreateInfos = [$queueInfo];
-vkCreateDevice($physical, $deviceInfo, null, $device);
+vkCreateDevice($physical, $deviceInfo, 0, $device);
 vkGetDeviceQueue($device, $family, 0, $queue);
 
 $imageInfo = new VkImageCreateInfo();
@@ -200,11 +204,11 @@ $imageInfo->arrayLayers = 1;
 $imageInfo->samples = VK_SAMPLE_COUNT_1_BIT;
 $imageInfo->tiling = VK_IMAGE_TILING_OPTIMAL;
 $imageInfo->usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-vkCreateImage($device, $imageInfo, null, $image);
+vkCreateImage($device, $imageInfo, 0, $image);
 ```
 
-Map the destination buffer with `vkMapMemory`, then `vk_read_mapped` on the
-address it wrote. Call `vkFlushMappedMemoryRanges` after a write and
+Map the destination buffer with `vkMapMemory`, then read the address it wrote
+with FFI. Call `vkFlushMappedMemoryRanges` after a write and
 `vkInvalidateMappedMemoryRanges` before a read when the memory is not coherent.
 
 ## Testing

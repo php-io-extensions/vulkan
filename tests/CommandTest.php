@@ -8,7 +8,7 @@ it('copies bytes through an image and back with barriers between', function (): 
     [$up, $upMemory] = hostBuffer(64, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
     [$down, $downMemory] = hostBuffer(64, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
     vkMapMemory($device, $upMemory, 0, 64, 0, $address);
-    vk_write_mapped($address, $bytes);
+    mappedWrite($address, $bytes);
     vkUnmapMemory($device, $upMemory);
     [$image, $imageMemory] = image2D(VK_FORMAT_R8G8B8A8_UNORM, 4, 4, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 
@@ -20,50 +20,68 @@ it('copies bytes through an image and back with barriers between', function (): 
     [$region->imageExtent->width, $region->imageExtent->height, $region->imageExtent->depth] = [4, 4, 1];
 
     $cmd = commands();
-    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, [], [], [layoutBarrier($image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, VK_ACCESS_TRANSFER_WRITE_BIT)]);
-    vkCmdCopyBufferToImage($cmd, $up, $image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, [$region]);
-    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, [], [], [layoutBarrier($image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT)]);
-    vkCmdCopyImageToBuffer($cmd, $image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $down, [$region]);
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, [], 0, [], 1, [layoutBarrier($image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, VK_ACCESS_TRANSFER_WRITE_BIT)]);
+    vkCmdCopyBufferToImage($cmd, $up, $image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, [$region]);
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, [], 0, [], 1, [layoutBarrier($image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT)]);
+    vkCmdCopyImageToBuffer($cmd, $image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $down, 1, [$region]);
     $toHost = new VkMemoryBarrier();
     $toHost->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     $toHost->dstAccessMask = VK_ACCESS_HOST_READ_BIT;
-    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, [$toHost], [], []);
+    $bufferToHost = new VkBufferMemoryBarrier();
+    $bufferToHost->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    $bufferToHost->dstAccessMask = VK_ACCESS_HOST_READ_BIT;
+    $bufferToHost->srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    $bufferToHost->dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    $bufferToHost->buffer = $down;
+    $bufferToHost->size = VK_WHOLE_SIZE;
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, 1, [$toHost], 1, [$bufferToHost], 0, []);
     submitAndWait($cmd);
 
     vkMapMemory($device, $downMemory, 0, 64, 0, $address);
     $range = new VkMappedMemoryRange();
     $range->memory = $downMemory;
     $range->size = VK_WHOLE_SIZE;
-    vkInvalidateMappedMemoryRanges($device, [$range]);
-    expect(vk_read_mapped($address, 64))->toBe($bytes);
+    vkInvalidateMappedMemoryRanges($device, 1, [$range]);
+    expect(mappedRead($address, 64))->toBe($bytes);
     vkUnmapMemory($device, $downMemory);
 });
 
-it('refuses push constants shorter than their size, and mismatched vertex buffer lists', function (): void {
+it('refuses push constants shorter than their size, and a count past its list', function (): void {
     $cmd = commands();
     [$buffer] = hostBuffer(16, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
-    expect(fn () => vkCmdPushConstants($cmd, flatLayout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, 16, 'abc'))->toThrow(ValueError::class, 'must hold 16 bytes')
-        ->and(fn () => vkCmdBindVertexBuffers($cmd, 0, [$buffer], []))->toThrow(ValueError::class, 'same length');
+    expect(fn () => vkCmdPushConstants($cmd, flatLayout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, 16, 'abc'))->toThrow(ValueError::class, 'holds 3 bytes, fewer than the 16 Vulkan reads')
+        ->and(fn () => vkCmdBindVertexBuffers($cmd, 0, 1, [$buffer], []))->toThrow(ValueError::class, 'must not pass the length of argument #5 ($pOffsets)');
+});
+
+it('passes the count it is given, so a list may hold more than Vulkan reads', function (): void {
+    $cmd = commands();
+    [$buffer] = hostBuffer(16, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    [$other] = hostBuffer(16, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+    vkCmdBindVertexBuffers($cmd, 0, 1, [$buffer, $other], [0, 0]);
+    vkCmdBindVertexBuffers($cmd, 0, 0, [], []);
+
+    expect(vkEndCommandBuffer($cmd))->toBe(VK_SUCCESS);
 });
 
 it('signals and resets a fence', function (): void {
     [, , $device, $queue] = gpu();
-    vkCreateFence($device, new VkFenceCreateInfo(), null, $fence);
-    vkQueueSubmit($queue, [], $fence);
+    vkCreateFence($device, new VkFenceCreateInfo(), 0, $fence);
+    vkQueueSubmit($queue, 0, [], $fence);
 
-    expect(vkWaitForFences($device, [$fence], true, PHP_INT_MAX))->toBe(VK_SUCCESS)
+    expect(vkWaitForFences($device, 1, [$fence], true, PHP_INT_MAX))->toBe(VK_SUCCESS)
         ->and(vkGetFenceStatus($device, $fence))->toBe(VK_SUCCESS)
-        ->and(vkResetFences($device, [$fence]))->toBe(VK_SUCCESS)
+        ->and(vkResetFences($device, 1, [$fence]))->toBe(VK_SUCCESS)
         ->and(vkGetFenceStatus($device, $fence))->toBe(VK_NOT_READY)
         ->and(vkQueueWaitIdle($queue))->toBe(VK_SUCCESS);
 
-    vkDestroyFence($device, $fence, null);
+    vkDestroyFence($device, $fence, 0);
+    vkDestroyFence($device, null, 0);
 });
 
-it('refuses a global barrier list holding something else, and buffer barriers it does not bind', function (): void {
+it('refuses a barrier list holding something else', function (): void {
     $cmd = commands();
 
-    expect(fn () => vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, [new VkFenceCreateInfo()], [], []))->toThrow(TypeError::class)
-        ->and(fn () => vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, [], [new VkMemoryBarrier()], []))->toThrow(ValueError::class, 'VkBufferMemoryBarrier is not bound');
+    expect(fn () => vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, 1, [new VkFenceCreateInfo()], 0, [], 0, []))->toThrow(TypeError::class);
 });

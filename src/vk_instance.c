@@ -9,22 +9,6 @@ VULKAN_HANDLE_METHODS(VkQueue)
 
 #include "struct_ctors.inc"
 
-static bool vulkan_in(zval *zv, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch, uint32_t arg_num)
-{
-	HashTable visited;
-	bool ok;
-
-	if (Z_TYPE_P(zv) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(zv), ce)) {
-		zend_argument_type_error(arg_num, "must be of type %s", ZSTR_VAL(ce->name));
-		return false;
-	}
-
-	zend_hash_init(&visited, 4, NULL, NULL, 0);
-	ok = from(Z_OBJ_P(zv), dst, scratch, &visited);
-	zend_hash_destroy(&visited);
-	return ok;
-}
-
 static void vulkan_assign_handles(zval *out, const void *values, uint32_t count, size_t stride, zend_class_entry *ce, zend_object *parent)
 {
 	zval arr, item;
@@ -116,9 +100,18 @@ void vulkan_register_instance(int module_number)
 	vulkan_struct_setup(vulkan_ce_VkExtensionProperties);
 }
 
+#define ALLOCATOR(z) ((const VkAllocationCallbacks *) (uintptr_t) (z))
+
+/* A dispatchable handle Vulkan may take as NULL (the destroys): a released one goes as NULL. */
+static uint64_t vulkan_or_null(zval *zv)
+{
+	return zv == NULL ? 0 : vulkan_handle_from(Z_OBJ_P(zv))->value;
+}
+
 ZEND_FUNCTION(vkCreateInstance)
 {
-	zval *create_info, *allocator, *out;
+	zval *create_info, *out;
+	zend_long allocator;
 	VkInstanceCreateInfo info;
 	VkInstance instance = VK_NULL_HANDLE;
 	vulkan_scratch scratch;
@@ -126,23 +119,18 @@ ZEND_FUNCTION(vkCreateInstance)
 	zval boxed;
 
 	ZEND_PARSE_PARAMETERS_START(3, 3)
-		Z_PARAM_OBJECT(create_info)
-		Z_PARAM_ZVAL(allocator)
+		Z_PARAM_OBJECT_OF_CLASS(create_info, vulkan_ce_VkInstanceCreateInfo)
+		Z_PARAM_LONG(allocator)
 		Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (Z_TYPE_P(allocator) != IS_NULL) {
-		zend_argument_type_error(2, "must be null");
-		RETURN_THROWS();
-	}
-
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(create_info, vulkan_ce_VkInstanceCreateInfo, vk_VkInstanceCreateInfo_from, &info, &scratch, 1)) {
+	if (!vulkan_arg_struct(create_info, vulkan_ce_VkInstanceCreateInfo, vk_VkInstanceCreateInfo_from, &info, &scratch)) {
 		vulkan_scratch_free(&scratch);
 		RETURN_THROWS();
 	}
 
-	result = vkCreateInstance(&info, NULL, &instance);
+	result = vkCreateInstance(&info, ALLOCATOR(allocator), &instance);
 	vulkan_scratch_free(&scratch);
 	if (result == VK_SUCCESS) {
 		vulkan_box(&boxed, (uint64_t) (uintptr_t) instance, vulkan_ce_VkInstance, NULL);
@@ -155,66 +143,45 @@ ZEND_FUNCTION(vkCreateInstance)
 
 ZEND_FUNCTION(vkDestroyInstance)
 {
-	zval *instance, *allocator;
-	uint64_t value;
+	zval *instance;
+	zend_long allocator;
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_OBJECT(instance)
-		Z_PARAM_ZVAL(allocator)
+		Z_PARAM_OBJECT_OF_CLASS_OR_NULL(instance, vulkan_ce_VkInstance)
+		Z_PARAM_LONG(allocator)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (Z_TYPE_P(allocator) != IS_NULL) {
-		zend_argument_type_error(2, "must be null");
-		RETURN_THROWS();
+	vkDestroyInstance((VkInstance) (uintptr_t) vulkan_or_null(instance), ALLOCATOR(allocator));
+	if (instance) {
+		vulkan_release_tree(Z_OBJ_P(instance));
 	}
-	if (!vulkan_handle_value(instance, vulkan_ce_VkInstance, 1, &value)) {
-		RETURN_THROWS();
-	}
-
-	vkDestroyInstance((VkInstance) (uintptr_t) value, NULL);
-	vulkan_release_tree(Z_OBJ_P(instance));
 }
 
 ZEND_FUNCTION(vkEnumerateInstanceExtensionProperties)
 {
 	char *layer = NULL;
 	size_t layer_len = 0;
-	zval *out;
+	zval *count, *out;
 	VkExtensionProperties *items = NULL;
-	uint32_t count = 0;
+	uint32_t n;
+	bool want;
 	VkResult result;
-	int spins = 0;
 
-	ZEND_PARSE_PARAMETERS_START(2, 2)
+	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_STRING_OR_NULL(layer, layer_len)
+		Z_PARAM_ZVAL(count)
 		Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 
 	(void) layer_len;
-	do {
-		uint32_t probe = 0;
-		result = vkEnumerateInstanceExtensionProperties(layer, &probe, NULL);
-		if (result < 0) {
-			break;
-		}
-		if (items != NULL) {
-			efree(items);
-		}
-		items = probe ? emalloc(sizeof(*items) * probe) : NULL;
-		count = probe;
-		result = vkEnumerateInstanceExtensionProperties(layer, &count, items);
-		spins++;
-	} while (result == VK_INCOMPLETE && spins < 8);
-
-	if (result < 0) {
-		if (items != NULL) {
-			efree(items);
-		}
-		RETURN_LONG((zend_long) result);
+	want = vulkan_enum_in(count, out, &n);
+	if (want) {
+		items = safe_emalloc(n ? n : 1, sizeof(*items), 0);
 	}
-
-	vulkan_assign_extension_list(out, items, count);
-	if (items != NULL) {
+	result = vkEnumerateInstanceExtensionProperties(layer, &n, items);
+	vulkan_enum_count_out(count, n);
+	if (want) {
+		vulkan_assign_extension_list(out, items, result < 0 ? 0 : n);
 		efree(items);
 	}
 	RETURN_LONG((zend_long) result);
@@ -222,46 +189,30 @@ ZEND_FUNCTION(vkEnumerateInstanceExtensionProperties)
 
 ZEND_FUNCTION(vkEnumeratePhysicalDevices)
 {
-	zval *instance, *out;
+	zval *instance, *count, *out;
 	uint64_t value;
 	VkPhysicalDevice *items = NULL;
-	uint32_t count = 0;
+	uint32_t n;
+	bool want;
 	VkResult result;
-	int spins = 0;
 
-	ZEND_PARSE_PARAMETERS_START(2, 2)
+	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJECT(instance)
+		Z_PARAM_ZVAL(count)
 		Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 
 	if (!vulkan_handle_value(instance, vulkan_ce_VkInstance, 1, &value)) {
 		RETURN_THROWS();
 	}
-
-	do {
-		uint32_t probe = 0;
-		result = vkEnumeratePhysicalDevices((VkInstance) (uintptr_t) value, &probe, NULL);
-		if (result < 0) {
-			break;
-		}
-		if (items != NULL) {
-			efree(items);
-		}
-		items = probe ? emalloc(sizeof(*items) * probe) : NULL;
-		count = probe;
-		result = vkEnumeratePhysicalDevices((VkInstance) (uintptr_t) value, &count, items);
-		spins++;
-	} while (result == VK_INCOMPLETE && spins < 8);
-
-	if (result < 0) {
-		if (items != NULL) {
-			efree(items);
-		}
-		RETURN_LONG((zend_long) result);
+	want = vulkan_enum_in(count, out, &n);
+	if (want) {
+		items = safe_emalloc(n ? n : 1, sizeof(*items), 0);
 	}
-
-	vulkan_assign_handles(out, items, count, sizeof(VkPhysicalDevice), vulkan_ce_VkPhysicalDevice, Z_OBJ_P(instance));
-	if (items != NULL) {
+	result = vkEnumeratePhysicalDevices((VkInstance) (uintptr_t) value, &n, items);
+	vulkan_enum_count_out(count, n);
+	if (want) {
+		vulkan_assign_handles(out, items, result < 0 ? 0 : n, sizeof(VkPhysicalDevice), vulkan_ce_VkPhysicalDevice, Z_OBJ_P(instance));
 		efree(items);
 	}
 	RETURN_LONG((zend_long) result);
@@ -290,27 +241,29 @@ ZEND_FUNCTION(vkGetPhysicalDeviceProperties)
 
 ZEND_FUNCTION(vkGetPhysicalDeviceQueueFamilyProperties)
 {
-	zval *physical, *out;
+	zval *physical, *count, *out;
 	uint64_t value;
-	uint32_t count = 0;
-	VkQueueFamilyProperties *items;
+	uint32_t n;
+	bool want;
+	VkQueueFamilyProperties *items = NULL;
 
-	ZEND_PARSE_PARAMETERS_START(2, 2)
+	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJECT(physical)
+		Z_PARAM_ZVAL(count)
 		Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 
 	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &value)) {
 		RETURN_THROWS();
 	}
-
-	vkGetPhysicalDeviceQueueFamilyProperties((VkPhysicalDevice) (uintptr_t) value, &count, NULL);
-	items = count ? emalloc(sizeof(*items) * count) : NULL;
-	if (count > 0) {
-		vkGetPhysicalDeviceQueueFamilyProperties((VkPhysicalDevice) (uintptr_t) value, &count, items);
+	want = vulkan_enum_in(count, out, &n);
+	if (want) {
+		items = safe_emalloc(n ? n : 1, sizeof(*items), 0);
 	}
-	vulkan_assign_families(out, items, count);
-	if (items != NULL) {
+	vkGetPhysicalDeviceQueueFamilyProperties((VkPhysicalDevice) (uintptr_t) value, &n, items);
+	vulkan_enum_count_out(count, n);
+	if (want) {
+		vulkan_assign_families(out, items, n);
 		efree(items);
 	}
 }
@@ -361,18 +314,19 @@ ZEND_FUNCTION(vkGetPhysicalDeviceFormatProperties)
 
 ZEND_FUNCTION(vkEnumerateDeviceExtensionProperties)
 {
-	zval *physical, *out;
+	zval *physical, *count, *out;
 	char *layer = NULL;
 	size_t layer_len = 0;
 	uint64_t value;
 	VkExtensionProperties *items = NULL;
-	uint32_t count = 0;
+	uint32_t n;
+	bool want;
 	VkResult result;
-	int spins = 0;
 
-	ZEND_PARSE_PARAMETERS_START(3, 3)
+	ZEND_PARSE_PARAMETERS_START(4, 4)
 		Z_PARAM_OBJECT(physical)
 		Z_PARAM_STRING_OR_NULL(layer, layer_len)
+		Z_PARAM_ZVAL(count)
 		Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 
@@ -380,30 +334,14 @@ ZEND_FUNCTION(vkEnumerateDeviceExtensionProperties)
 	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &value)) {
 		RETURN_THROWS();
 	}
-	do {
-		uint32_t probe = 0;
-		result = vkEnumerateDeviceExtensionProperties((VkPhysicalDevice) (uintptr_t) value, layer, &probe, NULL);
-		if (result < 0) {
-			break;
-		}
-		if (items != NULL) {
-			efree(items);
-		}
-		items = probe ? emalloc(sizeof(*items) * probe) : NULL;
-		count = probe;
-		result = vkEnumerateDeviceExtensionProperties((VkPhysicalDevice) (uintptr_t) value, layer, &count, items);
-		spins++;
-	} while (result == VK_INCOMPLETE && spins < 8);
-
-	if (result < 0) {
-		if (items != NULL) {
-			efree(items);
-		}
-		RETURN_LONG((zend_long) result);
+	want = vulkan_enum_in(count, out, &n);
+	if (want) {
+		items = safe_emalloc(n ? n : 1, sizeof(*items), 0);
 	}
-
-	vulkan_assign_extension_list(out, items, count);
-	if (items != NULL) {
+	result = vkEnumerateDeviceExtensionProperties((VkPhysicalDevice) (uintptr_t) value, layer, &n, items);
+	vulkan_enum_count_out(count, n);
+	if (want) {
+		vulkan_assign_extension_list(out, items, result < 0 ? 0 : n);
 		efree(items);
 	}
 	RETURN_LONG((zend_long) result);
@@ -411,7 +349,8 @@ ZEND_FUNCTION(vkEnumerateDeviceExtensionProperties)
 
 ZEND_FUNCTION(vkCreateDevice)
 {
-	zval *physical, *create_info, *allocator, *out;
+	zval *physical, *create_info, *out;
+	zend_long allocator;
 	uint64_t value;
 	VkDeviceCreateInfo info;
 	VkDevice device = VK_NULL_HANDLE;
@@ -422,25 +361,21 @@ ZEND_FUNCTION(vkCreateDevice)
 	ZEND_PARSE_PARAMETERS_START(4, 4)
 		Z_PARAM_OBJECT(physical)
 		Z_PARAM_OBJECT(create_info)
-		Z_PARAM_ZVAL(allocator)
+		Z_PARAM_LONG(allocator)
 		Z_PARAM_ZVAL(out)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (Z_TYPE_P(allocator) != IS_NULL) {
-		zend_argument_type_error(3, "must be null");
-		RETURN_THROWS();
-	}
 	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &value)) {
 		RETURN_THROWS();
 	}
 
 	vulkan_scratch_init(&scratch);
-	if (!vulkan_in(create_info, vulkan_ce_VkDeviceCreateInfo, vk_VkDeviceCreateInfo_from, &info, &scratch, 2)) {
+	if (!vulkan_arg_struct(create_info, vulkan_ce_VkDeviceCreateInfo, vk_VkDeviceCreateInfo_from, &info, &scratch)) {
 		vulkan_scratch_free(&scratch);
 		RETURN_THROWS();
 	}
 
-	result = vkCreateDevice((VkPhysicalDevice) (uintptr_t) value, &info, NULL, &device);
+	result = vkCreateDevice((VkPhysicalDevice) (uintptr_t) value, &info, ALLOCATOR(allocator), &device);
 	vulkan_scratch_free(&scratch);
 	if (result == VK_SUCCESS) {
 		vulkan_box(&boxed, (uint64_t) (uintptr_t) device, vulkan_ce_VkDevice, Z_OBJ_P(physical));
@@ -453,26 +388,19 @@ ZEND_FUNCTION(vkCreateDevice)
 
 ZEND_FUNCTION(vkDestroyDevice)
 {
-	zval *device, *allocator;
-	uint64_t value;
+	zval *device;
+	zend_long allocator;
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_OBJECT(device)
-		Z_PARAM_ZVAL(allocator)
+		Z_PARAM_OBJECT_OF_CLASS_OR_NULL(device, vulkan_ce_VkDevice)
+		Z_PARAM_LONG(allocator)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (Z_TYPE_P(allocator) != IS_NULL) {
-		zend_argument_type_error(2, "must be null");
-		RETURN_THROWS();
+	vkDestroyDevice((VkDevice) (uintptr_t) vulkan_or_null(device), ALLOCATOR(allocator));
+	if (device) {
+		vulkan_release_tree(Z_OBJ_P(device));
 	}
-	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &value)) {
-		RETURN_THROWS();
-	}
-
-	vkDestroyDevice((VkDevice) (uintptr_t) value, NULL);
-	vulkan_release_tree(Z_OBJ_P(device));
 }
-
 ZEND_FUNCTION(vkGetDeviceQueue)
 {
 	zval *device, *out;

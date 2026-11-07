@@ -51,7 +51,8 @@ bool vk_VkImageDrmFormatModifierListCreateInfoEXT_from(zend_object *obj, void *r
 	memset(dst, 0, sizeof(*dst));
 	dst->sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT;
 	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
-	return vulkan_u64_list(obj, "pDrmFormatModifiers", &dst->pDrmFormatModifiers, &dst->drmFormatModifierCount, scratch);
+	return vulkan_u32(obj, "drmFormatModifierCount", &dst->drmFormatModifierCount)
+		&& vulkan_u64_list(obj, "pDrmFormatModifiers", &dst->pDrmFormatModifiers, &dst->drmFormatModifierCount, scratch);
 }
 void vk_VkImageDrmFormatModifierListCreateInfoEXT_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkImageDrmFormatModifierListCreateInfoEXT); }
 

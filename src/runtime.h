@@ -49,10 +49,36 @@ void vulkan_struct_setup(zend_class_entry *ce);
 
 /* Boxes value as ce. parent is referenced for the release tree. value 0 becomes null. */
 void vulkan_box(zval *rv, uint64_t value, zend_class_entry *ce, zend_object *parent);
-/* False after throwing. A released handle throws ValueError "... has been destroyed". */
+/*
+ * The probe switch. A kept refusal site reads `if (!VULKAN_PROBE_OFF("<id>") && (<check>))`.
+ * A build configured with --enable-vulkan-probes lets env VULKAN_PROBE_OFF=<id> turn that one
+ * site off, so tests/Probes can show the crash the site prevents. A release build compiles the
+ * switch out.
+ */
+#ifdef VULKAN_PROBES
+bool vulkan_probe_off(const char *id);
+# define VULKAN_PROBE_OFF(id) vulkan_probe_off(id)
+#else
+# define VULKAN_PROBE_OFF(id) 0
+#endif
+
+/* False after throwing. A released handle is 0 (VK_NULL_HANDLE); a released dispatchable handle is refused. */
 bool vulkan_handle_value(zval *zv, zend_class_entry *ce, uint32_t arg_num, uint64_t *out);
 /* Releases obj and every live handle whose parent chain reaches it. */
 void vulkan_release_tree(zend_object *obj);
+/* False after throwing when count is past the n items of list property name of obj, or (obj NULL) of argument list_arg counted by argument count_arg. */
+bool vulkan_list_count(zend_object *obj, const char *name, uint32_t count, uint32_t n, uint32_t count_arg, uint32_t list_arg);
+/* False after throwing when Vulkan reads size bytes from a string of length bytes. arg_num 0 names what. */
+bool vulkan_bytes_length(size_t length, size_t size, uint32_t arg_num, const char *what);
+/*
+ * The C enumerate-twice pair as PHP passes it: an int &$count and a @prefer-ref list: the literal
+ * null is NULL (Vulkan writes the count), a variable is the list Vulkan fills with up to $count items. vulkan_enum_in
+ * reads the capacity and whether the list is wanted; vulkan_enum_count_out writes the count back.
+ */
+bool vulkan_enum_in(zval *count, zval *items, uint32_t *capacity);
+void vulkan_enum_count_out(zval *count, uint32_t written);
+/* False after throwing when fn, an extension command from vkGet*ProcAddr, is NULL. */
+bool vulkan_proc(void (*fn)(void), const char *name);
 
 void vulkan_assign(zval *out, zval *value);
 
@@ -98,10 +124,6 @@ void vulkan_init_nested(zend_object *obj, const char *name, zend_class_entry *ce
 		vulkan_handle *handle; \
 		ZEND_PARSE_PARAMETERS_NONE(); \
 		handle = vulkan_handle_from(Z_OBJ_P(ZEND_THIS)); \
-		if (handle->value == 0) { \
-			zend_value_error("%s has been destroyed", ZSTR_VAL(Z_OBJCE_P(ZEND_THIS)->name)); \
-			RETURN_THROWS(); \
-		} \
 		RETURN_LONG((zend_long) handle->value); \
 	} \
 	ZEND_METHOD(cls, fromPointer) \
@@ -110,10 +132,6 @@ void vulkan_init_nested(zend_object *obj, const char *name, zend_class_entry *ce
 		ZEND_PARSE_PARAMETERS_START(1, 1) \
 			Z_PARAM_LONG(address) \
 		ZEND_PARSE_PARAMETERS_END(); \
-		if (address == 0) { \
-			zend_argument_value_error(1, "must not be a null address"); \
-			RETURN_THROWS(); \
-		} \
 		vulkan_box(return_value, (uint64_t) address, zend_get_called_scope(execute_data), NULL); \
 	}
 

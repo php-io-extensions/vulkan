@@ -1,4 +1,4 @@
-#include "runtime.h"
+#include "structs.h"
 
 static zend_object_handlers vulkan_handle_handlers;
 static zend_object_handlers vulkan_struct_handlers;
@@ -129,6 +129,22 @@ void vulkan_box(zval *rv, uint64_t value, zend_class_entry *ce, zend_object *par
 	zend_hash_index_update_ptr(table, (zend_ulong) value, Z_OBJ_P(rv));
 }
 
+#ifdef VULKAN_PROBES
+bool vulkan_probe_off(const char *id)
+{
+	const char *off = getenv("VULKAN_PROBE_OFF");
+
+	return off != NULL && strcmp(off, id) == 0;
+}
+#endif
+
+/* The loader reads the dispatch table through a dispatchable handle: NULL is a crash, not an error. */
+static bool vulkan_dispatchable(zend_class_entry *ce)
+{
+	return ce == vulkan_ce_VkInstance || ce == vulkan_ce_VkPhysicalDevice || ce == vulkan_ce_VkDevice
+		|| ce == vulkan_ce_VkQueue || ce == vulkan_ce_VkCommandBuffer;
+}
+
 bool vulkan_handle_value(zval *zv, zend_class_entry *ce, uint32_t arg_num, uint64_t *out)
 {
 	vulkan_handle *handle;
@@ -143,12 +159,8 @@ bool vulkan_handle_value(zval *zv, zend_class_entry *ce, uint32_t arg_num, uint6
 	}
 
 	handle = vulkan_handle_from(Z_OBJ_P(zv));
-	if (handle->value == 0) {
-		if (arg_num == 0) {
-			zend_value_error("%s has been destroyed", ZSTR_VAL(ce->name));
-		} else {
-			zend_argument_value_error(arg_num, "%s has been destroyed", ZSTR_VAL(ce->name));
-		}
+	if (!VULKAN_PROBE_OFF("vulkan-null-dispatchable") && handle->value == 0 && vulkan_dispatchable(ce)) {
+		arg_num == 0 ? zend_value_error("%s has been released: Vulkan dispatches through it", ZSTR_VAL(ce->name)) : zend_argument_value_error(arg_num, "%s has been released: Vulkan dispatches through it", ZSTR_VAL(ce->name)); /* binding:vulkan-null-dispatchable */
 		return false;
 	}
 
@@ -383,6 +395,17 @@ bool vulkan_cstring(zend_object *obj, const char *name, const char **out)
 	return true;
 }
 
+bool vulkan_bytes_length(size_t length, size_t size, uint32_t arg_num, const char *what)
+{
+	/* Vulkan reads size bytes from the string's buffer. */
+	if (!VULKAN_PROBE_OFF("vulkan-bytes-length") && size > length) {
+		arg_num == 0 ? zend_value_error("%s holds %zu bytes, fewer than the %zu Vulkan reads", what, length, size) : zend_argument_value_error(arg_num, "holds %zu bytes, fewer than the %zu Vulkan reads", length, size); /* binding:vulkan-bytes-length */
+		return false;
+	}
+
+	return true;
+}
+
 bool vulkan_bytes_from(zend_object *obj, const char *name, void *dst, size_t size)
 {
 	zval *zv = vulkan_read_prop(obj, name);
@@ -416,13 +439,31 @@ bool vulkan_char_array_from(zend_object *obj, const char *name, char *dst, size_
 	return true;
 }
 
-static bool vulkan_list(zend_object *obj, const char *name, zval **items, uint32_t *count)
+bool vulkan_list_count(zend_object *obj, const char *name, uint32_t count, uint32_t n, uint32_t count_arg, uint32_t list_arg)
+{
+	/* Vulkan reads count elements of the C array built from the list: a struct's (obj) or a function's argument. */
+	if (!VULKAN_PROBE_OFF("vulkan-list-count") && count > n) {
+		obj != NULL ? zend_value_error("%s::$%s holds %u values, fewer than its count %u", ZSTR_VAL(obj->ce->name), name, n, count) : zend_argument_value_error(count_arg, "must not pass the length of argument #%u ($%s)", list_arg, get_active_function_arg_name(list_arg)); /* binding:vulkan-list-count */
+		return false;
+	}
+
+	return true;
+}
+
+/*
+ * The items of list property name that the C array is built from: the first min(count, list
+ * length). count is the struct's count member, checked against the list (a count past it is
+ * refused). A fixed C array (fixed) has no count member: its short list is zero-filled, as a C
+ * initializer is.
+ */
+static bool vulkan_list(zend_object *obj, const char *name, zval **items, uint32_t count, uint32_t *taken, bool fixed)
 {
 	zval *zv = vulkan_read_prop(obj, name);
-	uint32_t n = 0;
-	uint32_t i = 0;
+	uint32_t n, i = 0;
 	zval *item;
 
+	*items = NULL;
+	*taken = 0;
 	if (zv == NULL) {
 		return false;
 	}
@@ -430,16 +471,20 @@ static bool vulkan_list(zend_object *obj, const char *name, zval **items, uint32
 		zend_type_error("%s::$%s must be a list", ZSTR_VAL(obj->ce->name), name);
 		return false;
 	}
-
 	n = zend_hash_num_elements(Z_ARRVAL_P(zv));
-	*count = n;
-	if (n == 0) {
-		*items = NULL;
+	if (!fixed && !vulkan_list_count(obj, name, count, n, 0, 0)) {
+		return false;
+	}
+	*taken = count < n ? count : n;
+	if (*taken == 0) {
 		return true;
 	}
 
-	*items = safe_emalloc(n, sizeof(zval), 0);
+	*items = safe_emalloc(*taken, sizeof(zval), 0);
 	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), item) {
+		if (i == *taken) {
+			break;
+		}
 		ZVAL_COPY_VALUE(&(*items)[i], item);
 		i++;
 	} ZEND_HASH_FOREACH_END();
@@ -447,187 +492,139 @@ static bool vulkan_list(zend_object *obj, const char *name, zval **items, uint32
 	return true;
 }
 
-bool vulkan_u64_list(zend_object *obj, const char *name, const uint64_t **out, uint32_t *count, vulkan_scratch *scratch)
-{
-	zval *zv = zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL);
-	zval *item;
-	uint32_t n, i;
-	uint64_t *stored;
+/* One list item into its C element: false when the item is not of the element's PHP type. */
+typedef bool (*vulkan_item_fn)(zval *item, void *dst);
 
-	if (zv == NULL || EG(exception) != NULL) return false;
-	if (Z_TYPE_P(zv) != IS_ARRAY) {
-		zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
+static bool vulkan_item_u64(zval *item, void *dst)
+{
+	if (Z_TYPE_P(item) != IS_LONG) return false;
+	*(uint64_t *) dst = (uint64_t) Z_LVAL_P(item);
+	return true;
+}
+
+static bool vulkan_item_u32(zval *item, void *dst)
+{
+	if (Z_TYPE_P(item) != IS_LONG) return false;
+	*(uint32_t *) dst = (uint32_t) Z_LVAL_P(item);
+	return true;
+}
+
+static bool vulkan_item_i32(zval *item, void *dst)
+{
+	if (Z_TYPE_P(item) != IS_LONG) return false;
+	*(int32_t *) dst = (int32_t) Z_LVAL_P(item);
+	return true;
+}
+
+static bool vulkan_item_float(zval *item, void *dst)
+{
+	if (Z_TYPE_P(item) == IS_DOUBLE) {
+		*(float *) dst = (float) Z_DVAL_P(item);
+	} else if (Z_TYPE_P(item) == IS_LONG) {
+		*(float *) dst = (float) Z_LVAL_P(item);
+	} else {
 		return false;
 	}
-	n = zend_hash_num_elements(Z_ARRVAL_P(zv));
-	*count = n;
-	if (n == 0) { *out = NULL; return true; }
-	stored = vulkan_scratch_alloc(scratch, sizeof(uint64_t) * n);
-	i = 0;
-	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zv), item) {
-		if (Z_TYPE_P(item) != IS_LONG) {
-			zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
+	return true;
+}
+
+/* The C array of list property name: its items converted, sized to them (Vulkan reads the count member). */
+static bool vulkan_scalar_items(zend_object *obj, const char *name, void **out, uint32_t count, uint32_t *taken, bool fixed, size_t size, vulkan_item_fn convert, const char *what, vulkan_scratch *scratch)
+{
+	zval *items = NULL;
+	uint32_t i;
+	char *stored;
+
+	*out = NULL;
+	if (!vulkan_list(obj, name, &items, count, taken, fixed)) {
+		return false;
+	}
+	if (*taken == 0) {
+		return true;
+	}
+	stored = vulkan_scratch_alloc(scratch, size * *taken);
+	for (i = 0; i < *taken; i++) {
+		if (!convert(&items[i], stored + (size_t) i * size)) {
+			zend_type_error("%s::$%s must be a list of %s", ZSTR_VAL(obj->ce->name), name, what);
+			efree(items);
 			return false;
 		}
-		stored[i++] = (uint64_t) Z_LVAL_P(item);
-	} ZEND_HASH_FOREACH_END();
+	}
+	efree(items);
 	*out = stored;
 	return true;
+}
+
+bool vulkan_u64_list(zend_object *obj, const char *name, const uint64_t **out, uint32_t *count, vulkan_scratch *scratch)
+{
+	uint32_t taken;
+	return vulkan_scalar_items(obj, name, (void **) out, *count, &taken, false, sizeof(uint64_t), vulkan_item_u64, "int", scratch);
 }
 
 bool vulkan_u32_list(zend_object *obj, const char *name, const uint32_t **out, uint32_t *count, vulkan_scratch *scratch)
 {
-	zval *items = NULL;
-	uint32_t n, i;
-	uint32_t *stored;
-
-	if (!vulkan_list(obj, name, &items, &n)) {
-		return false;
-	}
-	*count = n;
-	if (n == 0) {
-		*out = NULL;
-		return true;
-	}
-
-	stored = vulkan_scratch_alloc(scratch, sizeof(uint32_t) * n);
-	for (i = 0; i < n; i++) {
-		if (Z_TYPE(items[i]) != IS_LONG) {
-			zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
-			efree(items);
-			return false;
-		}
-		stored[i] = (uint32_t) Z_LVAL(items[i]);
-	}
-	efree(items);
-	*out = stored;
-	return true;
+	uint32_t taken;
+	return vulkan_scalar_items(obj, name, (void **) out, *count, &taken, false, sizeof(uint32_t), vulkan_item_u32, "int", scratch);
 }
 
 bool vulkan_i32_list(zend_object *obj, const char *name, const int32_t **out, uint32_t *count, vulkan_scratch *scratch)
 {
-	zval *items = NULL;
-	uint32_t n, i;
-	int32_t *stored;
-
-	if (!vulkan_list(obj, name, &items, &n)) {
-		return false;
-	}
-	*count = n;
-	if (n == 0) {
-		*out = NULL;
-		return true;
-	}
-
-	stored = vulkan_scratch_alloc(scratch, sizeof(int32_t) * n);
-	for (i = 0; i < n; i++) {
-		if (Z_TYPE(items[i]) != IS_LONG) {
-			zend_type_error("%s::$%s must be a list of int", ZSTR_VAL(obj->ce->name), name);
-			efree(items);
-			return false;
-		}
-		stored[i] = (int32_t) Z_LVAL(items[i]);
-	}
-	efree(items);
-	*out = stored;
-	return true;
+	uint32_t taken;
+	return vulkan_scalar_items(obj, name, (void **) out, *count, &taken, false, sizeof(int32_t), vulkan_item_i32, "int", scratch);
 }
 
 bool vulkan_float_list(zend_object *obj, const char *name, const float **out, uint32_t *count, vulkan_scratch *scratch)
 {
-	zval *items = NULL;
-	uint32_t n, i;
-	float *stored;
+	uint32_t taken;
+	return vulkan_scalar_items(obj, name, (void **) out, *count, &taken, false, sizeof(float), vulkan_item_float, "float", scratch);
+}
 
-	if (!vulkan_list(obj, name, &items, &n)) {
-		return false;
-	}
-	*count = n;
-	if (n == 0) {
-		*out = NULL;
-		return true;
-	}
+/* A fixed C array of count elements: a short list is zero-filled, as a C initializer is. */
+static bool vulkan_fixed_items(zend_object *obj, const char *name, void *dst, uint32_t count, size_t size, vulkan_item_fn convert, const char *what)
+{
+	void *items;
+	uint32_t taken;
+	vulkan_scratch scratch;
+	bool ok;
 
-	stored = vulkan_scratch_alloc(scratch, sizeof(float) * n);
-	for (i = 0; i < n; i++) {
-		if (Z_TYPE(items[i]) == IS_DOUBLE) {
-			stored[i] = (float) Z_DVAL(items[i]);
-		} else if (Z_TYPE(items[i]) == IS_LONG) {
-			stored[i] = (float) Z_LVAL(items[i]);
-		} else {
-			zend_type_error("%s::$%s must be a list of float", ZSTR_VAL(obj->ce->name), name);
-			efree(items);
-			return false;
+	vulkan_scratch_init(&scratch);
+	ok = vulkan_scalar_items(obj, name, &items, count, &taken, true, size, convert, what, &scratch);
+	if (ok) {
+		memset(dst, 0, size * count);
+		if (taken > 0) {
+			memcpy(dst, items, size * taken);
 		}
 	}
-	efree(items);
-	*out = stored;
-	return true;
+	vulkan_scratch_free(&scratch);
+	return ok;
 }
 
 bool vulkan_fixed_floats(zend_object *obj, const char *name, float *dst, uint32_t count)
 {
-	const float *items = NULL;
-	uint32_t n = 0;
-	vulkan_scratch scratch;
-
-	vulkan_scratch_init(&scratch);
-	if (!vulkan_float_list(obj, name, &items, &n, &scratch)) {
-		vulkan_scratch_free(&scratch);
-		return false;
-	}
-	if (n != count) {
-		zend_value_error("%s::$%s must hold %u floats", ZSTR_VAL(obj->ce->name), name, count);
-		vulkan_scratch_free(&scratch);
-		return false;
-	}
-	if (count > 0) {
-		memcpy(dst, items, sizeof(float) * count);
-	}
-	vulkan_scratch_free(&scratch);
-	return true;
+	return vulkan_fixed_items(obj, name, dst, count, sizeof(float), vulkan_item_float, "float");
 }
 
 bool vulkan_fixed_u32s(zend_object *obj, const char *name, uint32_t *dst, uint32_t count)
 {
-	const uint32_t *items = NULL;
-	uint32_t n = 0;
-	vulkan_scratch scratch;
-
-	vulkan_scratch_init(&scratch);
-	if (!vulkan_u32_list(obj, name, &items, &n, &scratch)) {
-		vulkan_scratch_free(&scratch);
-		return false;
-	}
-	if (n != count) {
-		zend_value_error("%s::$%s must hold %u ints", ZSTR_VAL(obj->ce->name), name, count);
-		vulkan_scratch_free(&scratch);
-		return false;
-	}
-	if (count > 0) {
-		memcpy(dst, items, sizeof(uint32_t) * count);
-	}
-	vulkan_scratch_free(&scratch);
-	return true;
+	return vulkan_fixed_items(obj, name, dst, count, sizeof(uint32_t), vulkan_item_u32, "int");
 }
 
 bool vulkan_string_list(zend_object *obj, const char *name, const char *const **out, uint32_t *count, vulkan_scratch *scratch)
 {
 	zval *items = NULL;
-	uint32_t n, i;
+	uint32_t taken, i;
 	const char **stored;
 
-	if (!vulkan_list(obj, name, &items, &n)) {
+	*out = NULL;
+	if (!vulkan_list(obj, name, &items, *count, &taken, false)) {
 		return false;
 	}
-	*count = n;
-	if (n == 0) {
-		*out = NULL;
+	if (taken == 0) {
 		return true;
 	}
 
-	stored = vulkan_scratch_alloc(scratch, sizeof(const char *) * n);
-	for (i = 0; i < n; i++) {
+	stored = vulkan_scratch_alloc(scratch, sizeof(const char *) * taken);
+	for (i = 0; i < taken; i++) {
 		char *copy;
 		if (Z_TYPE(items[i]) != IS_STRING) {
 			zend_type_error("%s::$%s must be a list of string", ZSTR_VAL(obj->ce->name), name);
@@ -665,20 +662,19 @@ bool vulkan_handle_prop(zend_object *obj, const char *name, zend_class_entry *ce
 bool vulkan_handle_list(zend_object *obj, const char *name, zend_class_entry *ce, uint64_t **out, uint32_t *count, vulkan_scratch *scratch)
 {
 	zval *items = NULL;
-	uint32_t n, i;
+	uint32_t taken, i;
 	uint64_t *stored;
 
-	if (!vulkan_list(obj, name, &items, &n)) {
+	*out = NULL;
+	if (!vulkan_list(obj, name, &items, *count, &taken, false)) {
 		return false;
 	}
-	*count = n;
-	if (n == 0) {
-		*out = NULL;
+	if (taken == 0) {
 		return true;
 	}
 
-	stored = vulkan_scratch_alloc(scratch, sizeof(uint64_t) * n);
-	for (i = 0; i < n; i++) {
+	stored = vulkan_scratch_alloc(scratch, sizeof(uint64_t) * taken);
+	for (i = 0; i < taken; i++) {
 		if (Z_TYPE(items[i]) != IS_OBJECT || !instanceof_function(Z_OBJCE(items[i]), ce)) {
 			zend_type_error("%s::$%s must be a list of %s", ZSTR_VAL(obj->ce->name), name, ZSTR_VAL(ce->name));
 			efree(items);
@@ -755,4 +751,183 @@ void vulkan_init_nested(zend_object *obj, const char *name, zend_class_entry *ce
 	}
 	zend_update_property(obj->ce, obj, name, strlen(name), &nested);
 	zval_ptr_dtor(&nested);
+}
+
+bool vulkan_arg_count(zend_long count, uint32_t n, uint32_t count_arg, uint32_t list_arg)
+{
+	return vulkan_list_count(NULL, NULL, (uint32_t) count, n, count_arg, list_arg);
+}
+
+/* The first min((uint32_t) count, list length) elements of list argument list_arg, after the count check. */
+static bool vulkan_arg_list(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, zval **items, uint32_t *n)
+{
+	zval *item;
+	uint32_t i = 0;
+
+	*items = NULL;
+	*n = 0;
+	if (Z_TYPE_P(list) != IS_ARRAY) {
+		zend_argument_type_error(list_arg, "must be of type array, %s given", zend_zval_value_name(list));
+		return false;
+	}
+	if (!vulkan_arg_count(count, zend_hash_num_elements(Z_ARRVAL_P(list)), count_arg, list_arg)) {
+		return false;
+	}
+	/* Built from the list's items; Vulkan is passed the count. */
+	*n = (uint32_t) count < zend_hash_num_elements(Z_ARRVAL_P(list)) ? (uint32_t) count : zend_hash_num_elements(Z_ARRVAL_P(list));
+	if (*n == 0) {
+		return true;
+	}
+
+	*items = safe_emalloc(*n, sizeof(zval), 0);
+	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(list), item) {
+		if (i == *n) {
+			break;
+		}
+		ZVAL_COPY_VALUE(&(*items)[i], item);
+		i++;
+	} ZEND_HASH_FOREACH_END();
+
+	return true;
+}
+
+bool vulkan_arg_structs(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, zend_class_entry *ce, size_t size, vulkan_from_fn from, void **out, vulkan_scratch *scratch)
+{
+	zval *items;
+	uint32_t n, i;
+	char *stored;
+	HashTable visited;
+
+	*out = NULL;
+	if (!vulkan_arg_list(list, count, count_arg, list_arg, &items, &n)) {
+		return false;
+	}
+	if (n == 0) {
+		return true;
+	}
+
+	stored = vulkan_scratch_alloc(scratch, size * n);
+	zend_hash_init(&visited, 4, NULL, NULL, 0);
+	for (i = 0; i < n; i++) {
+		zend_hash_clean(&visited);
+		if (Z_TYPE(items[i]) != IS_OBJECT || !instanceof_function(Z_OBJCE(items[i]), ce)) {
+			zend_argument_type_error(list_arg, "must be a list of %s", ZSTR_VAL(ce->name));
+			break;
+		}
+		if (!from(Z_OBJ(items[i]), stored + (size_t) i * size, scratch, &visited)) {
+			break;
+		}
+	}
+	zend_hash_destroy(&visited);
+	efree(items);
+	if (i < n) {
+		return false;
+	}
+
+	*out = stored;
+	return true;
+}
+
+bool vulkan_arg_handles(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, zend_class_entry *ce, uint64_t **out, vulkan_scratch *scratch)
+{
+	zval *items;
+	uint32_t n, i;
+	uint64_t *stored;
+
+	*out = NULL;
+	if (!vulkan_arg_list(list, count, count_arg, list_arg, &items, &n)) {
+		return false;
+	}
+	if (n == 0) {
+		return true;
+	}
+
+	stored = vulkan_scratch_alloc(scratch, sizeof(uint64_t) * n);
+	for (i = 0; i < n; i++) {
+		if (!vulkan_handle_value(&items[i], ce, list_arg, &stored[i])) {
+			efree(items);
+			return false;
+		}
+	}
+	efree(items);
+	*out = stored;
+	return true;
+}
+
+/* The C array of int list argument list_arg, converted by convert. */
+static bool vulkan_arg_ints(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, size_t size, vulkan_item_fn convert, void **out, vulkan_scratch *scratch)
+{
+	zval *items;
+	uint32_t n, i;
+	char *stored;
+
+	*out = NULL;
+	if (!vulkan_arg_list(list, count, count_arg, list_arg, &items, &n)) {
+		return false;
+	}
+	if (n == 0) {
+		return true;
+	}
+	stored = vulkan_scratch_alloc(scratch, size * n);
+	for (i = 0; i < n; i++) {
+		if (!convert(&items[i], stored + (size_t) i * size)) {
+			zend_argument_type_error(list_arg, "must be a list of int");
+			efree(items);
+			return false;
+		}
+	}
+	efree(items);
+	*out = stored;
+	return true;
+}
+
+bool vulkan_arg_u32s(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, uint32_t **out, vulkan_scratch *scratch)
+{
+	return vulkan_arg_ints(list, count, count_arg, list_arg, sizeof(uint32_t), vulkan_item_u32, (void **) out, scratch);
+}
+
+bool vulkan_arg_u64s(zval *list, zend_long count, uint32_t count_arg, uint32_t list_arg, uint64_t **out, vulkan_scratch *scratch)
+{
+	return vulkan_arg_ints(list, count, count_arg, list_arg, sizeof(uint64_t), vulkan_item_u64, (void **) out, scratch);
+}
+
+bool vulkan_arg_struct(zval *zv, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch)
+{
+	HashTable visited;
+	bool ok;
+
+	if (Z_TYPE_P(zv) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(zv), ce)) {
+		zend_type_error("must be of type %s", ZSTR_VAL(ce->name));
+		return false;
+	}
+	zend_hash_init(&visited, 8, NULL, NULL, 0);
+	ok = from(Z_OBJ_P(zv), dst, scratch, &visited);
+	zend_hash_destroy(&visited);
+	return ok;
+}
+
+bool vulkan_enum_in(zval *count, zval *items, uint32_t *capacity)
+{
+	zval *c = count;
+
+	ZVAL_DEREF(c);
+	*capacity = Z_TYPE_P(c) == IS_LONG ? (uint32_t) Z_LVAL_P(c) : 0;
+	/* @prefer-ref: a literal null arrives as a value (NULL); a variable arrives as a reference (the list). */
+	return Z_ISREF_P(items) || Z_TYPE_P(items) != IS_NULL;
+}
+
+void vulkan_enum_count_out(zval *count, uint32_t written)
+{
+	ZEND_TRY_ASSIGN_REF_LONG(count, (zend_long) written);
+}
+
+bool vulkan_proc(void (*fn)(void), const char *name)
+{
+	/* An extension's command comes from vkGet*ProcAddr: NULL when its extension is not enabled, and calling NULL is a crash. */
+	if (!VULKAN_PROBE_OFF("vulkan-no-proc") && fn == NULL) {
+		zend_throw_error(NULL, "%s(): the loader has no %s here: its extension is not enabled", name, name); /* binding:vulkan-no-proc */
+		return false;
+	}
+
+	return true;
 }

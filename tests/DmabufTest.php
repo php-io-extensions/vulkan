@@ -6,13 +6,17 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     [$instance, $physical, , , $family] = gpu();
     $queueInfo = new VkDeviceQueueCreateInfo();
     $queueInfo->queueFamilyIndex = $family;
+    $queueInfo->queueCount = 1;
     $queueInfo->pQueuePriorities = [1.0];
     $deviceInfo = new VkDeviceCreateInfo();
+    $deviceInfo->queueCreateInfoCount = 1;
     $deviceInfo->pQueueCreateInfos = [$queueInfo];
-    $deviceInfo->enabledExtensionNames = [VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME, VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME, VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME];
-    vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), null, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice with dmabuf extensions');
+    $deviceInfo->ppEnabledExtensionNames = [VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME, VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME, VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME];
+    $deviceInfo->enabledExtensionCount = count($deviceInfo->ppEnabledExtensionNames);
+    vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), 0, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice with dmabuf extensions');
 
     $modifiers = new VkImageDrmFormatModifierListCreateInfoEXT();
+    $modifiers->drmFormatModifierCount = 1;
     $modifiers->pDrmFormatModifiers = [0]; // DRM_FORMAT_MOD_LINEAR
     $external = new VkExternalMemoryImageCreateInfo();
     $external->handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
@@ -27,7 +31,7 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     $imageInfo->samples = VK_SAMPLE_COUNT_1_BIT;
     $imageInfo->tiling = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
     $imageInfo->usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    expect(vkCreateImage($device, $imageInfo, null, $image))->toBe(VK_SUCCESS);
+    expect(vkCreateImage($device, $imageInfo, 0, $image))->toBe(VK_SUCCESS);
 
     vkGetImageMemoryRequirements($device, $image, $requirements);
     $export = new VkExportMemoryAllocateInfo();
@@ -39,7 +43,7 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     $allocate->pNext = $export;
     $allocate->allocationSize = $requirements->size;
     $allocate->memoryTypeIndex = memoryType($requirements->memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    vkAllocateMemory($device, $allocate, null, $memory);
+    vkAllocateMemory($device, $allocate, 0, $memory);
     vkBindImageMemory($device, $image, $memory, 0);
 
     $fdInfo = new VkMemoryGetFdInfoKHR();
@@ -56,15 +60,10 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     vkGetImageSubresourceLayout($device, $image, $subresource, $layout);
     expect($layout->rowPitch)->toBeGreaterThanOrEqual(64 * 4);
 
-    vk_close_fd($fd);
-    expect(fn () => vk_close_fd($fd))->toThrow(ValueError::class, 'is not an open file descriptor');
+    expect(libc()->close($fd))->toBe(0);
 
-    vkDestroyImage($device, $image, null);
-    vkFreeMemory($device, $memory, null);
-    vkDestroyDevice($device, null);
+    vkDestroyImage($device, $image, 0);
+    vkFreeMemory($device, $memory, 0);
+    vkDestroyDevice($device, 0);
 })->skip(PHP_OS_FAMILY === 'Darwin', 'dmabuf is Linux only');
 
-it('refuses to close what is not an open descriptor', function (): void {
-    expect(fn () => vk_close_fd(-1))->toThrow(ValueError::class, 'is not a file descriptor')
-        ->and(fn () => vk_close_fd(9999))->toThrow(ValueError::class, 'is not an open file descriptor');
-});

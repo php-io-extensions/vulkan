@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 6d6ac29a0051ee4a838efe323b821fba5a8d91e1 */
+ * Stub hash: bd906d90f74f70d9ef7c05bfb712c974312566c7 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceSurfaceSupportKHR, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
@@ -14,35 +14,38 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceSurfaceCapabi
 	ZEND_ARG_OBJ_INFO(1, pSurfaceCapabilities, VkSurfaceCapabilitiesKHR, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceSurfaceFormatsKHR, 0, 3, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceSurfaceFormatsKHR, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, surface, VkSurfaceKHR, 0)
-	ZEND_ARG_TYPE_INFO(1, pSurfaceFormats, IS_ARRAY, 1)
+	ZEND_ARG_TYPE_INFO(1, pSurfaceFormatCount, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(ZEND_SEND_PREFER_REF, pSurfaceFormats, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceSurfacePresentModesKHR, 0, 3, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceSurfacePresentModesKHR, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, surface, VkSurfaceKHR, 0)
-	ZEND_ARG_TYPE_INFO(1, pPresentModes, IS_ARRAY, 1)
+	ZEND_ARG_TYPE_INFO(1, pPresentModeCount, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(ZEND_SEND_PREFER_REF, pPresentModes, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateSwapchainKHR, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkSwapchainCreateInfoKHR, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pSwapchain, VkSwapchainKHR, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroySwapchainKHR, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
-	ZEND_ARG_OBJ_INFO(0, swapchain, VkSwapchainKHR, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, swapchain, VkSwapchainKHR, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetSwapchainImagesKHR, 0, 3, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetSwapchainImagesKHR, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, swapchain, VkSwapchainKHR, 0)
-	ZEND_ARG_TYPE_INFO(1, pSwapchainImages, IS_ARRAY, 1)
+	ZEND_ARG_TYPE_INFO(1, pSwapchainImageCount, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(ZEND_SEND_PREFER_REF, pSwapchainImages, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkAcquireNextImageKHR, 0, 6, IS_LONG, 0)
@@ -61,8 +64,8 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroySurfaceKHR, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, instance, VkInstance, 0)
-	ZEND_ARG_OBJ_INFO(0, surface, VkSurfaceKHR, 0)
-	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_NULL, 1)
+	ZEND_ARG_OBJ_INFO(0, surface, VkSurfaceKHR, 1)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkWaitForPresentKHR, 0, 4, IS_LONG, 0)
@@ -72,8 +75,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkWaitForPresentKHR, 0, 4, IS_LO
 	ZEND_ARG_TYPE_INFO(0, timeout, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkSetHdrMetadataEXT, 0, 3, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkSetHdrMetadataEXT, 0, 4, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_TYPE_INFO(0, swapchainCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pSwapchains, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, pMetadata, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
@@ -84,7 +88,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkSurfaceKHR_pointer, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkSurfaceKHR_fromPointer, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_VkSurfaceKHR_fromPointer, 0, 1, IS_STATIC, 1)
 	ZEND_ARG_TYPE_INFO(0, pointer, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -359,6 +363,12 @@ static zend_class_entry *register_class_VkSwapchainCreateInfoKHR(void)
 	zend_declare_typed_property(class_entry, property_imageSharingMode_name, &property_imageSharingMode_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_imageSharingMode_name);
 
+	zval property_queueFamilyIndexCount_default_value;
+	ZVAL_LONG(&property_queueFamilyIndexCount_default_value, 0);
+	zend_string *property_queueFamilyIndexCount_name = zend_string_init("queueFamilyIndexCount", sizeof("queueFamilyIndexCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_queueFamilyIndexCount_name, &property_queueFamilyIndexCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_queueFamilyIndexCount_name);
+
 	zval property_pQueueFamilyIndices_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pQueueFamilyIndices_default_value);
 	zend_string *property_pQueueFamilyIndices_name = zend_string_init("pQueueFamilyIndices", sizeof("pQueueFamilyIndices") - 1, 1);
@@ -384,9 +394,9 @@ static zend_class_entry *register_class_VkSwapchainCreateInfoKHR(void)
 	zend_string_release(property_presentMode_name);
 
 	zval property_clipped_default_value;
-	ZVAL_LONG(&property_clipped_default_value, 0);
+	ZVAL_FALSE(&property_clipped_default_value);
 	zend_string *property_clipped_name = zend_string_init("clipped", sizeof("clipped") - 1, 1);
-	zend_declare_typed_property(class_entry, property_clipped_name, &property_clipped_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_declare_typed_property(class_entry, property_clipped_name, &property_clipped_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
 	zend_string_release(property_clipped_name);
 
 	zval property_oldSwapchain_default_value;
@@ -412,11 +422,23 @@ static zend_class_entry *register_class_VkPresentInfoKHR(void)
 	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
 	zend_string_release(property_pNext_name);
 
+	zval property_waitSemaphoreCount_default_value;
+	ZVAL_LONG(&property_waitSemaphoreCount_default_value, 0);
+	zend_string *property_waitSemaphoreCount_name = zend_string_init("waitSemaphoreCount", sizeof("waitSemaphoreCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_waitSemaphoreCount_name, &property_waitSemaphoreCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_waitSemaphoreCount_name);
+
 	zval property_pWaitSemaphores_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pWaitSemaphores_default_value);
 	zend_string *property_pWaitSemaphores_name = zend_string_init("pWaitSemaphores", sizeof("pWaitSemaphores") - 1, 1);
 	zend_declare_typed_property(class_entry, property_pWaitSemaphores_name, &property_pWaitSemaphores_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
 	zend_string_release(property_pWaitSemaphores_name);
+
+	zval property_swapchainCount_default_value;
+	ZVAL_LONG(&property_swapchainCount_default_value, 0);
+	zend_string *property_swapchainCount_name = zend_string_init("swapchainCount", sizeof("swapchainCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_swapchainCount_name, &property_swapchainCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_swapchainCount_name);
 
 	zval property_pSwapchains_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pSwapchains_default_value);
@@ -470,6 +492,12 @@ static zend_class_entry *register_class_VkPresentRegionKHR(void)
 	INIT_CLASS_ENTRY(ce, "VkPresentRegionKHR", NULL);
 	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
 
+	zval property_rectangleCount_default_value;
+	ZVAL_LONG(&property_rectangleCount_default_value, 0);
+	zend_string *property_rectangleCount_name = zend_string_init("rectangleCount", sizeof("rectangleCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_rectangleCount_name, &property_rectangleCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_rectangleCount_name);
+
 	zval property_pRectangles_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pRectangles_default_value);
 	zend_string *property_pRectangles_name = zend_string_init("pRectangles", sizeof("pRectangles") - 1, 1);
@@ -492,6 +520,12 @@ static zend_class_entry *register_class_VkPresentRegionsKHR(void)
 	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
 	zend_string_release(property_pNext_name);
 
+	zval property_swapchainCount_default_value;
+	ZVAL_LONG(&property_swapchainCount_default_value, 0);
+	zend_string *property_swapchainCount_name = zend_string_init("swapchainCount", sizeof("swapchainCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_swapchainCount_name, &property_swapchainCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_swapchainCount_name);
+
 	zval property_pRegions_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pRegions_default_value);
 	zend_string *property_pRegions_name = zend_string_init("pRegions", sizeof("pRegions") - 1, 1);
@@ -513,6 +547,12 @@ static zend_class_entry *register_class_VkPresentIdKHR(void)
 	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
 	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
 	zend_string_release(property_pNext_name);
+
+	zval property_swapchainCount_default_value;
+	ZVAL_LONG(&property_swapchainCount_default_value, 0);
+	zend_string *property_swapchainCount_name = zend_string_init("swapchainCount", sizeof("swapchainCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_swapchainCount_name, &property_swapchainCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_swapchainCount_name);
 
 	zval property_pPresentIds_default_value;
 	ZVAL_EMPTY_ARRAY(&property_pPresentIds_default_value);

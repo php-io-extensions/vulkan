@@ -6,6 +6,11 @@ if (! extension_loaded('vulkan')) {
     throw new RuntimeException('The vulkan extension is not loaded; run ./install-macos.sh or ./install-debian-trixie.sh');
 }
 
+const MAC = PHP_OS_FAMILY === 'Darwin';
+const PROBE_SIGBUS = MAC ? 10 : 7;
+const PROBE_SIGSEGV = 11;
+const PROBE_SIGABRT = 6;
+
 function tap(object $object, Closure $callback): object
 {
     $callback($object);
@@ -22,13 +27,15 @@ function portabilityInstance(array $extensions = []): VkInstanceCreateInfo
     $info = new VkInstanceCreateInfo();
     $info->pApplicationInfo = $app;
 
-    vkEnumerateInstanceExtensionProperties(null, $available);
+    vkEnumerateInstanceExtensionProperties(null, $count, null);
+    vkEnumerateInstanceExtensionProperties(null, $count, $available);
     $names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
     if (in_array(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME, $names, true)) {
         $extensions[] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
         $info->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     }
-    $info->enabledExtensionNames = array_values(array_unique($extensions));
+    $info->ppEnabledExtensionNames = array_values(array_unique($extensions));
+    $info->enabledExtensionCount = count($info->ppEnabledExtensionNames);
 
     return $info;
 }
@@ -36,10 +43,12 @@ function portabilityInstance(array $extensions = []): VkInstanceCreateInfo
 /** The device create info with VK_KHR_portability_subset added where the device lists it. */
 function portabilityDevice(VkPhysicalDevice $physical, VkDeviceCreateInfo $info): VkDeviceCreateInfo
 {
-    vkEnumerateDeviceExtensionProperties($physical, null, $available);
+    vkEnumerateDeviceExtensionProperties($physical, null, $count, null);
+    vkEnumerateDeviceExtensionProperties($physical, null, $count, $available);
     $names = array_map(fn (VkExtensionProperties $e): string => $e->extensionName, $available);
     if (in_array(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, $names, true)) {
-        $info->enabledExtensionNames = array_values(array_unique([...$info->enabledExtensionNames, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME]));
+        $info->ppEnabledExtensionNames = array_values(array_unique([...$info->ppEnabledExtensionNames, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME]));
+        $info->enabledExtensionCount = count($info->ppEnabledExtensionNames);
     }
 
     return $info;
@@ -55,11 +64,12 @@ function vulkan(): ?array
     $made = true;
 
     $create = portabilityInstance();
-    if (vkCreateInstance($create, null, $instance) !== VK_SUCCESS) {
+    if (vkCreateInstance($create, 0, $instance) !== VK_SUCCESS) {
         return null;
     }
 
-    vkEnumeratePhysicalDevices($instance, $devices);
+    vkEnumeratePhysicalDevices($instance, $count, null);
+    vkEnumeratePhysicalDevices($instance, $count, $devices);
     foreach ($devices as $candidate) {
         vkGetPhysicalDeviceProperties($candidate, $properties);
         if ($properties->deviceType !== VK_PHYSICAL_DEVICE_TYPE_CPU) {
@@ -71,14 +81,17 @@ function vulkan(): ?array
         return null;
     }
 
-    vkGetPhysicalDeviceQueueFamilyProperties($physical, $families);
+    vkGetPhysicalDeviceQueueFamilyProperties($physical, $count, null);
+    vkGetPhysicalDeviceQueueFamilyProperties($physical, $count, $families);
     $family = array_key_first(array_filter($families, fn (VkQueueFamilyProperties $f): bool => ($f->queueFlags & VK_QUEUE_GRAPHICS_BIT) !== 0));
     $queueInfo = new VkDeviceQueueCreateInfo();
     $queueInfo->queueFamilyIndex = $family;
+    $queueInfo->queueCount = 1;
     $queueInfo->pQueuePriorities = [1.0];
     $deviceInfo = new VkDeviceCreateInfo();
+    $deviceInfo->queueCreateInfoCount = 1;
     $deviceInfo->pQueueCreateInfos = [$queueInfo];
-    vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), null, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice');
+    vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), 0, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice');
     vkGetDeviceQueue($device, $family, 0, $queue);
 
     return $vulkan = [$instance, $physical, $device, $queue, $family];
@@ -111,12 +124,12 @@ function hostBuffer(int $size, int $usage): array
     $info = new VkBufferCreateInfo();
     $info->size = $size;
     $info->usage = $usage;
-    vkCreateBuffer($device, $info, null, $buffer) === VK_SUCCESS || throw new RuntimeException('vkCreateBuffer');
+    vkCreateBuffer($device, $info, 0, $buffer) === VK_SUCCESS || throw new RuntimeException('vkCreateBuffer');
     vkGetBufferMemoryRequirements($device, $buffer, $requirements);
     $allocate = new VkMemoryAllocateInfo();
     $allocate->allocationSize = $requirements->size;
     $allocate->memoryTypeIndex = memoryType($requirements->memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    vkAllocateMemory($device, $allocate, null, $memory) === VK_SUCCESS || throw new RuntimeException('vkAllocateMemory');
+    vkAllocateMemory($device, $allocate, 0, $memory) === VK_SUCCESS || throw new RuntimeException('vkAllocateMemory');
     vkBindBufferMemory($device, $buffer, $memory, 0) === VK_SUCCESS || throw new RuntimeException('vkBindBufferMemory');
 
     return [$buffer, $memory];
@@ -137,12 +150,12 @@ function image2D(int $format, int $w, int $h, int $usage, int $samples = VK_SAMP
     $info->samples = $samples;
     $info->tiling = VK_IMAGE_TILING_OPTIMAL;
     $info->usage = $usage;
-    vkCreateImage($device, $info, null, $image) === VK_SUCCESS || throw new RuntimeException('vkCreateImage');
+    vkCreateImage($device, $info, 0, $image) === VK_SUCCESS || throw new RuntimeException('vkCreateImage');
     vkGetImageMemoryRequirements($device, $image, $requirements);
     $allocate = new VkMemoryAllocateInfo();
     $allocate->allocationSize = $requirements->size;
     $allocate->memoryTypeIndex = memoryType($requirements->memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    vkAllocateMemory($device, $allocate, null, $memory) === VK_SUCCESS || throw new RuntimeException('vkAllocateMemory');
+    vkAllocateMemory($device, $allocate, 0, $memory) === VK_SUCCESS || throw new RuntimeException('vkAllocateMemory');
     vkBindImageMemory($device, $image, $memory, 0) === VK_SUCCESS || throw new RuntimeException('vkBindImageMemory');
 
     return [$image, $memory];
@@ -158,7 +171,7 @@ function view2D(VkImage $image, int $format, int $aspect): VkImageView
     $info->subresourceRange->aspectMask = $aspect;
     $info->subresourceRange->levelCount = 1;
     $info->subresourceRange->layerCount = 1;
-    vkCreateImageView($device, $info, null, $view) === VK_SUCCESS || throw new RuntimeException('vkCreateImageView');
+    vkCreateImageView($device, $info, 0, $view) === VK_SUCCESS || throw new RuntimeException('vkCreateImageView');
 
     return $view;
 }
@@ -214,6 +227,7 @@ function msaaRenderPass(): VkRenderPass
     });
     $subpass = new VkSubpassDescription();
     $subpass->pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    $subpass->colorAttachmentCount = 1;
     $subpass->pColorAttachments = [$reference(0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)];
     $subpass->pResolveAttachments = [$reference(2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)];
     $subpass->pDepthStencilAttachment = $reference(1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
@@ -227,10 +241,13 @@ function msaaRenderPass(): VkRenderPass
     $dependency->dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
     $info = new VkRenderPassCreateInfo();
+    $info->attachmentCount = 3;
     $info->pAttachments = [$color, $stencil, $resolve];
+    $info->subpassCount = 1;
+    $info->dependencyCount = 1;
     $info->pSubpasses = [$subpass];
     $info->pDependencies = [$dependency];
-    vkCreateRenderPass($device, $info, null, $pass) === VK_SUCCESS || throw new RuntimeException('vkCreateRenderPass');
+    vkCreateRenderPass($device, $info, 0, $pass) === VK_SUCCESS || throw new RuntimeException('vkCreateRenderPass');
 
     return $pass;
 }
@@ -239,8 +256,9 @@ function shaderModule(string $file): VkShaderModule
 {
     [, , $device] = gpu();
     $info = new VkShaderModuleCreateInfo();
-    $info->code = file_get_contents(__DIR__ . '/Fixtures/' . $file);
-    vkCreateShaderModule($device, $info, null, $module) === VK_SUCCESS || throw new RuntimeException("vkCreateShaderModule {$file}");
+    $info->pCode = file_get_contents(__DIR__ . '/Fixtures/' . $file);
+    $info->codeSize = strlen($info->pCode);
+    vkCreateShaderModule($device, $info, 0, $module) === VK_SUCCESS || throw new RuntimeException("vkCreateShaderModule {$file}");
 
     return $module;
 }
@@ -253,8 +271,9 @@ function flatLayout(): VkPipelineLayout
     $range->stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
     $range->size = 16;
     $info = new VkPipelineLayoutCreateInfo();
+    $info->pushConstantRangeCount = 1;
     $info->pPushConstantRanges = [$range];
-    vkCreatePipelineLayout($device, $info, null, $layout) === VK_SUCCESS || throw new RuntimeException('vkCreatePipelineLayout');
+    vkCreatePipelineLayout($device, $info, 0, $layout) === VK_SUCCESS || throw new RuntimeException('vkCreatePipelineLayout');
 
     return $layout;
 }
@@ -278,6 +297,8 @@ function flatPipeline(VkRenderPass $pass, VkPipelineLayout $layout, bool $writeC
     $attribute = new VkVertexInputAttributeDescription();
     $attribute->format = VK_FORMAT_R32G32_SFLOAT;
     $vertexInput = new VkPipelineVertexInputStateCreateInfo();
+    $vertexInput->vertexBindingDescriptionCount = 1;
+    $vertexInput->vertexAttributeDescriptionCount = 1;
     $vertexInput->pVertexBindingDescriptions = [$binding];
     $vertexInput->pVertexAttributeDescriptions = [$attribute];
 
@@ -295,7 +316,7 @@ function flatPipeline(VkRenderPass $pass, VkPipelineLayout $layout, bool $writeC
     $multisample->rasterizationSamples = VK_SAMPLE_COUNT_4_BIT;
 
     $depthStencil = new VkPipelineDepthStencilStateCreateInfo();
-    $depthStencil->stencilTestEnable = VK_TRUE;
+    $depthStencil->stencilTestEnable = true;
     foreach ([$depthStencil->front, $depthStencil->back] as $face) {
         $face->failOp = VK_STENCIL_OP_KEEP;
         $face->passOp = $passOp;
@@ -311,11 +332,14 @@ function flatPipeline(VkRenderPass $pass, VkPipelineLayout $layout, bool $writeC
         ? VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
         : 0;
     $blend = new VkPipelineColorBlendStateCreateInfo();
+    $blend->attachmentCount = 1;
     $blend->pAttachments = [$attachment];
     $dynamic = new VkPipelineDynamicStateCreateInfo();
+    $dynamic->dynamicStateCount = 2;
     $dynamic->pDynamicStates = [VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR];
 
     $info = new VkGraphicsPipelineCreateInfo();
+    $info->stageCount = 2;
     $info->pStages = [$stage(VK_SHADER_STAGE_VERTEX_BIT, 'flat.vert.spv'), $stage(VK_SHADER_STAGE_FRAGMENT_BIT, 'flat.frag.spv')];
     $info->pVertexInputState = $vertexInput;
     $info->pInputAssemblyState = $assembly;
@@ -327,7 +351,7 @@ function flatPipeline(VkRenderPass $pass, VkPipelineLayout $layout, bool $writeC
     $info->pDynamicState = $dynamic;
     $info->layout = $layout;
     $info->renderPass = $pass;
-    vkCreateGraphicsPipelines($device, null, [$info], null, $pipelines) === VK_SUCCESS || throw new RuntimeException('vkCreateGraphicsPipelines');
+    vkCreateGraphicsPipelines($device, 0, 1, [$info], 0, $pipelines) === VK_SUCCESS || throw new RuntimeException('vkCreateGraphicsPipelines');
 
     return $pipelines[0];
 }
@@ -353,7 +377,7 @@ function commandsOn(VkDevice $device, int $family): VkCommandBuffer
 {
     $poolInfo = new VkCommandPoolCreateInfo();
     $poolInfo->queueFamilyIndex = $family;
-    vkCreateCommandPool($device, $poolInfo, null, $pool) === VK_SUCCESS || throw new RuntimeException('vkCreateCommandPool');
+    vkCreateCommandPool($device, $poolInfo, 0, $pool) === VK_SUCCESS || throw new RuntimeException('vkCreateCommandPool');
     $allocate = new VkCommandBufferAllocateInfo();
     $allocate->commandPool = $pool;
     $allocate->level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -377,11 +401,12 @@ function submitAndWaitOn(VkDevice $device, VkQueue $queue, VkCommandBuffer $comm
 {
     vkEndCommandBuffer($commandBuffer) === VK_SUCCESS || throw new RuntimeException('vkEndCommandBuffer');
     $submit = new VkSubmitInfo();
+    $submit->commandBufferCount = 1;
     $submit->pCommandBuffers = [$commandBuffer];
-    vkCreateFence($device, new VkFenceCreateInfo(), null, $fence) === VK_SUCCESS || throw new RuntimeException('vkCreateFence');
-    vkQueueSubmit($queue, [$submit], $fence) === VK_SUCCESS || throw new RuntimeException('vkQueueSubmit');
-    vkWaitForFences($device, [$fence], true, PHP_INT_MAX) === VK_SUCCESS || throw new RuntimeException('vkWaitForFences');
-    vkDestroyFence($device, $fence, null);
+    vkCreateFence($device, new VkFenceCreateInfo(), 0, $fence) === VK_SUCCESS || throw new RuntimeException('vkCreateFence');
+    vkQueueSubmit($queue, 1, [$submit], $fence) === VK_SUCCESS || throw new RuntimeException('vkQueueSubmit');
+    vkWaitForFences($device, 1, [$fence], true, PHP_INT_MAX) === VK_SUCCESS || throw new RuntimeException('vkWaitForFences');
+    vkDestroyFence($device, $fence, 0);
 }
 
 function submitAndWait(VkCommandBuffer $commandBuffer): void
@@ -391,3 +416,74 @@ function submitAndWait(VkCommandBuffer $commandBuffer): void
 }
 
 
+
+/** libc through FFI: the bytes at a mapped address, the copy into it, and close(2). */
+function libc(): FFI
+{
+    static $ffi = null;
+
+    return $ffi ??= FFI::cdef('int close(int fd);');
+}
+
+/** $size bytes read at the address vkMapMemory wrote. */
+function mappedRead(int $address, int $size): string
+{
+    return FFI::string(libc()->cast('uint8_t *', $address), $size);
+}
+
+/** $bytes copied to the address vkMapMemory wrote. */
+function mappedWrite(int $address, string $bytes): void
+{
+    FFI::memcpy(libc()->cast('uint8_t *', $address), $bytes, strlen($bytes));
+}
+
+/** Skips a tests/Probes test unless the loaded ext-vulkan is a probe build (--enable-vulkan-probes). */
+function requireProbeBuild(): void
+{
+    if (! defined('VULKAN_PROBES')) {
+        test()->markTestSkipped('ext-vulkan is not a probe build (configure --enable-vulkan-probes): VULKAN_PROBES is undefined');
+    }
+}
+
+/**
+ * Runs $code in a child of this PHP with only ext-vulkan loaded (env VULKAN_SO names the module,
+ * else the extension directory's), after this file's helpers. With $siteOff, VULKAN_PROBE_OFF
+ * turns that kept site off; null keeps every site. $gmalloc runs the child under libgmalloc
+ * (macOS) with Zend's allocator off, so an over-read faults at the guard page after the allocation.
+ *
+ * @return array{signal: ?int, stdout: string}
+ */
+function vkProbe(string $code, ?string $siteOff, bool $gmalloc = false): array
+{
+    $script = "<?php\ndeclare(strict_types=1);\nrequire " . var_export(__FILE__, true) . ";\n"
+        . "function test(): object { return new class { public function markTestSkipped(string \$m): never { echo \"SKIPPED \$m\\n\"; exit(0); } }; }\n"
+        . "try {\n" . $code . "\n} catch (Throwable \$t) {\n    echo 'REFUSED ', get_class(\$t), ': ', \$t->getMessage(), \"\\n\";\n}\necho \"SURVIVED\\n\";\n";
+    $file = tempnam(sys_get_temp_dir(), 'vulkan-probe');
+    file_put_contents($file, $script);
+
+    $env = getenv();
+    unset($env['VULKAN_PROBE_OFF'], $env['DYLD_INSERT_LIBRARIES'], $env['USE_ZEND_ALLOC']);
+    $env['XDEBUG_MODE'] = 'off';
+    if ($siteOff !== null) {
+        $env['VULKAN_PROBE_OFF'] = $siteOff;
+    }
+    if ($gmalloc && MAC) {
+        $env['DYLD_INSERT_LIBRARIES'] = '/usr/lib/libgmalloc.dylib';
+        $env['USE_ZEND_ALLOC'] = '0';
+    }
+
+    $command = [PHP_BINARY, '-n', '-d', 'memory_limit=1G', '-d', 'extension=' . (getenv('VULKAN_SO') ?: ini_get('extension_dir') . '/vulkan.so'), $file];
+    $process = proc_open($command, [0 => ['file', '/dev/null', 'r'], 1 => ['pipe', 'w'], 2 => ['file', '/dev/null', 'w']], $pipes, null, $env);
+    $stdout = (string) stream_get_contents($pipes[1]);
+    fclose($pipes[1]);
+    do {
+        $status = proc_get_status($process);
+        if ($status['running']) {
+            usleep(20_000);
+        }
+    } while ($status['running']);
+    proc_close($process);
+    @unlink($file);
+
+    return ['signal' => $status['signaled'] ? $status['termsig'] : null, 'stdout' => $stdout];
+}

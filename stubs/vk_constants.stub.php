@@ -5051,11 +5051,6 @@ const VK_TRUE = UNKNOWN;
 const VK_FALSE = UNKNOWN;
 
 /**
- * @var int
- */
-const VK_NULL_HANDLE = 0;
-
-/**
  * @var string
  * @cvalue VK_KHR_SURFACE_EXTENSION_NAME
  */
@@ -5123,42 +5118,20 @@ const VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME = UNKNOWN;
 
 /**
  * @var string
+ * @cvalue VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
  */
-const VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME = 'VK_KHR_portability_subset';
+const VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME = UNKNOWN;
 
 /**
  * @var string
+ * @cvalue VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
  */
-const VK_EXT_METAL_SURFACE_EXTENSION_NAME = 'VK_EXT_metal_surface';
+const VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME = UNKNOWN;
 
+#ifdef VK_USE_PLATFORM_METAL_EXT
 /**
  * @var string
+ * @cvalue VK_EXT_METAL_SURFACE_EXTENSION_NAME
  */
-const VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME = 'VK_KHR_wayland_surface';
-
-/**
- * @var string
- */
-const VK_KHR_XCB_SURFACE_EXTENSION_NAME = 'VK_KHR_xcb_surface';
-
-/**
- * @var string
- */
-const VK_KHR_XLIB_SURFACE_EXTENSION_NAME = 'VK_KHR_xlib_surface';
-
-/**
- * @var string
- */
-const VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME = 'VK_KHR_get_physical_device_properties2';
-
-/** An address of 0 is refused. Any other address is trusted. */
-function vk_read_mapped(int $address, int $size): string {}
-
-/** An address of 0 is refused. Any other address is trusted. */
-function vk_write_mapped(int $address, string $bytes): void {}
-
-/** close(2) on a descriptor vkGetMemoryFdKHR handed out. EBADF (not open, or closed already) is a ValueError; another failure is too, naming errno. */
-function vk_close_fd(int $fd): void {}
-
-/** The file the Vulkan loader this extension calls was loaded from (dladdr of vkGetInstanceProcAddr); null when the system cannot say. */
-function vk_loader_path(): ?string {}
+const VK_EXT_METAL_SURFACE_EXTENSION_NAME = UNKNOWN;
+#endif

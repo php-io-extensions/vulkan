@@ -1,5 +1,12 @@
 # Log
 
+## 2026-11-06
+
+* **1:1 sweep** (`f11a63d`): counts are explicit arguments and struct members, enumerate calls take `?int &count` and `?array &list` as C's two calls, `pAllocator` and `pipelineCache` are int addresses (0 is `NULL`), `VkBool32` is bool, SPIR-V is `codeSize` + `pCode`, destroys take `null`, `fromPointer(0)` is `null`. `VkCopyDescriptorSet` and `VkBufferMemoryBarrier` are bound. `vkSetHdrMetadataEXT` is void.
+* **Removed**: `vk_read_mapped`, `vk_write_mapped`, `vk_close_fd`, `vk_loader_path`, `VK_NULL_HANDLE` and the Wayland/XCB/Xlib names. They are not Vulkan; FFI does the mapped reads and writes and the close.
+* **Refusals**: four sites in `bindings.json` (`541bf9c`), each with a probe in `tests/Probes` (`7781b43`): `vulkan-list-count`, `vulkan-bytes-length`, `vulkan-null-dispatchable`, `vulkan-no-proc`. Probes need `--enable-vulkan-probes`. On the NVIDIA x86_64 box (headers 1.4.309 from Vulkan-Headers) the push-constant probe skips (no guard-page allocator) and the no-proc probes skip (the implementation hands out the commands).
+* **Tests**: Homebrew PHP 8.4 NTS and ZTS, 44 passed, 3 skipped each. The x86_64 box: everything passes but the two SDL swapchain tests, which need a display.
+
 ## 2026-10-28
 
 * **Version**: 0.11.0 in `PHP_VULKAN_VERSION` (`php_vulkan.h`), `AGENTS.md`, README and the index; `branch-alias` `dev-main` is `0.11.x-dev`. Promoted with the Venusian 0.11 ecosystem. No API or behaviour change. Built and loaded on Homebrew PHP 8.4 NTS and ZTS (28 passed, 3 skipped each) and the Pi on 8.4 ZTS (30 passed, 1 skipped).

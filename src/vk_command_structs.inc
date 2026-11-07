@@ -35,19 +35,26 @@ static bool vulkan_clear_value(zend_object *obj, VkClearValue *dst, vulkan_scrat
 		&& vulkan_u32(Z_OBJ_P(depth), "stencil", &dst->depthStencil.stencil);
 }
 
+/* The fixed VkOffset3D[2]: a short list is zero-filled, as a C initializer is. */
 static bool vulkan_offset3_list(zend_object *obj, const char *name, VkOffset3D *dst, vulkan_scratch *scratch, HashTable *visited)
 {
-	uint32_t count = 0;
+	zval *zv = zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL);
+	uint32_t count = 2;
 	void *items = NULL;
 
+	if (zv == NULL || EG(exception) != NULL) {
+		return false;
+	}
+	if (Z_TYPE_P(zv) == IS_ARRAY && zend_hash_num_elements(Z_ARRVAL_P(zv)) < count) {
+		count = zend_hash_num_elements(Z_ARRVAL_P(zv));
+	}
+	memset(dst, 0, sizeof(VkOffset3D) * 2);
 	if (!vulkan_struct_list(obj, name, vulkan_ce_VkOffset3D, sizeof(VkOffset3D), vk_VkOffset3D_from, &items, &count, scratch, visited)) {
 		return false;
 	}
-	if (count != 2) {
-		zend_value_error("%s::$%s must hold 2 VkOffset3D values", ZSTR_VAL(obj->ce->name), name);
-		return false;
+	if (count > 0) {
+		memcpy(dst, items, sizeof(VkOffset3D) * count);
 	}
-	memcpy(dst, items, sizeof(VkOffset3D) * 2);
 	return true;
 }
 
@@ -86,7 +93,7 @@ bool vk_VkCommandBufferInheritanceInfo_from(zend_object *obj, void *raw, vulkan_
 	dst->renderPass = (VkRenderPass) (uintptr_t) render_pass;
 	dst->framebuffer = (VkFramebuffer) (uintptr_t) framebuffer;
 	return vulkan_u32(obj, "subpass", &dst->subpass)
-		&& vulkan_u32(obj, "occlusionQueryEnable", &dst->occlusionQueryEnable)
+		&& vulkan_bool32(obj, "occlusionQueryEnable", &dst->occlusionQueryEnable)
 		&& vulkan_u32(obj, "queryFlags", &dst->queryFlags)
 		&& vulkan_u32(obj, "pipelineStatistics", &dst->pipelineStatistics);
 }
@@ -183,6 +190,23 @@ bool vk_VkMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratc
 }
 void vk_VkMemoryBarrier_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkMemoryBarrier); }
 
+bool vk_VkBufferMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkBufferMemoryBarrier *dst = raw;
+	uint64_t buffer;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_handle_prop(obj, "buffer", vulkan_ce_VkBuffer, &buffer)) return false;
+	dst->buffer = (VkBuffer) (uintptr_t) buffer;
+	return vulkan_u32(obj, "srcAccessMask", &dst->srcAccessMask)
+		&& vulkan_u32(obj, "dstAccessMask", &dst->dstAccessMask)
+		&& vulkan_u32(obj, "srcQueueFamilyIndex", &dst->srcQueueFamilyIndex)
+		&& vulkan_u32(obj, "dstQueueFamilyIndex", &dst->dstQueueFamilyIndex)
+		&& vulkan_u64(obj, "offset", &dst->offset)
+		&& vulkan_u64(obj, "size", &dst->size);
+}
+
 bool vk_VkImageMemoryBarrier_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkImageMemoryBarrier *dst = raw;
@@ -207,19 +231,19 @@ bool vk_VkSubmitInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, 
 	VkSubmitInfo *dst = raw;
 	uint64_t *waits = NULL, *buffers = NULL, *signals = NULL;
 	const uint32_t *stages = NULL;
-	uint32_t stage_count = 0;
+	uint32_t stage_count;
 
 	memset(dst, 0, sizeof(*dst));
 	dst->sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) {
 		return false;
 	}
+	if (!vulkan_u32(obj, "waitSemaphoreCount", &dst->waitSemaphoreCount)
+		|| !vulkan_u32(obj, "commandBufferCount", &dst->commandBufferCount)
+		|| !vulkan_u32(obj, "signalSemaphoreCount", &dst->signalSemaphoreCount)) return false;
+	stage_count = dst->waitSemaphoreCount;
 	if (!vulkan_handle_list(obj, "pWaitSemaphores", vulkan_ce_VkSemaphore, &waits, &dst->waitSemaphoreCount, scratch)) return false;
 	if (!vulkan_u32_list(obj, "pWaitDstStageMask", &stages, &stage_count, scratch)) return false;
-	if (stage_count != dst->waitSemaphoreCount) {
-		zend_value_error("VkSubmitInfo::$pWaitDstStageMask must be the same length");
-		return false;
-	}
 	if (!vulkan_handle_list(obj, "pCommandBuffers", vulkan_ce_VkCommandBuffer, &buffers, &dst->commandBufferCount, scratch)) return false;
 	if (!vulkan_handle_list(obj, "pSignalSemaphores", vulkan_ce_VkSemaphore, &signals, &dst->signalSemaphoreCount, scratch)) return false;
 	dst->pWaitSemaphores = (const VkSemaphore *) waits;
@@ -263,6 +287,7 @@ bool vk_VkRenderPassBeginInfo_from(zend_object *obj, void *raw, vulkan_scratch *
 	dst->renderPass = (VkRenderPass) (uintptr_t) render_pass;
 	dst->framebuffer = (VkFramebuffer) (uintptr_t) framebuffer;
 	if (!vulkan_struct_value(obj, "renderArea", vulkan_ce_VkRect2D, vk_VkRect2D_from, &dst->renderArea, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "clearValueCount", &dst->clearValueCount)) return false;
 	if (!vulkan_struct_list(obj, "pClearValues", vulkan_ce_VkClearValue, sizeof(VkClearValue), vk_VkClearValue_from, &clears, &dst->clearValueCount, scratch, visited)) return false;
 	dst->pClearValues = clears;
 	return true;

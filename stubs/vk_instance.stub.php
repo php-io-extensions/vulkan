@@ -11,7 +11,7 @@ final class VkInstance
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -23,7 +23,7 @@ final class VkPhysicalDevice
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -35,7 +35,7 @@ final class VkDevice
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -47,7 +47,7 @@ final class VkQueue
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -81,11 +81,11 @@ final class VkInstanceCreateInfo
 
     public int $enabledLayerCount = 0;
 
-    public array $enabledLayerNames = [];
+    public array $ppEnabledLayerNames = [];
 
     public int $enabledExtensionCount = 0;
 
-    public array $enabledExtensionNames = [];
+    public array $ppEnabledExtensionNames = [];
 }
 
 /**
@@ -98,6 +98,8 @@ final class VkDeviceQueueCreateInfo
     public int $flags = 0;
 
     public int $queueFamilyIndex = 0;
+
+    public int $queueCount = 0;
 
     public array $pQueuePriorities = [];
 }
@@ -277,15 +279,17 @@ final class VkDeviceCreateInfo
 
     public int $flags = 0;
 
+    public int $queueCreateInfoCount = 0;
+
     public array $pQueueCreateInfos = [];
 
     public int $enabledLayerCount = 0;
 
-    public array $enabledLayerNames = [];
+    public array $ppEnabledLayerNames = [];
 
     public int $enabledExtensionCount = 0;
 
-    public array $enabledExtensionNames = [];
+    public array $ppEnabledExtensionNames = [];
 
     public ?VkPhysicalDeviceFeatures $pEnabledFeatures = null;
 }
@@ -603,7 +607,11 @@ final class VkMemoryHeap
  */
 final class VkPhysicalDeviceMemoryProperties
 {
+    public int $memoryTypeCount = 0;
+
     public array $memoryTypes = [];
+
+    public int $memoryHeapCount = 0;
 
     public array $memoryHeaps = [];
 }
@@ -630,27 +638,31 @@ final class VkExtensionProperties
     public int $specVersion = 0;
 }
 
-function vkCreateInstance(VkInstanceCreateInfo $pCreateInfo, null $pAllocator, ?VkInstance &$pInstance): int {}
+function vkCreateInstance(VkInstanceCreateInfo $pCreateInfo, int $pAllocator, ?VkInstance &$pInstance): int {}
 
-function vkDestroyInstance(VkInstance $instance, null $pAllocator): void {}
+function vkDestroyInstance(?VkInstance $instance, int $pAllocator): void {}
 
-function vkEnumerateInstanceExtensionProperties(?string $pLayerName, ?array &$pProperties): int {}
+/** @prefer-ref $pProperties */
+function vkEnumerateInstanceExtensionProperties(?string $pLayerName, ?int &$pPropertyCount, ?array &$pProperties): int {}
 
-function vkEnumeratePhysicalDevices(VkInstance $instance, ?array &$pPhysicalDevices): int {}
+/** @prefer-ref $pPhysicalDevices */
+function vkEnumeratePhysicalDevices(VkInstance $instance, ?int &$pPhysicalDeviceCount, ?array &$pPhysicalDevices): int {}
 
 function vkGetPhysicalDeviceProperties(VkPhysicalDevice $physicalDevice, ?VkPhysicalDeviceProperties &$pProperties): void {}
 
-function vkGetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice $physicalDevice, ?array &$pQueueFamilyProperties): void {}
+/** @prefer-ref $pQueueFamilyProperties */
+function vkGetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice $physicalDevice, ?int &$pQueueFamilyPropertyCount, ?array &$pQueueFamilyProperties): void {}
 
 function vkGetPhysicalDeviceMemoryProperties(VkPhysicalDevice $physicalDevice, ?VkPhysicalDeviceMemoryProperties &$pMemoryProperties): void {}
 
 function vkGetPhysicalDeviceFormatProperties(VkPhysicalDevice $physicalDevice, int $format, ?VkFormatProperties &$pFormatProperties): void {}
 
-function vkEnumerateDeviceExtensionProperties(VkPhysicalDevice $physicalDevice, ?string $pLayerName, ?array &$pProperties): int {}
+/** @prefer-ref $pProperties */
+function vkEnumerateDeviceExtensionProperties(VkPhysicalDevice $physicalDevice, ?string $pLayerName, ?int &$pPropertyCount, ?array &$pProperties): int {}
 
-function vkCreateDevice(VkPhysicalDevice $physicalDevice, VkDeviceCreateInfo $pCreateInfo, null $pAllocator, ?VkDevice &$pDevice): int {}
+function vkCreateDevice(VkPhysicalDevice $physicalDevice, VkDeviceCreateInfo $pCreateInfo, int $pAllocator, ?VkDevice &$pDevice): int {}
 
-function vkDestroyDevice(VkDevice $device, null $pAllocator): void {}
+function vkDestroyDevice(?VkDevice $device, int $pAllocator): void {}
 
 function vkGetDeviceQueue(VkDevice $device, int $queueFamilyIndex, int $queueIndex, ?VkQueue &$pQueue): void {}
 

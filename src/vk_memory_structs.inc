@@ -59,6 +59,7 @@ bool vk_VkBufferCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scr
 		&& vulkan_u64(obj, "size", &dst->size)
 		&& vulkan_u32(obj, "usage", &dst->usage)
 		&& vulkan_u32(obj, "sharingMode", &dst->sharingMode)
+		&& vulkan_u32(obj, "queueFamilyIndexCount", &dst->queueFamilyIndexCount)
 		&& vulkan_u32_list(obj, "pQueueFamilyIndices", &dst->pQueueFamilyIndices, &dst->queueFamilyIndexCount, scratch);
 }
 
@@ -113,6 +114,7 @@ bool vk_VkImageCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scra
 		&& vulkan_u32(obj, "tiling", &dst->tiling)
 		&& vulkan_u32(obj, "usage", &dst->usage)
 		&& vulkan_u32(obj, "sharingMode", &dst->sharingMode)
+		&& vulkan_u32(obj, "queueFamilyIndexCount", &dst->queueFamilyIndexCount)
 		&& vulkan_u32_list(obj, "pQueueFamilyIndices", &dst->pQueueFamilyIndices, &dst->queueFamilyIndexCount, scratch)
 		&& vulkan_u32(obj, "initialLayout", &dst->initialLayout);
 }

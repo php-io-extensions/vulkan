@@ -11,7 +11,7 @@ final class VkCommandPool
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -23,7 +23,7 @@ final class VkCommandBuffer
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -35,7 +35,7 @@ final class VkFence
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -47,7 +47,7 @@ final class VkSemaphore
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /** @not-serializable */
@@ -83,7 +83,7 @@ final class VkCommandBufferInheritanceInfo
 
     public ?VkFramebuffer $framebuffer = null;
 
-    public int $occlusionQueryEnable = 0;
+    public bool $occlusionQueryEnable = false;
 
     public int $queryFlags = 0;
 
@@ -132,6 +132,8 @@ final class VkRenderPassBeginInfo
     public ?VkFramebuffer $framebuffer = null;
 
     public VkRect2D $renderArea;
+
+    public int $clearValueCount = 0;
 
     public array $pClearValues = [];
 
@@ -203,6 +205,26 @@ final class VkMemoryBarrier
 }
 
 /** @not-serializable */
+final class VkBufferMemoryBarrier
+{
+    public ?object $pNext = null;
+
+    public int $srcAccessMask = 0;
+
+    public int $dstAccessMask = 0;
+
+    public int $srcQueueFamilyIndex = 0;
+
+    public int $dstQueueFamilyIndex = 0;
+
+    public ?VkBuffer $buffer = null;
+
+    public int $offset = 0;
+
+    public int $size = 0;
+}
+
+/** @not-serializable */
 final class VkImageMemoryBarrier
 {
     public ?object $pNext = null;
@@ -231,11 +253,17 @@ final class VkSubmitInfo
 {
     public ?object $pNext = null;
 
+    public int $waitSemaphoreCount = 0;
+
     public array $pWaitSemaphores = [];
 
     public array $pWaitDstStageMask = [];
 
+    public int $commandBufferCount = 0;
+
     public array $pCommandBuffers = [];
+
+    public int $signalSemaphoreCount = 0;
 
     public array $pSignalSemaphores = [];
 }
@@ -280,13 +308,13 @@ final class VkClearRect
     public function __construct() {}
 }
 
-function vkCreateCommandPool(VkDevice $device, VkCommandPoolCreateInfo $pCreateInfo, null $pAllocator, ?VkCommandPool &$pCommandPool): int {}
+function vkCreateCommandPool(VkDevice $device, VkCommandPoolCreateInfo $pCreateInfo, int $pAllocator, ?VkCommandPool &$pCommandPool): int {}
 
-function vkDestroyCommandPool(VkDevice $device, VkCommandPool $commandPool, null $pAllocator): void {}
+function vkDestroyCommandPool(VkDevice $device, ?VkCommandPool $commandPool, int $pAllocator): void {}
 
 function vkAllocateCommandBuffers(VkDevice $device, VkCommandBufferAllocateInfo $pAllocateInfo, ?array &$pCommandBuffers): int {}
 
-function vkFreeCommandBuffers(VkDevice $device, VkCommandPool $commandPool, array $pCommandBuffers): void {}
+function vkFreeCommandBuffers(VkDevice $device, VkCommandPool $commandPool, int $commandBufferCount, array $pCommandBuffers): void {}
 
 function vkBeginCommandBuffer(VkCommandBuffer $commandBuffer, VkCommandBufferBeginInfo $pBeginInfo): int {}
 
@@ -300,17 +328,17 @@ function vkCmdEndRenderPass(VkCommandBuffer $commandBuffer): void {}
 
 function vkCmdBindPipeline(VkCommandBuffer $commandBuffer, int $pipelineBindPoint, VkPipeline $pipeline): void {}
 
-function vkCmdSetViewport(VkCommandBuffer $commandBuffer, int $firstViewport, array $pViewports): void {}
+function vkCmdSetViewport(VkCommandBuffer $commandBuffer, int $firstViewport, int $viewportCount, array $pViewports): void {}
 
-function vkCmdSetScissor(VkCommandBuffer $commandBuffer, int $firstScissor, array $pScissors): void {}
+function vkCmdSetScissor(VkCommandBuffer $commandBuffer, int $firstScissor, int $scissorCount, array $pScissors): void {}
 
 function vkCmdSetStencilReference(VkCommandBuffer $commandBuffer, int $faceMask, int $reference): void {}
 
-function vkCmdBindVertexBuffers(VkCommandBuffer $commandBuffer, int $firstBinding, array $pBuffers, array $pOffsets): void {}
+function vkCmdBindVertexBuffers(VkCommandBuffer $commandBuffer, int $firstBinding, int $bindingCount, array $pBuffers, array $pOffsets): void {}
 
 function vkCmdBindIndexBuffer(VkCommandBuffer $commandBuffer, VkBuffer $buffer, int $offset, int $indexType): void {}
 
-function vkCmdBindDescriptorSets(VkCommandBuffer $commandBuffer, int $pipelineBindPoint, VkPipelineLayout $layout, int $firstSet, array $pDescriptorSets, array $pDynamicOffsets): void {}
+function vkCmdBindDescriptorSets(VkCommandBuffer $commandBuffer, int $pipelineBindPoint, VkPipelineLayout $layout, int $firstSet, int $descriptorSetCount, array $pDescriptorSets, int $dynamicOffsetCount, array $pDynamicOffsets): void {}
 
 function vkCmdPushConstants(VkCommandBuffer $commandBuffer, VkPipelineLayout $layout, int $stageFlags, int $offset, int $size, string $pValues): void {}
 
@@ -318,30 +346,30 @@ function vkCmdDraw(VkCommandBuffer $commandBuffer, int $vertexCount, int $instan
 
 function vkCmdDrawIndexed(VkCommandBuffer $commandBuffer, int $indexCount, int $instanceCount, int $firstIndex, int $vertexOffset, int $firstInstance): void {}
 
-function vkCmdClearAttachments(VkCommandBuffer $commandBuffer, array $pAttachments, array $pRects): void {}
+function vkCmdClearAttachments(VkCommandBuffer $commandBuffer, int $attachmentCount, array $pAttachments, int $rectCount, array $pRects): void {}
 
-function vkCmdCopyBufferToImage(VkCommandBuffer $commandBuffer, VkBuffer $srcBuffer, VkImage $dstImage, int $dstImageLayout, array $pRegions): void {}
+function vkCmdCopyBufferToImage(VkCommandBuffer $commandBuffer, VkBuffer $srcBuffer, VkImage $dstImage, int $dstImageLayout, int $regionCount, array $pRegions): void {}
 
-function vkCmdCopyImageToBuffer(VkCommandBuffer $commandBuffer, VkImage $srcImage, int $srcImageLayout, VkBuffer $dstBuffer, array $pRegions): void {}
+function vkCmdCopyImageToBuffer(VkCommandBuffer $commandBuffer, VkImage $srcImage, int $srcImageLayout, VkBuffer $dstBuffer, int $regionCount, array $pRegions): void {}
 
-function vkCmdBlitImage(VkCommandBuffer $commandBuffer, VkImage $srcImage, int $srcImageLayout, VkImage $dstImage, int $dstImageLayout, array $pRegions, int $filter): void {}
+function vkCmdBlitImage(VkCommandBuffer $commandBuffer, VkImage $srcImage, int $srcImageLayout, VkImage $dstImage, int $dstImageLayout, int $regionCount, array $pRegions, int $filter): void {}
 
-function vkCmdPipelineBarrier(VkCommandBuffer $commandBuffer, int $srcStageMask, int $dstStageMask, int $dependencyFlags, array $pMemoryBarriers, array $pBufferMemoryBarriers, array $pImageMemoryBarriers): void {}
+function vkCmdPipelineBarrier(VkCommandBuffer $commandBuffer, int $srcStageMask, int $dstStageMask, int $dependencyFlags, int $memoryBarrierCount, array $pMemoryBarriers, int $bufferMemoryBarrierCount, array $pBufferMemoryBarriers, int $imageMemoryBarrierCount, array $pImageMemoryBarriers): void {}
 
-function vkQueueSubmit(VkQueue $queue, array $pSubmits, ?VkFence $fence): int {}
+function vkQueueSubmit(VkQueue $queue, int $submitCount, array $pSubmits, ?VkFence $fence): int {}
 
 function vkQueueWaitIdle(VkQueue $queue): int {}
 
-function vkCreateFence(VkDevice $device, VkFenceCreateInfo $pCreateInfo, null $pAllocator, ?VkFence &$pFence): int {}
+function vkCreateFence(VkDevice $device, VkFenceCreateInfo $pCreateInfo, int $pAllocator, ?VkFence &$pFence): int {}
 
-function vkDestroyFence(VkDevice $device, VkFence $fence, null $pAllocator): void {}
+function vkDestroyFence(VkDevice $device, ?VkFence $fence, int $pAllocator): void {}
 
 function vkGetFenceStatus(VkDevice $device, VkFence $fence): int {}
 
-function vkResetFences(VkDevice $device, array $pFences): int {}
+function vkResetFences(VkDevice $device, int $fenceCount, array $pFences): int {}
 
-function vkWaitForFences(VkDevice $device, array $pFences, bool $waitAll, int $timeout): int {}
+function vkWaitForFences(VkDevice $device, int $fenceCount, array $pFences, bool $waitAll, int $timeout): int {}
 
-function vkCreateSemaphore(VkDevice $device, VkSemaphoreCreateInfo $pCreateInfo, null $pAllocator, ?VkSemaphore &$pSemaphore): int {}
+function vkCreateSemaphore(VkDevice $device, VkSemaphoreCreateInfo $pCreateInfo, int $pAllocator, ?VkSemaphore &$pSemaphore): int {}
 
-function vkDestroySemaphore(VkDevice $device, VkSemaphore $semaphore, null $pAllocator): void {}
+function vkDestroySemaphore(VkDevice $device, ?VkSemaphore $semaphore, int $pAllocator): void {}

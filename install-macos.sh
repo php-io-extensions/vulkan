@@ -42,7 +42,7 @@ for PHP_BIN in "${PHP_BINS[@]}"; do
     done
     if ! (cd "$BUILD_DIR" \
         && "$PHPIZE" \
-        && ./configure --enable-vulkan --with-php-config="$PHP_CONFIG" \
+        && ./configure --enable-vulkan ${VULKAN_CONFIGURE:-} --with-php-config="$PHP_CONFIG" \
         && make -j"$(sysctl -n hw.ncpu)") >"${BUILD_DIR}/build.log" 2>&1; then
         tail -40 "${BUILD_DIR}/build.log" >&2
         die "Build failed for ${PHP_BIN}"

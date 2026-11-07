@@ -11,7 +11,7 @@ final class VkSurfaceKHR
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /**
@@ -23,7 +23,7 @@ final class VkSwapchainKHR
 
     public function pointer(): int {}
 
-    public static function fromPointer(int $pointer): static {}
+    public static function fromPointer(int $pointer): ?static {}
 }
 
 /** @not-serializable */
@@ -83,6 +83,8 @@ final class VkSwapchainCreateInfoKHR
 
     public int $imageSharingMode = 0;
 
+    public int $queueFamilyIndexCount = 0;
+
     public array $pQueueFamilyIndices = [];
 
     public int $preTransform = 0;
@@ -91,7 +93,7 @@ final class VkSwapchainCreateInfoKHR
 
     public int $presentMode = 0;
 
-    public int $clipped = 0;
+    public bool $clipped = false;
 
     public ?VkSwapchainKHR $oldSwapchain = null;
 
@@ -103,7 +105,11 @@ final class VkPresentInfoKHR
 {
     public ?object $pNext = null;
 
+    public int $waitSemaphoreCount = 0;
+
     public array $pWaitSemaphores = [];
+
+    public int $swapchainCount = 0;
 
     public array $pSwapchains = [];
 
@@ -130,6 +136,8 @@ final class VkRectLayerKHR
 final class VkPresentRegionKHR
 {
     /** @var list<VkRectLayerKHR> */
+    public int $rectangleCount = 0;
+
     public array $pRectangles = [];
 }
 
@@ -143,6 +151,8 @@ final class VkPresentRegionsKHR
     public ?object $pNext = null;
 
     /** @var list<VkPresentRegionKHR> */
+    public int $swapchainCount = 0;
+
     public array $pRegions = [];
 }
 
@@ -156,6 +166,8 @@ final class VkPresentIdKHR
     public ?object $pNext = null;
 
     /** @var list<int> */
+    public int $swapchainCount = 0;
+
     public array $pPresentIds = [];
 }
 
@@ -215,21 +227,24 @@ function vkGetPhysicalDeviceSurfaceSupportKHR(VkPhysicalDevice $physicalDevice, 
 
 function vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VkPhysicalDevice $physicalDevice, VkSurfaceKHR $surface, ?VkSurfaceCapabilitiesKHR &$pSurfaceCapabilities): int {}
 
-function vkGetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice $physicalDevice, VkSurfaceKHR $surface, ?array &$pSurfaceFormats): int {}
+/** @prefer-ref $pSurfaceFormats */
+function vkGetPhysicalDeviceSurfaceFormatsKHR(VkPhysicalDevice $physicalDevice, VkSurfaceKHR $surface, ?int &$pSurfaceFormatCount, ?array &$pSurfaceFormats): int {}
 
-function vkGetPhysicalDeviceSurfacePresentModesKHR(VkPhysicalDevice $physicalDevice, VkSurfaceKHR $surface, ?array &$pPresentModes): int {}
+/** @prefer-ref $pPresentModes */
+function vkGetPhysicalDeviceSurfacePresentModesKHR(VkPhysicalDevice $physicalDevice, VkSurfaceKHR $surface, ?int &$pPresentModeCount, ?array &$pPresentModes): int {}
 
-function vkCreateSwapchainKHR(VkDevice $device, VkSwapchainCreateInfoKHR $pCreateInfo, null $pAllocator, ?VkSwapchainKHR &$pSwapchain): int {}
+function vkCreateSwapchainKHR(VkDevice $device, VkSwapchainCreateInfoKHR $pCreateInfo, int $pAllocator, ?VkSwapchainKHR &$pSwapchain): int {}
 
-function vkDestroySwapchainKHR(VkDevice $device, VkSwapchainKHR $swapchain, null $pAllocator): void {}
+function vkDestroySwapchainKHR(VkDevice $device, ?VkSwapchainKHR $swapchain, int $pAllocator): void {}
 
-function vkGetSwapchainImagesKHR(VkDevice $device, VkSwapchainKHR $swapchain, ?array &$pSwapchainImages): int {}
+/** @prefer-ref $pSwapchainImages */
+function vkGetSwapchainImagesKHR(VkDevice $device, VkSwapchainKHR $swapchain, ?int &$pSwapchainImageCount, ?array &$pSwapchainImages): int {}
 
 function vkAcquireNextImageKHR(VkDevice $device, VkSwapchainKHR $swapchain, int $timeout, ?VkSemaphore $semaphore, ?VkFence $fence, ?int &$pImageIndex): int {}
 
 function vkQueuePresentKHR(VkQueue $queue, VkPresentInfoKHR $pPresentInfo): int {}
 
-function vkDestroySurfaceKHR(VkInstance $instance, VkSurfaceKHR $surface, null $pAllocator): void {}
+function vkDestroySurfaceKHR(VkInstance $instance, ?VkSurfaceKHR $surface, int $pAllocator): void {}
 
 /** VK_KHR_present_wait, through vkGetDeviceProcAddr: VK_ERROR_EXTENSION_NOT_PRESENT when the device does not expose it. */
 function vkWaitForPresentKHR(VkDevice $device, VkSwapchainKHR $swapchain, int $presentId, int $timeout): int {}
@@ -238,4 +253,4 @@ function vkWaitForPresentKHR(VkDevice $device, VkSwapchainKHR $swapchain, int $p
  * VK_EXT_hdr_metadata, through vkGetDeviceProcAddr: false when the device does not expose it.
  * $pSwapchains and $pMetadata are lists of the same length.
  */
-function vkSetHdrMetadataEXT(VkDevice $device, array $pSwapchains, array $pMetadata): bool {}
+function vkSetHdrMetadataEXT(VkDevice $device, int $swapchainCount, array $pSwapchains, array $pMetadata): void {}
