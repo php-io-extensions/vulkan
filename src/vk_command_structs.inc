@@ -167,6 +167,114 @@ bool vk_VkBufferImageCopy_from(zend_object *obj, void *raw, vulkan_scratch *scra
 }
 void vk_VkBufferImageCopy_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkBufferImageCopy); }
 
+/* A by-value struct member, from the object property of that name. */
+static bool vulkan_nested(zend_object *obj, const char *name, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch)
+{
+	return vulkan_arg_struct(zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL), ce, from, dst, scratch);
+}
+
+bool vk_VkMemoryToImageCopy_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkMemoryToImageCopy *dst = raw;
+	zval *held;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_MEMORY_TO_IMAGE_COPY;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	/* a typed string property: always a string */
+	held = zend_read_property(obj->ce, obj, "pHostPointer", sizeof("pHostPointer") - 1, 0, NULL);
+	dst->pHostPointer = Z_STRVAL_P(held);
+	if (!vulkan_u32(obj, "memoryRowLength", &dst->memoryRowLength)
+		|| !vulkan_u32(obj, "memoryImageHeight", &dst->memoryImageHeight)
+		|| !vulkan_nested(obj, "imageSubresource", vulkan_ce_VkImageSubresourceLayers, vk_VkImageSubresourceLayers_from, &dst->imageSubresource, scratch)
+		|| !vulkan_nested(obj, "imageOffset", vulkan_ce_VkOffset3D, vk_VkOffset3D_from, &dst->imageOffset, scratch)
+		|| !vulkan_nested(obj, "imageExtent", vulkan_ce_VkExtent3D, vk_VkExtent3D_from, &dst->imageExtent, scratch)) return false;
+	/* at least one byte a texel: the bytes Vulkan reads are never fewer than the texels of the region */
+	return vulkan_bytes_length(Z_STRLEN_P(held), (size_t) dst->imageExtent.width * dst->imageExtent.height * dst->imageExtent.depth, 0, "VkMemoryToImageCopy::$pHostPointer");
+}
+void vk_VkMemoryToImageCopy_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkMemoryToImageCopy); }
+
+/* The region's bytes are filled by Vulkan: a copy of the caller's string (its length is the size to read) in scratch; vkCopyImageToMemory() puts them back in the property. */
+bool vk_VkImageToMemoryCopy_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkImageToMemoryCopy *dst = raw;
+	zval *held;
+	char *bytes;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_IMAGE_TO_MEMORY_COPY;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "memoryRowLength", &dst->memoryRowLength)
+		|| !vulkan_u32(obj, "memoryImageHeight", &dst->memoryImageHeight)
+		|| !vulkan_nested(obj, "imageSubresource", vulkan_ce_VkImageSubresourceLayers, vk_VkImageSubresourceLayers_from, &dst->imageSubresource, scratch)
+		|| !vulkan_nested(obj, "imageOffset", vulkan_ce_VkOffset3D, vk_VkOffset3D_from, &dst->imageOffset, scratch)
+		|| !vulkan_nested(obj, "imageExtent", vulkan_ce_VkExtent3D, vk_VkExtent3D_from, &dst->imageExtent, scratch)) return false;
+	/* a typed string property: always a string */
+	held = zend_read_property(obj->ce, obj, "pHostPointer", sizeof("pHostPointer") - 1, 0, NULL);
+	if (!vulkan_bytes_length(Z_STRLEN_P(held), (size_t) dst->imageExtent.width * dst->imageExtent.height * dst->imageExtent.depth, 0, "VkImageToMemoryCopy::$pHostPointer")) return false;
+	bytes = vulkan_scratch_alloc(scratch, Z_STRLEN_P(held) ? Z_STRLEN_P(held) : 1);
+	memcpy(bytes, Z_STRVAL_P(held), Z_STRLEN_P(held));
+	dst->pHostPointer = bytes;
+	return true;
+}
+void vk_VkImageToMemoryCopy_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkImageToMemoryCopy); }
+
+bool vk_VkCopyMemoryToImageInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkCopyMemoryToImageInfo *dst = raw;
+	uint64_t image;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_COPY_MEMORY_TO_IMAGE_INFO;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_handle_prop(obj, "dstImage", vulkan_ce_VkImage, &image)) return false;
+	dst->dstImage = (VkImage) (uintptr_t) image;
+	return vulkan_u32(obj, "flags", &dst->flags)
+		&& vulkan_u32(obj, "dstImageLayout", &dst->dstImageLayout)
+		&& vulkan_u32(obj, "regionCount", &dst->regionCount)
+		&& vulkan_struct_list(obj, "pRegions", vulkan_ce_VkMemoryToImageCopy, sizeof(VkMemoryToImageCopy), vk_VkMemoryToImageCopy_from, (void **) &dst->pRegions, &dst->regionCount, scratch, visited);
+}
+void vk_VkCopyMemoryToImageInfo_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkCopyMemoryToImageInfo); }
+
+bool vk_VkCopyImageToMemoryInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkCopyImageToMemoryInfo *dst = raw;
+	uint64_t image;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_COPY_IMAGE_TO_MEMORY_INFO;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_handle_prop(obj, "srcImage", vulkan_ce_VkImage, &image)) return false;
+	dst->srcImage = (VkImage) (uintptr_t) image;
+	return vulkan_u32(obj, "flags", &dst->flags)
+		&& vulkan_u32(obj, "srcImageLayout", &dst->srcImageLayout)
+		&& vulkan_u32(obj, "regionCount", &dst->regionCount)
+		&& vulkan_struct_list(obj, "pRegions", vulkan_ce_VkImageToMemoryCopy, sizeof(VkImageToMemoryCopy), vk_VkImageToMemoryCopy_from, (void **) &dst->pRegions, &dst->regionCount, scratch, visited);
+}
+void vk_VkCopyImageToMemoryInfo_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkCopyImageToMemoryInfo); }
+
+bool vk_VkHostImageLayoutTransitionInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkHostImageLayoutTransitionInfo *dst = raw;
+	uint64_t image;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_HOST_IMAGE_LAYOUT_TRANSITION_INFO;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_handle_prop(obj, "image", vulkan_ce_VkImage, &image)) return false;
+	dst->image = (VkImage) (uintptr_t) image;
+	return vulkan_u32(obj, "oldLayout", &dst->oldLayout)
+		&& vulkan_u32(obj, "newLayout", &dst->newLayout)
+		&& vulkan_nested(obj, "subresourceRange", vulkan_ce_VkImageSubresourceRange, vk_VkImageSubresourceRange_from, &dst->subresourceRange, scratch);
+}
+void vk_VkHostImageLayoutTransitionInfo_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkHostImageLayoutTransitionInfo); }
+
+bool vk_VkPhysicalDeviceHostImageCopyFeatures_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDeviceHostImageCopyFeatures *dst = raw;
+	const void *next = NULL;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_IMAGE_COPY_FEATURES;
+	if (!vulkan_enter(obj, visited) || !vulkan_pnext(obj, &next, scratch, visited)) return false;
+	dst->pNext = (void *) next;
+	return vulkan_bool32(obj, "hostImageCopy", &dst->hostImageCopy);
+}
+
 bool vk_VkImageBlit_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkImageBlit *dst = raw;

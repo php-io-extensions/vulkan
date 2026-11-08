@@ -181,6 +181,103 @@ final class VkBufferImageCopy
 }
 
 /** @not-serializable */
+final class VkMemoryToImageCopy
+{
+    public ?object $pNext = null;
+
+    public string $pHostPointer = '';
+
+    public int $memoryRowLength = 0;
+
+    public int $memoryImageHeight = 0;
+
+    public VkImageSubresourceLayers $imageSubresource;
+
+    public VkOffset3D $imageOffset;
+
+    public VkExtent3D $imageExtent;
+
+    public function __construct() {}
+}
+
+/** @not-serializable */
+final class VkImageToMemoryCopy
+{
+    public ?object $pNext = null;
+
+    /** The bytes of the region: the caller gives a string of the size to read, vkCopyImageToMemory() fills it. */
+    public string $pHostPointer = '';
+
+    public int $memoryRowLength = 0;
+
+    public int $memoryImageHeight = 0;
+
+    public VkImageSubresourceLayers $imageSubresource;
+
+    public VkOffset3D $imageOffset;
+
+    public VkExtent3D $imageExtent;
+
+    public function __construct() {}
+}
+
+/** @not-serializable */
+final class VkCopyMemoryToImageInfo
+{
+    public ?object $pNext = null;
+
+    public int $flags = 0;
+
+    public VkImage $dstImage;
+
+    public int $dstImageLayout = 0;
+
+    public int $regionCount = 0;
+
+    public array $pRegions = [];
+}
+
+/** @not-serializable */
+final class VkCopyImageToMemoryInfo
+{
+    public ?object $pNext = null;
+
+    public int $flags = 0;
+
+    public VkImage $srcImage;
+
+    public int $srcImageLayout = 0;
+
+    public int $regionCount = 0;
+
+    public array $pRegions = [];
+}
+
+/** @not-serializable */
+final class VkHostImageLayoutTransitionInfo
+{
+    public ?object $pNext = null;
+
+    public VkImage $image;
+
+    public int $oldLayout = 0;
+
+    public int $newLayout = 0;
+
+    public VkImageSubresourceRange $subresourceRange;
+
+    public function __construct() {}
+}
+
+/** @not-serializable */
+final class VkPhysicalDeviceHostImageCopyFeatures
+{
+    public ?object $pNext = null;
+
+    public bool $hostImageCopy = false;
+}
+
+/** @not-serializable */
 final class VkImageBlit
 {
     public VkImageSubresourceLayers $srcSubresource;
@@ -339,6 +436,14 @@ function vkCmdBindVertexBuffers(VkCommandBuffer $commandBuffer, int $firstBindin
 function vkCmdBindIndexBuffer(VkCommandBuffer $commandBuffer, VkBuffer $buffer, int $offset, int $indexType): void {}
 
 function vkCmdBindDescriptorSets(VkCommandBuffer $commandBuffer, int $pipelineBindPoint, VkPipelineLayout $layout, int $firstSet, int $descriptorSetCount, array $pDescriptorSets, int $dynamicOffsetCount, array $pDynamicOffsets): void {}
+
+function vkCmdUpdateBuffer(VkCommandBuffer $commandBuffer, VkBuffer $dstBuffer, int $dstOffset, int $dataSize, string $pData): void {}
+
+function vkCopyMemoryToImage(VkDevice $device, VkCopyMemoryToImageInfo $pCopyMemoryToImageInfo): int {}
+
+function vkCopyImageToMemory(VkDevice $device, VkCopyImageToMemoryInfo $pCopyImageToMemoryInfo): int {}
+
+function vkTransitionImageLayout(VkDevice $device, int $transitionCount, array $pTransitions): int {}
 
 function vkCmdPushConstants(VkCommandBuffer $commandBuffer, VkPipelineLayout $layout, int $stageFlags, int $offset, int $size, string $pValues): void {}
 

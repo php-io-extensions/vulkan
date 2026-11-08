@@ -195,6 +195,7 @@ foreach (array_keys($kept) as $name) {
 
 foreach ([
     'VK_API_VERSION_1_3',
+    'VK_API_VERSION_1_4',
     'VK_API_VERSION_1_1',
     'VK_WHOLE_SIZE',
     'VK_QUEUE_FAMILY_IGNORED',

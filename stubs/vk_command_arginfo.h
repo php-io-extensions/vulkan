@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 63e8e48c34d13ce199b54eeae643bb9316bb979c */
+ * Stub hash: cf3afe292feaf3352f402c01415898e7f9d916bf */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateCommandPool, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -101,6 +101,30 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdBindDescriptorSets, 0, 8, I
 	ZEND_ARG_TYPE_INFO(0, pDescriptorSets, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, dynamicOffsetCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pDynamicOffsets, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdUpdateBuffer, 0, 5, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
+	ZEND_ARG_OBJ_INFO(0, dstBuffer, VkBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, dstOffset, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, dataSize, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, pData, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCopyMemoryToImage, 0, 2, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_OBJ_INFO(0, pCopyMemoryToImageInfo, VkCopyMemoryToImageInfo, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCopyImageToMemory, 0, 2, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_OBJ_INFO(0, pCopyImageToMemoryInfo, VkCopyImageToMemoryInfo, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkTransitionImageLayout, 0, 3, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_TYPE_INFO(0, transitionCount, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, pTransitions, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdPushConstants, 0, 6, IS_VOID, 0)
@@ -267,6 +291,12 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_VkBufferImageCopy___construct arginfo_class_VkCommandPool___construct
 
+#define arginfo_class_VkMemoryToImageCopy___construct arginfo_class_VkCommandPool___construct
+
+#define arginfo_class_VkImageToMemoryCopy___construct arginfo_class_VkCommandPool___construct
+
+#define arginfo_class_VkHostImageLayoutTransitionInfo___construct arginfo_class_VkCommandPool___construct
+
 #define arginfo_class_VkImageBlit___construct arginfo_class_VkCommandPool___construct
 
 #define arginfo_class_VkImageMemoryBarrier___construct arginfo_class_VkCommandPool___construct
@@ -291,6 +321,10 @@ ZEND_FUNCTION(vkCmdSetStencilReference);
 ZEND_FUNCTION(vkCmdBindVertexBuffers);
 ZEND_FUNCTION(vkCmdBindIndexBuffer);
 ZEND_FUNCTION(vkCmdBindDescriptorSets);
+ZEND_FUNCTION(vkCmdUpdateBuffer);
+ZEND_FUNCTION(vkCopyMemoryToImage);
+ZEND_FUNCTION(vkCopyImageToMemory);
+ZEND_FUNCTION(vkTransitionImageLayout);
 ZEND_FUNCTION(vkCmdPushConstants);
 ZEND_FUNCTION(vkCmdDraw);
 ZEND_FUNCTION(vkCmdDrawIndexed);
@@ -322,6 +356,9 @@ ZEND_METHOD(VkSemaphore, pointer);
 ZEND_METHOD(VkSemaphore, fromPointer);
 ZEND_METHOD(VkRenderPassBeginInfo, __construct);
 ZEND_METHOD(VkBufferImageCopy, __construct);
+ZEND_METHOD(VkMemoryToImageCopy, __construct);
+ZEND_METHOD(VkImageToMemoryCopy, __construct);
+ZEND_METHOD(VkHostImageLayoutTransitionInfo, __construct);
 ZEND_METHOD(VkImageBlit, __construct);
 ZEND_METHOD(VkImageMemoryBarrier, __construct);
 ZEND_METHOD(VkClearAttachment, __construct);
@@ -344,6 +381,10 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkCmdBindVertexBuffers, arginfo_vkCmdBindVertexBuffers)
 	ZEND_FE(vkCmdBindIndexBuffer, arginfo_vkCmdBindIndexBuffer)
 	ZEND_FE(vkCmdBindDescriptorSets, arginfo_vkCmdBindDescriptorSets)
+	ZEND_FE(vkCmdUpdateBuffer, arginfo_vkCmdUpdateBuffer)
+	ZEND_FE(vkCopyMemoryToImage, arginfo_vkCopyMemoryToImage)
+	ZEND_FE(vkCopyImageToMemory, arginfo_vkCopyImageToMemory)
+	ZEND_FE(vkTransitionImageLayout, arginfo_vkTransitionImageLayout)
 	ZEND_FE(vkCmdPushConstants, arginfo_vkCmdPushConstants)
 	ZEND_FE(vkCmdDraw, arginfo_vkCmdDraw)
 	ZEND_FE(vkCmdDrawIndexed, arginfo_vkCmdDrawIndexed)
@@ -399,6 +440,21 @@ static const zend_function_entry class_VkRenderPassBeginInfo_methods[] = {
 
 static const zend_function_entry class_VkBufferImageCopy_methods[] = {
 	ZEND_ME(VkBufferImageCopy, __construct, arginfo_class_VkBufferImageCopy___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_VkMemoryToImageCopy_methods[] = {
+	ZEND_ME(VkMemoryToImageCopy, __construct, arginfo_class_VkMemoryToImageCopy___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_VkImageToMemoryCopy_methods[] = {
+	ZEND_ME(VkImageToMemoryCopy, __construct, arginfo_class_VkImageToMemoryCopy___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_VkHostImageLayoutTransitionInfo_methods[] = {
+	ZEND_ME(VkHostImageLayoutTransitionInfo, __construct, arginfo_class_VkHostImageLayoutTransitionInfo___construct, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -826,6 +882,274 @@ static zend_class_entry *register_class_VkBufferImageCopy(void)
 	zend_string *property_imageExtent_class_VkExtent3D = zend_string_init("VkExtent3D", sizeof("VkExtent3D")-1, 1);
 	zend_declare_typed_property(class_entry, property_imageExtent_name, &property_imageExtent_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_imageExtent_class_VkExtent3D, 0, 0));
 	zend_string_release(property_imageExtent_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkMemoryToImageCopy(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkMemoryToImageCopy", class_VkMemoryToImageCopy_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_pHostPointer_default_value;
+	ZVAL_EMPTY_STRING(&property_pHostPointer_default_value);
+	zend_string *property_pHostPointer_name = zend_string_init("pHostPointer", sizeof("pHostPointer") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pHostPointer_name, &property_pHostPointer_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_STRING));
+	zend_string_release(property_pHostPointer_name);
+
+	zval property_memoryRowLength_default_value;
+	ZVAL_LONG(&property_memoryRowLength_default_value, 0);
+	zend_string *property_memoryRowLength_name = zend_string_init("memoryRowLength", sizeof("memoryRowLength") - 1, 1);
+	zend_declare_typed_property(class_entry, property_memoryRowLength_name, &property_memoryRowLength_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_memoryRowLength_name);
+
+	zval property_memoryImageHeight_default_value;
+	ZVAL_LONG(&property_memoryImageHeight_default_value, 0);
+	zend_string *property_memoryImageHeight_name = zend_string_init("memoryImageHeight", sizeof("memoryImageHeight") - 1, 1);
+	zend_declare_typed_property(class_entry, property_memoryImageHeight_name, &property_memoryImageHeight_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_memoryImageHeight_name);
+
+	zval property_imageSubresource_default_value;
+	ZVAL_UNDEF(&property_imageSubresource_default_value);
+	zend_string *property_imageSubresource_name = zend_string_init("imageSubresource", sizeof("imageSubresource") - 1, 1);
+	zend_string *property_imageSubresource_class_VkImageSubresourceLayers = zend_string_init("VkImageSubresourceLayers", sizeof("VkImageSubresourceLayers")-1, 1);
+	zend_declare_typed_property(class_entry, property_imageSubresource_name, &property_imageSubresource_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_imageSubresource_class_VkImageSubresourceLayers, 0, 0));
+	zend_string_release(property_imageSubresource_name);
+
+	zval property_imageOffset_default_value;
+	ZVAL_UNDEF(&property_imageOffset_default_value);
+	zend_string *property_imageOffset_name = zend_string_init("imageOffset", sizeof("imageOffset") - 1, 1);
+	zend_string *property_imageOffset_class_VkOffset3D = zend_string_init("VkOffset3D", sizeof("VkOffset3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_imageOffset_name, &property_imageOffset_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_imageOffset_class_VkOffset3D, 0, 0));
+	zend_string_release(property_imageOffset_name);
+
+	zval property_imageExtent_default_value;
+	ZVAL_UNDEF(&property_imageExtent_default_value);
+	zend_string *property_imageExtent_name = zend_string_init("imageExtent", sizeof("imageExtent") - 1, 1);
+	zend_string *property_imageExtent_class_VkExtent3D = zend_string_init("VkExtent3D", sizeof("VkExtent3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_imageExtent_name, &property_imageExtent_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_imageExtent_class_VkExtent3D, 0, 0));
+	zend_string_release(property_imageExtent_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkImageToMemoryCopy(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkImageToMemoryCopy", class_VkImageToMemoryCopy_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_pHostPointer_default_value;
+	ZVAL_EMPTY_STRING(&property_pHostPointer_default_value);
+	zend_string *property_pHostPointer_name = zend_string_init("pHostPointer", sizeof("pHostPointer") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pHostPointer_name, &property_pHostPointer_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_STRING));
+	zend_string_release(property_pHostPointer_name);
+
+	zval property_memoryRowLength_default_value;
+	ZVAL_LONG(&property_memoryRowLength_default_value, 0);
+	zend_string *property_memoryRowLength_name = zend_string_init("memoryRowLength", sizeof("memoryRowLength") - 1, 1);
+	zend_declare_typed_property(class_entry, property_memoryRowLength_name, &property_memoryRowLength_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_memoryRowLength_name);
+
+	zval property_memoryImageHeight_default_value;
+	ZVAL_LONG(&property_memoryImageHeight_default_value, 0);
+	zend_string *property_memoryImageHeight_name = zend_string_init("memoryImageHeight", sizeof("memoryImageHeight") - 1, 1);
+	zend_declare_typed_property(class_entry, property_memoryImageHeight_name, &property_memoryImageHeight_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_memoryImageHeight_name);
+
+	zval property_imageSubresource_default_value;
+	ZVAL_UNDEF(&property_imageSubresource_default_value);
+	zend_string *property_imageSubresource_name = zend_string_init("imageSubresource", sizeof("imageSubresource") - 1, 1);
+	zend_string *property_imageSubresource_class_VkImageSubresourceLayers = zend_string_init("VkImageSubresourceLayers", sizeof("VkImageSubresourceLayers")-1, 1);
+	zend_declare_typed_property(class_entry, property_imageSubresource_name, &property_imageSubresource_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_imageSubresource_class_VkImageSubresourceLayers, 0, 0));
+	zend_string_release(property_imageSubresource_name);
+
+	zval property_imageOffset_default_value;
+	ZVAL_UNDEF(&property_imageOffset_default_value);
+	zend_string *property_imageOffset_name = zend_string_init("imageOffset", sizeof("imageOffset") - 1, 1);
+	zend_string *property_imageOffset_class_VkOffset3D = zend_string_init("VkOffset3D", sizeof("VkOffset3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_imageOffset_name, &property_imageOffset_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_imageOffset_class_VkOffset3D, 0, 0));
+	zend_string_release(property_imageOffset_name);
+
+	zval property_imageExtent_default_value;
+	ZVAL_UNDEF(&property_imageExtent_default_value);
+	zend_string *property_imageExtent_name = zend_string_init("imageExtent", sizeof("imageExtent") - 1, 1);
+	zend_string *property_imageExtent_class_VkExtent3D = zend_string_init("VkExtent3D", sizeof("VkExtent3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_imageExtent_name, &property_imageExtent_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_imageExtent_class_VkExtent3D, 0, 0));
+	zend_string_release(property_imageExtent_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkCopyMemoryToImageInfo(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkCopyMemoryToImageInfo", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_flags_default_value;
+	ZVAL_LONG(&property_flags_default_value, 0);
+	zend_string *property_flags_name = zend_string_init("flags", sizeof("flags") - 1, 1);
+	zend_declare_typed_property(class_entry, property_flags_name, &property_flags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_flags_name);
+
+	zval property_dstImage_default_value;
+	ZVAL_UNDEF(&property_dstImage_default_value);
+	zend_string *property_dstImage_name = zend_string_init("dstImage", sizeof("dstImage") - 1, 1);
+	zend_string *property_dstImage_class_VkImage = zend_string_init("VkImage", sizeof("VkImage")-1, 1);
+	zend_declare_typed_property(class_entry, property_dstImage_name, &property_dstImage_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_dstImage_class_VkImage, 0, 0));
+	zend_string_release(property_dstImage_name);
+
+	zval property_dstImageLayout_default_value;
+	ZVAL_LONG(&property_dstImageLayout_default_value, 0);
+	zend_string *property_dstImageLayout_name = zend_string_init("dstImageLayout", sizeof("dstImageLayout") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dstImageLayout_name, &property_dstImageLayout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dstImageLayout_name);
+
+	zval property_regionCount_default_value;
+	ZVAL_LONG(&property_regionCount_default_value, 0);
+	zend_string *property_regionCount_name = zend_string_init("regionCount", sizeof("regionCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_regionCount_name, &property_regionCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_regionCount_name);
+
+	zval property_pRegions_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pRegions_default_value);
+	zend_string *property_pRegions_name = zend_string_init("pRegions", sizeof("pRegions") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pRegions_name, &property_pRegions_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pRegions_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkCopyImageToMemoryInfo(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkCopyImageToMemoryInfo", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_flags_default_value;
+	ZVAL_LONG(&property_flags_default_value, 0);
+	zend_string *property_flags_name = zend_string_init("flags", sizeof("flags") - 1, 1);
+	zend_declare_typed_property(class_entry, property_flags_name, &property_flags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_flags_name);
+
+	zval property_srcImage_default_value;
+	ZVAL_UNDEF(&property_srcImage_default_value);
+	zend_string *property_srcImage_name = zend_string_init("srcImage", sizeof("srcImage") - 1, 1);
+	zend_string *property_srcImage_class_VkImage = zend_string_init("VkImage", sizeof("VkImage")-1, 1);
+	zend_declare_typed_property(class_entry, property_srcImage_name, &property_srcImage_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_srcImage_class_VkImage, 0, 0));
+	zend_string_release(property_srcImage_name);
+
+	zval property_srcImageLayout_default_value;
+	ZVAL_LONG(&property_srcImageLayout_default_value, 0);
+	zend_string *property_srcImageLayout_name = zend_string_init("srcImageLayout", sizeof("srcImageLayout") - 1, 1);
+	zend_declare_typed_property(class_entry, property_srcImageLayout_name, &property_srcImageLayout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_srcImageLayout_name);
+
+	zval property_regionCount_default_value;
+	ZVAL_LONG(&property_regionCount_default_value, 0);
+	zend_string *property_regionCount_name = zend_string_init("regionCount", sizeof("regionCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_regionCount_name, &property_regionCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_regionCount_name);
+
+	zval property_pRegions_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pRegions_default_value);
+	zend_string *property_pRegions_name = zend_string_init("pRegions", sizeof("pRegions") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pRegions_name, &property_pRegions_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pRegions_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkHostImageLayoutTransitionInfo(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkHostImageLayoutTransitionInfo", class_VkHostImageLayoutTransitionInfo_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_image_default_value;
+	ZVAL_UNDEF(&property_image_default_value);
+	zend_string *property_image_name = zend_string_init("image", sizeof("image") - 1, 1);
+	zend_string *property_image_class_VkImage = zend_string_init("VkImage", sizeof("VkImage")-1, 1);
+	zend_declare_typed_property(class_entry, property_image_name, &property_image_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_image_class_VkImage, 0, 0));
+	zend_string_release(property_image_name);
+
+	zval property_oldLayout_default_value;
+	ZVAL_LONG(&property_oldLayout_default_value, 0);
+	zend_string *property_oldLayout_name = zend_string_init("oldLayout", sizeof("oldLayout") - 1, 1);
+	zend_declare_typed_property(class_entry, property_oldLayout_name, &property_oldLayout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_oldLayout_name);
+
+	zval property_newLayout_default_value;
+	ZVAL_LONG(&property_newLayout_default_value, 0);
+	zend_string *property_newLayout_name = zend_string_init("newLayout", sizeof("newLayout") - 1, 1);
+	zend_declare_typed_property(class_entry, property_newLayout_name, &property_newLayout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_newLayout_name);
+
+	zval property_subresourceRange_default_value;
+	ZVAL_UNDEF(&property_subresourceRange_default_value);
+	zend_string *property_subresourceRange_name = zend_string_init("subresourceRange", sizeof("subresourceRange") - 1, 1);
+	zend_string *property_subresourceRange_class_VkImageSubresourceRange = zend_string_init("VkImageSubresourceRange", sizeof("VkImageSubresourceRange")-1, 1);
+	zend_declare_typed_property(class_entry, property_subresourceRange_name, &property_subresourceRange_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_subresourceRange_class_VkImageSubresourceRange, 0, 0));
+	zend_string_release(property_subresourceRange_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkPhysicalDeviceHostImageCopyFeatures(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkPhysicalDeviceHostImageCopyFeatures", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_hostImageCopy_default_value;
+	ZVAL_FALSE(&property_hostImageCopy_default_value);
+	zend_string *property_hostImageCopy_name = zend_string_init("hostImageCopy", sizeof("hostImageCopy") - 1, 1);
+	zend_declare_typed_property(class_entry, property_hostImageCopy_name, &property_hostImageCopy_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_hostImageCopy_name);
 
 	return class_entry;
 }

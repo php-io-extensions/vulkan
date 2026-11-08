@@ -5016,6 +5016,12 @@ const VK_API_VERSION_1_3 = UNKNOWN;
 
 /**
  * @var int
+ * @cvalue VK_API_VERSION_1_4
+ */
+const VK_API_VERSION_1_4 = UNKNOWN;
+
+/**
+ * @var int
  * @cvalue VK_API_VERSION_1_1
  */
 const VK_API_VERSION_1_1 = UNKNOWN;

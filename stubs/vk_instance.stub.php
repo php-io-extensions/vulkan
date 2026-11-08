@@ -670,3 +670,5 @@ function vkDeviceWaitIdle(VkDevice $device): int {}
 
 function vkGetPhysicalDeviceFeatures2(VkPhysicalDevice $physicalDevice, VkPhysicalDeviceFeatures2 $pFeatures): void {}
 
+function vkGetInstanceProcAddr(?VkInstance $instance, string $pName): int {}
+

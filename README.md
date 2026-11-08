@@ -60,9 +60,21 @@ translations:
 - SPIR-V is `VkShaderModuleCreateInfo::$codeSize` plus the string `$pCode`.
   Push constants are a string.
 - Results are the `VkResult` int, as in C.
-- `vkMapMemory` writes the mapped address to `$ppData` (`int`). Read and write
-  it with FFI (`FFI::cdef()->cast('uint8_t *', $address)`, `FFI::memcpy`,
-  `FFI::string`). `vkGetMemoryFdKHR` hands out a descriptor the caller closes.
+- `vkMapMemory` writes the mapped address to `$ppData` (`int`). Host data moves
+  through `vkCmdUpdateBuffer` (a string, at most 65,536 bytes a call) and the
+  host image copies: `vkCopyMemoryToImage` takes strings, and
+  `vkCopyImageToMemory` fills the `$pHostPointer` string of each region (give
+  it a string of the size to read). `vkTransitionImageLayout` moves an image to
+  the layout a host copy needs. They need Vulkan 1.4, the `hostImageCopy`
+  feature (chain `VkPhysicalDeviceHostImageCopyFeatures` into
+  `VkDeviceCreateInfo`), and images made with `VK_IMAGE_USAGE_HOST_TRANSFER_BIT`.
+  `vkGetMemoryFdKHR` hands out a descriptor the caller closes (`posix_close()` of
+  ext-posi).
+- `vkGetInstanceProcAddr($instance, $pName)` returns the function's address as
+  an `int` (`PFN_vkVoidFunction`; `0` is `NULL`). With `null` and
+  `'vkGetInstanceProcAddr'` it names the loader this process loaded: another
+  library's `dlsym()` of the same name (ext-posi) gives the same address only
+  in the same loader.
 
 ## Refusals
 
@@ -207,9 +219,11 @@ $imageInfo->usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DS
 vkCreateImage($device, $imageInfo, 0, $image);
 ```
 
-Map the destination buffer with `vkMapMemory`, then read the address it wrote
-with FFI. Call `vkFlushMappedMemoryRanges` after a write and
-`vkInvalidateMappedMemoryRanges` before a read when the memory is not coherent.
+Create the image with `VK_IMAGE_USAGE_HOST_TRANSFER_BIT`, move it to
+`VK_IMAGE_LAYOUT_GENERAL` with `vkTransitionImageLayout`, and read it with
+`vkCopyImageToMemory` once the queue is idle: a `VkImageToMemoryCopy` region
+holds a string of `width * height * 4` bytes in `$pHostPointer`, and the call
+puts the pixels in it.
 
 ## Testing
 

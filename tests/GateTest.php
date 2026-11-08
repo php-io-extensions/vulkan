@@ -32,15 +32,11 @@ it('fills a triangle by stencil-then-cover into a 4x image, resolves in the pass
 
     // The triangle (-1,-1), (1,-1), (-1,1), then a cover quad as two triangles.
     $points = pack('g18', -1.0, -1.0, 1.0, -1.0, -1.0, 1.0,   -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0);
-    [$vertices, $verticesMemory] = hostBuffer(strlen($points), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    vkMapMemory($device, $verticesMemory, 0, VK_WHOLE_SIZE, 0, $address);
-    mappedWrite($address, $points);
-    $range = new VkMappedMemoryRange();
-    $range->memory = $verticesMemory;
-    $range->size = VK_WHOLE_SIZE;
-    vkFlushMappedMemoryRanges($device, 1, [$range]);
-    vkUnmapMemory($device, $verticesMemory);
-    [$readback, $readbackMemory] = hostBuffer(512, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    requireHostCopy();
+    // (the vertices go in with vkCmdUpdateBuffer, and the pixels come out through an 8 x 16 image the host reads)
+    [$vertices] = hostBuffer(strlen($points), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    [$readback] = hostBuffer(512, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    [$out] = hostImage2D(8, 16, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 
     $clearColor = new VkClearValue();
     $clearColor->color = new VkClearColorValue();
@@ -61,6 +57,11 @@ it('fills a triangle by stencil-then-cover into a 4x image, resolves in the pass
     [$scissor->extent->width, $scissor->extent->height] = [8, 8];
 
     $cmd = commands();
+    vkCmdUpdateBuffer($cmd, $vertices, 0, strlen($points), $points);
+    $updated = new VkMemoryBarrier();
+    $updated->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    $updated->dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, 1, [$updated], 0, [], 0, []);
     vkCmdBeginRenderPass($cmd, $begin, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport($cmd, 0, 1, [$viewport]);
     vkCmdSetScissor($cmd, 0, 1, [$scissor]);
@@ -95,13 +96,18 @@ it('fills a triangle by stencil-then-cover into a 4x image, resolves in the pass
         [$copy->imageExtent->width, $copy->imageExtent->height, $copy->imageExtent->depth] = [8, 8, 1];
         vkCmdCopyImageToBuffer($cmd, $image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $readback, 1, [$copy]);
     }
+    // the two 8 x 8 blocks of the readback buffer are the two halves of the 8 x 16 image the host reads
+    $written = new VkMemoryBarrier();
+    $written->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    $written->dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 1, [$written], 0, [], 0, []);
+    $stacked = new VkBufferImageCopy();
+    $stacked->imageSubresource = $layers;
+    [$stacked->imageExtent->width, $stacked->imageExtent->height, $stacked->imageExtent->depth] = [8, 16, 1];
+    vkCmdCopyBufferToImage($cmd, $readback, $out, VK_IMAGE_LAYOUT_GENERAL, 1, [$stacked]);
     submitAndWait($cmd);
 
-    vkMapMemory($device, $readbackMemory, 0, VK_WHOLE_SIZE, 0, $address);
-    $range->memory = $readbackMemory;
-    vkInvalidateMappedMemoryRanges($device, 1, [$range]);
-    $both = mappedRead($address, 512);
-    vkUnmapMemory($device, $readbackMemory);
+    $both = hostRead($out, 8, 16);
     [$pixels, $copied] = [substr($both, 0, 256), substr($both, 256)];
 
     expect($copied)->toBe($pixels)

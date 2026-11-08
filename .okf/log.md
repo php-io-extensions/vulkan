@@ -1,5 +1,11 @@
 # Log
 
+## 2026-11-08
+
+* **vkGetInstanceProcAddr**: bound 1:1, `vkGetInstanceProcAddr(?VkInstance $instance, string $pName): int` (`PFN_vkVoidFunction` is the int address by typemap, `0` is `NULL`; a released instance is refused like any dispatchable handle). It replaces the `vkGetLoaderPath()` idea: `vkGetInstanceProcAddr(null, 'vkGetInstanceProcAddr')` is the loader's address, which another library's `dlsym()` (ext-posi) compares to tell whether two sides use one loader. Two tests in `tests/InstanceTest.php`. Suite from its own repo setup on MoltenVK, ZTS scratch build: 37 passed, 15 skipped (Linux, ext-sdl3 and probe tests), 1 risky, exit 0.
+
+* **Host copies, no FFI**: `vkCmdUpdateBuffer`, `vkCopyMemoryToImage`, `vkCopyImageToMemory`, `vkTransitionImageLayout` and the structs `VkMemoryToImageCopy`, `VkImageToMemoryCopy`, `VkCopyMemoryToImageInfo`, `VkCopyImageToMemoryInfo`, `VkHostImageLayoutTransitionInfo`, `VkPhysicalDeviceHostImageCopyFeatures` (a `pNext` node, written back by `vkGetPhysicalDeviceFeatures2`); constant `VK_API_VERSION_1_4`. `pHostPointer` is a PHP string (a read fills the caller's string of the size to read). `tests/HostCopyTest.php`; the suite's helpers (`hostImage2D`, `hostWrite`, `hostRead`) replace `mappedRead`, `mappedWrite` and libc, so no test uses FFI; the shared device is a 1.4 device with `hostImageCopy` where the GPU has it, and the tests that need it skip without. `MemoryTest` checks the bytes of host-visible memory through the GPU: `vkCmdUpdateBuffer` writes them into a buffer bound to the mapped memory, `vkCmdCopyBufferToImage` moves them into a host-transfer image, `vkCopyImageToMemory` reads them back; the map, flush, invalidate and unmap results are still checked. MoltenVK, ZTS, installed build: 32 passed, 3 skipped (the Linux tests). `vkGetLoaderPath()` is not bound: the guard maps a symbol to a native function and demands its signature, which dladdr() cannot give.
+
 ## 2026-11-06
 
 * **1:1 sweep** (`f11a63d`): counts are explicit arguments and struct members, enumerate calls take `?int &count` and `?array &list` as C's two calls, `pAllocator` and `pipelineCache` are int addresses (0 is `NULL`), `VkBool32` is bool, SPIR-V is `codeSize` + `pCode`, destroys take `null`, `fromPointer(0)` is `null`. `VkCopyDescriptorSet` and `VkBufferMemoryBarrier` are bound. `vkSetHdrMetadataEXT` is void.

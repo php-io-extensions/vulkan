@@ -21,7 +21,10 @@
     "VkSurfaceCapabilitiesKHR": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"},
     "VkSwapchainCreateInfoKHR": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"},
     "VkRectLayerKHR": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"},
-    "VkHdrMetadataEXT": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"}
+    "VkHdrMetadataEXT": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"},
+    "VkMemoryToImageCopy": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"},
+    "VkImageToMemoryCopy": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"},
+    "VkHostImageLayoutTransitionInfo": {"methods": ["__construct"], "forwards": "zero-init, as C's {0}: builds the nested structs"}
   },
   "helpers": {
     "marshal": ["vulkan_u32", "vulkan_u64", "vulkan_size", "vulkan_bool32", "vulkan_handle_value", "vulkan_handle_prop", "vulkan_handle_list", "vulkan_string_list", "vulkan_list", "vulkan_list_count", "vulkan_bytes_length", "vulkan_arg_count", "vulkan_arg_list", "vulkan_arg_struct", "vulkan_arg_structs", "vulkan_arg_handles", "vulkan_arg_ints", "vulkan_scalar_items", "vulkan_fixed_items", "vulkan_u64_list", "vulkan_u32_list", "vulkan_i32_list", "vulkan_float_list", "vulkan_fixed_floats", "vulkan_fixed_u32s", "vulkan_arg_u32s", "vulkan_arg_u64s", "vulkan_spirv", "vulkan_proc", "vulkan_pnext", "vulkan_struct_list", "vulkan_opt_struct_list", "vulkan_device", "vulkan_memory_ranges"],
@@ -81,6 +84,8 @@
     "VkWriteDescriptorSet*": ["array"],
     "VkCopyDescriptorSet*": ["array"],
     "VkGraphicsPipelineCreateInfo*": ["array"],
-    "VkHdrMetadataEXT*": ["array"]
+    "VkHdrMetadataEXT*": ["array"],
+    "VkHostImageLayoutTransitionInfo*": ["array"],
+    "PFN_vkVoidFunction": ["int"]
   }
 }

@@ -4,7 +4,7 @@ title: Bindings
 description: The Vulkan functions and structs this extension binds, by group.
 tags: [vulkan, api]
 status: draft
-generated: { by: grok/4.7, at: 2026-10-05T09:30:00-04:00 }
+generated: { by: claude-sonnet/5.5, at: 2026-11-08T14:00:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -15,7 +15,7 @@ sources:
 
 | Group | Source | What it binds |
 |---|---|---|
-| Instance and device | `src/vk_instance.c` | `VkInstance`, `VkPhysicalDevice`, `VkDevice`, `VkQueue`; create, destroy, enumerate, properties, formats, memory properties, queues; `vkGetPhysicalDeviceFeatures2` fills a `VkPhysicalDeviceFeatures2` and its `pNext` chain in place. `VkPhysicalDevicePortabilitySubsetFeaturesKHR` is the chain node for what `VK_KHR_portability_subset` forbids |
+| Instance and device | `src/vk_instance.c` | `VkInstance`, `VkPhysicalDevice`, `VkDevice`, `VkQueue`; create, destroy, enumerate, properties, formats, memory properties, queues; `vkGetPhysicalDeviceFeatures2` fills a `VkPhysicalDeviceFeatures2` and its `pNext` chain in place; `vkGetInstanceProcAddr` takes `?VkInstance` and a name and answers the address as an `int` (0 is `NULL`; with `null` and its own name it is the loader's address). `VkPhysicalDevicePortabilitySubsetFeaturesKHR` is the chain node for what `VK_KHR_portability_subset` forbids |
 | Memory | `src/vk_memory.c` | `VkDeviceMemory`, `VkBuffer`, `VkImage`, `VkImageView`, `VkSampler`; allocate, map, flush, invalidate, bind |
 | Pipelines | `src/vk_pipeline.c` | render passes, framebuffers, shader modules, graphics pipelines, descriptor layouts, pools, sets, writes |
 | Commands | `src/vk_command.c` | command pools and buffers, draw and copy and blit, barriers, submit, fences, semaphores |
@@ -23,7 +23,7 @@ sources:
 | Metal surface | `src/vk_metal.c` | `vkCreateMetalSurfaceEXT`, macOS only, loaded with `vkGetInstanceProcAddr` |
 | dmabuf | `src/vk_external.c` | `vkGetMemoryFdKHR`, `vkGetImageDrmFormatModifierPropertiesEXT` via `vkGetDeviceProcAddr`; `vkGetImageSubresourceLayout` |
 
-Every function is a Vulkan entry point; there are no helper functions. Mapped memory is read and written with FFI.
+Every function is a Vulkan entry point; there are no helper functions. There is no FFI: host data moves through `vkCmdUpdateBuffer` (a string, at most 65,536 bytes a call) and the Vulkan 1.4 host image copies `vkCopyMemoryToImage`, `vkCopyImageToMemory` and `vkTransitionImageLayout` (commands group). A `VkMemoryToImageCopy` or `VkImageToMemoryCopy` region carries its bytes as the string `$pHostPointer`; for a read the caller gives a string of the size to read and the call fills it. The bytes must cover the region's texels at least one byte each (site `vulkan-bytes-length`). `VkPhysicalDeviceHostImageCopyFeatures` is the `pNext` node that enables and reports the feature; the images need `VK_IMAGE_USAGE_HOST_TRANSFER_BIT`.
 
 An extension command whose `vkGet*ProcAddr` answer is `NULL` is refused with `Error` (site `vulkan-no-proc`): calling `NULL` kills the process. Some implementations hand out the command although its extension is not enabled; the call then goes through.
 

@@ -90,6 +90,12 @@ zend_class_entry *vulkan_ce_VkRenderPassBeginInfo;
 zend_class_entry *vulkan_ce_VkOffset3D;
 zend_class_entry *vulkan_ce_VkImageSubresourceLayers;
 zend_class_entry *vulkan_ce_VkBufferImageCopy;
+zend_class_entry *vulkan_ce_VkMemoryToImageCopy;
+zend_class_entry *vulkan_ce_VkImageToMemoryCopy;
+zend_class_entry *vulkan_ce_VkCopyMemoryToImageInfo;
+zend_class_entry *vulkan_ce_VkCopyImageToMemoryInfo;
+zend_class_entry *vulkan_ce_VkHostImageLayoutTransitionInfo;
+zend_class_entry *vulkan_ce_VkPhysicalDeviceHostImageCopyFeatures;
 zend_class_entry *vulkan_ce_VkImageBlit;
 zend_class_entry *vulkan_ce_VkMemoryBarrier;
 zend_class_entry *vulkan_ce_VkBufferMemoryBarrier;
@@ -407,6 +413,12 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkOffset3D, sizeof(VkOffset3D), vk_VkOffset3D_from },
 	{ &vulkan_ce_VkImageSubresourceLayers, sizeof(VkImageSubresourceLayers), vk_VkImageSubresourceLayers_from },
 	{ &vulkan_ce_VkBufferImageCopy, sizeof(VkBufferImageCopy), vk_VkBufferImageCopy_from },
+	{ &vulkan_ce_VkMemoryToImageCopy, sizeof(VkMemoryToImageCopy), vk_VkMemoryToImageCopy_from },
+	{ &vulkan_ce_VkImageToMemoryCopy, sizeof(VkImageToMemoryCopy), vk_VkImageToMemoryCopy_from },
+	{ &vulkan_ce_VkCopyMemoryToImageInfo, sizeof(VkCopyMemoryToImageInfo), vk_VkCopyMemoryToImageInfo_from },
+	{ &vulkan_ce_VkCopyImageToMemoryInfo, sizeof(VkCopyImageToMemoryInfo), vk_VkCopyImageToMemoryInfo_from },
+	{ &vulkan_ce_VkHostImageLayoutTransitionInfo, sizeof(VkHostImageLayoutTransitionInfo), vk_VkHostImageLayoutTransitionInfo_from },
+	{ &vulkan_ce_VkPhysicalDeviceHostImageCopyFeatures, sizeof(VkPhysicalDeviceHostImageCopyFeatures), vk_VkPhysicalDeviceHostImageCopyFeatures_from },
 	{ &vulkan_ce_VkImageBlit, sizeof(VkImageBlit), vk_VkImageBlit_from },
 	{ &vulkan_ce_VkMemoryBarrier, sizeof(VkMemoryBarrier), vk_VkMemoryBarrier_from },
 	{ &vulkan_ce_VkBufferMemoryBarrier, sizeof(VkBufferMemoryBarrier), vk_VkBufferMemoryBarrier_from },
@@ -898,6 +910,8 @@ void vulkan_store_pnext_chain(zend_object *obj, const void *raw)
 		vulkan_set_bool(obj, "presentId", ((const VkPhysicalDevicePresentIdFeaturesKHR *) raw)->presentId == VK_TRUE);
 	} else if (obj->ce == vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR) {
 		vulkan_set_bool(obj, "presentWait", ((const VkPhysicalDevicePresentWaitFeaturesKHR *) raw)->presentWait == VK_TRUE);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDeviceHostImageCopyFeatures) {
+		vulkan_set_bool(obj, "hostImageCopy", ((const VkPhysicalDeviceHostImageCopyFeatures *) raw)->hostImageCopy == VK_TRUE);
 	}
 
 	next = zend_read_property(obj->ce, obj, "pNext", sizeof("pNext") - 1, 0, NULL);

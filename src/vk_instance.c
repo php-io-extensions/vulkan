@@ -475,3 +475,24 @@ ZEND_FUNCTION(vkGetPhysicalDeviceFeatures2)
 	vulkan_store_pnext_chain(Z_OBJ_P(features), &info);
 	vulkan_scratch_free(&scratch);
 }
+
+ZEND_FUNCTION(vkGetInstanceProcAddr)
+{
+	zval *instance;
+	char *name;
+	size_t name_len;
+	uint64_t value = 0;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJECT_OF_CLASS_OR_NULL(instance, vulkan_ce_VkInstance)
+		Z_PARAM_STRING(name, name_len)
+	ZEND_PARSE_PARAMETERS_END();
+
+	(void) name_len;
+	if (instance && !vulkan_handle_value(instance, vulkan_ce_VkInstance, 1, &value)) {
+		RETURN_THROWS();
+	}
+
+	/* PFN_vkVoidFunction as the int address; 0 is NULL, a name the loader does not know. */
+	RETURN_LONG((zend_long) (uintptr_t) vkGetInstanceProcAddr((VkInstance) (uintptr_t) value, name));
+}

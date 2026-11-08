@@ -23,7 +23,7 @@ function portabilityInstance(array $extensions = []): VkInstanceCreateInfo
 {
     $app = new VkApplicationInfo();
     $app->pApplicationName = 'ext-vulkan tests';
-    $app->apiVersion = VK_API_VERSION_1_3;
+    $app->apiVersion = VK_API_VERSION_1_4;
     $info = new VkInstanceCreateInfo();
     $info->pApplicationInfo = $app;
 
@@ -54,7 +54,9 @@ function portabilityDevice(VkPhysicalDevice $physical, VkDeviceCreateInfo $info)
     return $info;
 }
 
-/** @return array{VkInstance, VkPhysicalDevice, VkDevice, VkQueue, int}|null instance, the GPU (never the CPU device), a device with one graphics queue, that queue, its family; null where no GPU is visible */
+/**
+ * @return array{VkInstance, VkPhysicalDevice, VkDevice, VkQueue, int, bool}|null instance, the GPU (never the CPU device), a device with one graphics queue, that queue, its family, whether the device was made with host image copies (Vulkan 1.4, hostImageCopy: the tests move host data with them); null where no GPU is visible
+ */
 function vulkan(): ?array
 {
     static $made = false, $vulkan = null;
@@ -91,10 +93,20 @@ function vulkan(): ?array
     $deviceInfo = new VkDeviceCreateInfo();
     $deviceInfo->queueCreateInfoCount = 1;
     $deviceInfo->pQueueCreateInfos = [$queueInfo];
+    $offered = new VkPhysicalDeviceHostImageCopyFeatures();
+    $probe = new VkPhysicalDeviceFeatures2();
+    $probe->pNext = $offered;
+    vkGetPhysicalDeviceFeatures2($physical, $probe);
+    $hostCopy = $properties->apiVersion >= VK_API_VERSION_1_4 && $offered->hostImageCopy;
+    if ($hostCopy) {
+        $enable = new VkPhysicalDeviceHostImageCopyFeatures();
+        $enable->hostImageCopy = true;
+        $deviceInfo->pNext = $enable;
+    }
     vkCreateDevice($physical, portabilityDevice($physical, $deviceInfo), 0, $device) === VK_SUCCESS || throw new RuntimeException('vkCreateDevice');
     vkGetDeviceQueue($device, $family, 0, $queue);
 
-    return $vulkan = [$instance, $physical, $device, $queue, $family];
+    return $vulkan = [$instance, $physical, $device, $queue, $family, $hostCopy];
 }
 
 /** The Vulkan objects, or the test skipped where the platform has no GPU device this slice can open. */
@@ -417,24 +429,68 @@ function submitAndWait(VkCommandBuffer $commandBuffer): void
 
 
 
-/** libc through FFI: the bytes at a mapped address, the copy into it, and close(2). */
-function libc(): FFI
+/** The test is skipped where the shared device has no host image copies (Vulkan 1.4, hostImageCopy). */
+function requireHostCopy(): void
 {
-    static $ffi = null;
-
-    return $ffi ??= FFI::cdef('int close(int fd);');
+    gpu()[5] || test()->markTestSkipped('the device lacks hostImageCopy (Vulkan 1.4)');
 }
 
-/** $size bytes read at the address vkMapMemory wrote. */
-function mappedRead(int $address, int $size): string
+/**
+ * A device-local RGBA8 image the host can write and read, in GENERAL from the start (the host moved it there).
+ *
+ * @return array{VkImage, VkDeviceMemory}
+ */
+function hostImage2D(int $w, int $h, int $usage): array
 {
-    return FFI::string(libc()->cast('uint8_t *', $address), $size);
+    requireHostCopy();
+    [, , $device] = gpu();
+    [$image, $memory] = image2D(VK_FORMAT_R8G8B8A8_UNORM, $w, $h, $usage | VK_IMAGE_USAGE_HOST_TRANSFER_BIT);
+    $transition = new VkHostImageLayoutTransitionInfo();
+    $transition->image = $image;
+    $transition->oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    $transition->newLayout = VK_IMAGE_LAYOUT_GENERAL;
+    $transition->subresourceRange->aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    $transition->subresourceRange->levelCount = 1;
+    $transition->subresourceRange->layerCount = 1;
+    vkTransitionImageLayout($device, 1, [$transition]) === VK_SUCCESS || throw new RuntimeException('vkTransitionImageLayout');
+
+    return [$image, $memory];
 }
 
-/** $bytes copied to the address vkMapMemory wrote. */
-function mappedWrite(int $address, string $bytes): void
+/** $bytes (rows top-down) over all of a host image, written by the host. */
+function hostWrite(VkImage $image, int $w, int $h, string $bytes): void
 {
-    FFI::memcpy(libc()->cast('uint8_t *', $address), $bytes, strlen($bytes));
+    [, , $device] = gpu();
+    $region = new VkMemoryToImageCopy();
+    $region->pHostPointer = $bytes;
+    $region->imageSubresource->aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    $region->imageSubresource->layerCount = 1;
+    [$region->imageExtent->width, $region->imageExtent->height, $region->imageExtent->depth] = [$w, $h, 1];
+    $info = new VkCopyMemoryToImageInfo();
+    $info->dstImage = $image;
+    $info->dstImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+    $info->regionCount = 1;
+    $info->pRegions = [$region];
+    vkCopyMemoryToImage($device, $info) === VK_SUCCESS || throw new RuntimeException('vkCopyMemoryToImage');
+}
+
+/** All of a host image, rows top-down, read by the host. */
+function hostRead(VkImage $image, int $w, int $h): string
+{
+    [, , $device] = gpu();
+    $region = new VkImageToMemoryCopy();
+    $region->pHostPointer = str_repeat("\0", $w * $h * 4);
+    $region->imageSubresource->aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    $region->imageSubresource->layerCount = 1;
+    [$region->imageExtent->width, $region->imageExtent->height, $region->imageExtent->depth] = [$w, $h, 1];
+    $info = new VkCopyImageToMemoryInfo();
+    $info->srcImage = $image;
+    $info->srcImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+    $info->regionCount = 1;
+    $info->pRegions = [$region];
+    vkCopyImageToMemory($device, $info) === VK_SUCCESS || throw new RuntimeException('vkCopyImageToMemory');
+
+    return $region->pHostPointer;
 }
 
 /** Skips a tests/Probes test unless the loaded ext-vulkan is a probe build (--enable-vulkan-probes). */

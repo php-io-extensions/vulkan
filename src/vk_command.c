@@ -21,6 +21,28 @@ ZEND_METHOD(VkBufferImageCopy, __construct)
 	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageExtent", vulkan_ce_VkExtent3D);
 }
 
+ZEND_METHOD(VkMemoryToImageCopy, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageSubresource", vulkan_ce_VkImageSubresourceLayers);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageOffset", vulkan_ce_VkOffset3D);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageExtent", vulkan_ce_VkExtent3D);
+}
+
+ZEND_METHOD(VkImageToMemoryCopy, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageSubresource", vulkan_ce_VkImageSubresourceLayers);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageOffset", vulkan_ce_VkOffset3D);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "imageExtent", vulkan_ce_VkExtent3D);
+}
+
+ZEND_METHOD(VkHostImageLayoutTransitionInfo, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "subresourceRange", vulkan_ce_VkImageSubresourceRange);
+}
+
 ZEND_METHOD(VkImageBlit, __construct)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
@@ -65,6 +87,7 @@ void vulkan_register_command(int module_number)
 	S(VkRenderPassBeginInfo); S(VkOffset3D); S(VkImageSubresourceLayers); S(VkBufferImageCopy);
 	S(VkImageBlit); S(VkMemoryBarrier); S(VkBufferMemoryBarrier); S(VkImageMemoryBarrier); S(VkSubmitInfo);
 	S(VkFenceCreateInfo); S(VkSemaphoreCreateInfo); S(VkClearAttachment); S(VkClearRect);
+	S(VkMemoryToImageCopy); S(VkImageToMemoryCopy); S(VkCopyMemoryToImageInfo); S(VkCopyImageToMemoryInfo); S(VkHostImageLayoutTransitionInfo); S(VkPhysicalDeviceHostImageCopyFeatures);
 #undef H
 #undef S
 }
@@ -373,6 +396,69 @@ ZEND_FUNCTION(vkCmdCopyImageToBuffer)
 	if (!vulkan_arg_structs(regions, count, 5, 6, vulkan_ce_VkBufferImageCopy, sizeof(VkBufferImageCopy), vk_VkBufferImageCopy_from, &items, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
 	vkCmdCopyImageToBuffer((VkCommandBuffer) (uintptr_t) command_value, (VkImage) (uintptr_t) image_value, (VkImageLayout) layout, (VkBuffer) (uintptr_t) buffer_value, (uint32_t) count, items);
 	vulkan_scratch_free(&scratch);
+}
+
+ZEND_FUNCTION(vkCmdUpdateBuffer)
+{
+	zval *command, *buffer; zend_long offset, size; zend_string *data; uint64_t command_value, buffer_value;
+	ZEND_PARSE_PARAMETERS_START(5, 5)
+		Z_PARAM_OBJECT(command) Z_PARAM_OBJECT(buffer) Z_PARAM_LONG(offset) Z_PARAM_LONG(size) Z_PARAM_STR(data)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_cmd(command, &command_value) || !vulkan_handle_value(buffer, vulkan_ce_VkBuffer, 2, &buffer_value) || !vulkan_bytes_length(ZSTR_LEN(data), (size_t) size, 5, "pData")) RETURN_THROWS();
+	vkCmdUpdateBuffer((VkCommandBuffer) (uintptr_t) command_value, (VkBuffer) (uintptr_t) buffer_value, (VkDeviceSize) offset, (VkDeviceSize) size, ZSTR_VAL(data));
+}
+
+ZEND_FUNCTION(vkCopyMemoryToImage)
+{
+	zval *device, *info; uint64_t device_value; VkCopyMemoryToImageInfo raw; vulkan_scratch scratch; VkResult result;
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(info)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
+	vulkan_scratch_init(&scratch);
+	if (!vulkan_arg_struct(info, vulkan_ce_VkCopyMemoryToImageInfo, vk_VkCopyMemoryToImageInfo_from, &raw, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+	result = vkCopyMemoryToImage((VkDevice) (uintptr_t) device_value, &raw);
+	vulkan_scratch_free(&scratch);
+	RETURN_LONG((zend_long) result);
+}
+
+/* Vulkan fills a copy of each region's string; on success the bytes go back into the region objects. */
+ZEND_FUNCTION(vkCopyImageToMemory)
+{
+	zval *device, *info, *regions, *region; uint64_t device_value; VkCopyImageToMemoryInfo raw; vulkan_scratch scratch; VkResult result; uint32_t i = 0;
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(info)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
+	vulkan_scratch_init(&scratch);
+	if (!vulkan_arg_struct(info, vulkan_ce_VkCopyImageToMemoryInfo, vk_VkCopyImageToMemoryInfo_from, &raw, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+	result = vkCopyImageToMemory((VkDevice) (uintptr_t) device_value, &raw);
+	if (result == VK_SUCCESS) {
+		regions = zend_read_property(Z_OBJCE_P(info), Z_OBJ_P(info), "pRegions", sizeof("pRegions") - 1, 0, NULL);
+		ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(regions), region) {
+			zval *held;
+			if (i == raw.regionCount) break;
+			held = zend_read_property(Z_OBJCE_P(region), Z_OBJ_P(region), "pHostPointer", sizeof("pHostPointer") - 1, 0, NULL);
+			vulkan_set_bytes(Z_OBJ_P(region), "pHostPointer", raw.pRegions[i].pHostPointer, Z_STRLEN_P(held));
+			i++;
+		} ZEND_HASH_FOREACH_END();
+	}
+	vulkan_scratch_free(&scratch);
+	RETURN_LONG((zend_long) result);
+}
+
+ZEND_FUNCTION(vkTransitionImageLayout)
+{
+	zval *device, *transitions; zend_long count; uint64_t device_value; void *items; vulkan_scratch scratch; VkResult result;
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJECT(device) Z_PARAM_LONG(count) Z_PARAM_ZVAL(transitions)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
+	vulkan_scratch_init(&scratch);
+	if (!vulkan_arg_structs(transitions, count, 2, 3, vulkan_ce_VkHostImageLayoutTransitionInfo, sizeof(VkHostImageLayoutTransitionInfo), vk_VkHostImageLayoutTransitionInfo_from, &items, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+	result = vkTransitionImageLayout((VkDevice) (uintptr_t) device_value, (uint32_t) count, items);
+	vulkan_scratch_free(&scratch);
+	RETURN_LONG((zend_long) result);
 }
 
 ZEND_FUNCTION(vkCmdBlitImage)

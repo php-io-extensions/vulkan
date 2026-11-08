@@ -2,22 +2,37 @@
 
 declare(strict_types=1);
 
-it('maps host-visible memory to an address, writes, flushes, invalidates and reads it back', function (): void {
+// The bytes reach the host-visible memory through the GPU (vkCmdUpdateBuffer) and come back through a host-transfer image.
+it('maps host-visible memory to an address, flushes, invalidates and unmaps it, and the bytes the GPU writes into it come back', function (): void {
+    requireHostCopy();
     [, , $device] = gpu();
-    [$buffer, $memory] = hostBuffer(256, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    [$buffer, $memory] = hostBuffer(256, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+    [$image] = hostImage2D(8, 8, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
     $bytes = random_bytes(256);
 
     expect(vkMapMemory($device, $memory, 0, VK_WHOLE_SIZE, 0, $address))->toBe(VK_SUCCESS)
         ->and($address)->toBeGreaterThan(0);
 
-    mappedWrite($address, $bytes);
+    $copy = new VkBufferImageCopy();
+    $copy->imageSubresource->aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    $copy->imageSubresource->layerCount = 1;
+    [$copy->imageExtent->width, $copy->imageExtent->height, $copy->imageExtent->depth] = [8, 8, 1];
+    $cmd = commands();
+    vkCmdUpdateBuffer($cmd, $buffer, 0, 256, $bytes);
+    $updated = new VkMemoryBarrier();
+    $updated->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    $updated->dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 1, [$updated], 0, [], 0, []);
+    vkCmdCopyBufferToImage($cmd, $buffer, $image, VK_IMAGE_LAYOUT_GENERAL, 1, [$copy]);
+    submitAndWait($cmd);
+
     $range = new VkMappedMemoryRange();
     $range->memory = $memory;
     $range->size = VK_WHOLE_SIZE;
 
     expect(vkFlushMappedMemoryRanges($device, 1, [$range]))->toBe(VK_SUCCESS)
         ->and(vkInvalidateMappedMemoryRanges($device, 1, [$range]))->toBe(VK_SUCCESS)
-        ->and(mappedRead($address, 256))->toBe($bytes);
+        ->and(hostRead($image, 8, 8))->toBe($bytes);
 
     vkUnmapMemory($device, $memory);
     vkDestroyBuffer($device, $buffer, 0);

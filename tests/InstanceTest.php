@@ -66,6 +66,26 @@ it('releases everything made from a destroyed device', function (): void {
     vkDestroyDevice(null, 0);
 });
 
+it('answers the address of a function by name, 0 for a name the loader does not know', function (): void {
+    [$instance] = gpu();
+    $loader = vkGetInstanceProcAddr(null, 'vkGetInstanceProcAddr');
+
+    expect($loader)->toBeInt()->toBeGreaterThan(0)
+        ->and(vkGetInstanceProcAddr(null, 'vkGetInstanceProcAddr'))->toBe($loader)
+        ->and(vkGetInstanceProcAddr(null, 'vkCreateInstance'))->toBeGreaterThan(0)
+        ->and(vkGetInstanceProcAddr($instance, 'vkEnumeratePhysicalDevices'))->toBeGreaterThan(0)
+        ->and(vkGetInstanceProcAddr($instance, 'vkGetInstanceProcAddr'))->toBe($loader)
+        ->and(vkGetInstanceProcAddr($instance, 'vkNoSuchFunction'))->toBe(0)
+        ->and(vkGetInstanceProcAddr(null, 'vkEnumeratePhysicalDevices'))->toBe(0);
+});
+
+it('refuses a released instance for vkGetInstanceProcAddr', function (): void {
+    vkCreateInstance(portabilityInstance(), 0, $instance);
+    vkDestroyInstance($instance, 0);
+
+    expect(fn () => vkGetInstanceProcAddr($instance, 'vkCreateDevice'))->toThrow(ValueError::class, 'VkInstance has been released');
+});
+
 it('refuses a pNext chain that loops', function (): void {
     $info = new VkInstanceCreateInfo();
     $info->pNext = $info;

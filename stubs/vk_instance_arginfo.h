@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 96a0ee28e45968263e81c603388c52b39d4c9e07 */
+ * Stub hash: bc25cc0987d2225640be90d70048f8585d5097f5 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateInstance, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkInstanceCreateInfo, 0)
@@ -81,6 +81,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceFeatures2, 0,
 	ZEND_ARG_OBJ_INFO(0, pFeatures, VkPhysicalDeviceFeatures2, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetInstanceProcAddr, 0, 2, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, instance, VkInstance, 1)
+	ZEND_ARG_TYPE_INFO(0, pName, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_VkInstance___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -129,6 +134,7 @@ ZEND_FUNCTION(vkDestroyDevice);
 ZEND_FUNCTION(vkGetDeviceQueue);
 ZEND_FUNCTION(vkDeviceWaitIdle);
 ZEND_FUNCTION(vkGetPhysicalDeviceFeatures2);
+ZEND_FUNCTION(vkGetInstanceProcAddr);
 ZEND_METHOD(VkInstance, __construct);
 ZEND_METHOD(VkInstance, pointer);
 ZEND_METHOD(VkInstance, fromPointer);
@@ -160,6 +166,7 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkGetDeviceQueue, arginfo_vkGetDeviceQueue)
 	ZEND_FE(vkDeviceWaitIdle, arginfo_vkDeviceWaitIdle)
 	ZEND_FE(vkGetPhysicalDeviceFeatures2, arginfo_vkGetPhysicalDeviceFeatures2)
+	ZEND_FE(vkGetInstanceProcAddr, arginfo_vkGetInstanceProcAddr)
 	ZEND_FE_END
 };
 

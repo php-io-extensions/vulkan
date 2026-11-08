@@ -3,14 +3,13 @@
 declare(strict_types=1);
 
 it('copies bytes through an image and back with barriers between', function (): void {
-    [, , $device] = gpu();
+    requireHostCopy();
     $bytes = random_bytes(4 * 4 * 4);
-    [$up, $upMemory] = hostBuffer(64, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-    [$down, $downMemory] = hostBuffer(64, VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-    vkMapMemory($device, $upMemory, 0, 64, 0, $address);
-    mappedWrite($address, $bytes);
-    vkUnmapMemory($device, $upMemory);
+    [$up] = hostBuffer(64, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    [$down] = hostBuffer(64, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
     [$image, $imageMemory] = image2D(VK_FORMAT_R8G8B8A8_UNORM, 4, 4, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+    // the bytes go in with vkCmdUpdateBuffer and come out through an image the host reads
+    [$out] = hostImage2D(4, 4, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 
     $layers = new VkImageSubresourceLayers();
     $layers->aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -20,30 +19,20 @@ it('copies bytes through an image and back with barriers between', function (): 
     [$region->imageExtent->width, $region->imageExtent->height, $region->imageExtent->depth] = [4, 4, 1];
 
     $cmd = commands();
+    vkCmdUpdateBuffer($cmd, $up, 0, 64, $bytes);
+    $transferred = new VkMemoryBarrier();
+    $transferred->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    $transferred->dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 1, [$transferred], 0, [], 0, []);
     vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, [], 0, [], 1, [layoutBarrier($image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, VK_ACCESS_TRANSFER_WRITE_BIT)]);
     vkCmdCopyBufferToImage($cmd, $up, $image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, [$region]);
     vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, [], 0, [], 1, [layoutBarrier($image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT)]);
     vkCmdCopyImageToBuffer($cmd, $image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, $down, 1, [$region]);
-    $toHost = new VkMemoryBarrier();
-    $toHost->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    $toHost->dstAccessMask = VK_ACCESS_HOST_READ_BIT;
-    $bufferToHost = new VkBufferMemoryBarrier();
-    $bufferToHost->srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    $bufferToHost->dstAccessMask = VK_ACCESS_HOST_READ_BIT;
-    $bufferToHost->srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    $bufferToHost->dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    $bufferToHost->buffer = $down;
-    $bufferToHost->size = VK_WHOLE_SIZE;
-    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0, 1, [$toHost], 1, [$bufferToHost], 0, []);
+    vkCmdPipelineBarrier($cmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 1, [$transferred], 0, [], 0, []);
+    vkCmdCopyBufferToImage($cmd, $down, $out, VK_IMAGE_LAYOUT_GENERAL, 1, [$region]);
     submitAndWait($cmd);
 
-    vkMapMemory($device, $downMemory, 0, 64, 0, $address);
-    $range = new VkMappedMemoryRange();
-    $range->memory = $downMemory;
-    $range->size = VK_WHOLE_SIZE;
-    vkInvalidateMappedMemoryRanges($device, 1, [$range]);
-    expect(mappedRead($address, 64))->toBe($bytes);
-    vkUnmapMemory($device, $downMemory);
+    expect(hostRead($out, 4, 4))->toBe($bytes);
 });
 
 it('refuses push constants shorter than their size, and a count past its list', function (): void {

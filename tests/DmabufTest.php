@@ -60,7 +60,7 @@ it('exports a linear RGBA8 image\'s memory as a dmabuf fd with its layout', func
     vkGetImageSubresourceLayout($device, $image, $subresource, $layout);
     expect($layout->rowPitch)->toBeGreaterThanOrEqual(64 * 4);
 
-    expect(libc()->close($fd))->toBe(0);
+    expect(posix_close($fd))->toBe(0);
 
     vkDestroyImage($device, $image, 0);
     vkFreeMemory($device, $memory, 0);
