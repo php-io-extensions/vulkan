@@ -278,6 +278,22 @@ final class VkPhysicalDeviceHostImageCopyFeatures
 }
 
 /** @not-serializable */
+final class VkImageCopy
+{
+    public VkImageSubresourceLayers $srcSubresource;
+
+    public VkOffset3D $srcOffset;
+
+    public VkImageSubresourceLayers $dstSubresource;
+
+    public VkOffset3D $dstOffset;
+
+    public VkExtent3D $extent;
+
+    public function __construct() {}
+}
+
+/** @not-serializable */
 final class VkImageBlit
 {
     public VkImageSubresourceLayers $srcSubresource;
@@ -449,6 +465,8 @@ function vkCmdPushConstants(VkCommandBuffer $commandBuffer, VkPipelineLayout $la
 
 function vkCmdDraw(VkCommandBuffer $commandBuffer, int $vertexCount, int $instanceCount, int $firstVertex, int $firstInstance): void {}
 
+function vkCmdDispatch(VkCommandBuffer $commandBuffer, int $groupCountX, int $groupCountY, int $groupCountZ): void {}
+
 function vkCmdDrawIndexed(VkCommandBuffer $commandBuffer, int $indexCount, int $instanceCount, int $firstIndex, int $vertexOffset, int $firstInstance): void {}
 
 function vkCmdClearAttachments(VkCommandBuffer $commandBuffer, int $attachmentCount, array $pAttachments, int $rectCount, array $pRects): void {}
@@ -456,6 +474,8 @@ function vkCmdClearAttachments(VkCommandBuffer $commandBuffer, int $attachmentCo
 function vkCmdCopyBufferToImage(VkCommandBuffer $commandBuffer, VkBuffer $srcBuffer, VkImage $dstImage, int $dstImageLayout, int $regionCount, array $pRegions): void {}
 
 function vkCmdCopyImageToBuffer(VkCommandBuffer $commandBuffer, VkImage $srcImage, int $srcImageLayout, VkBuffer $dstBuffer, int $regionCount, array $pRegions): void {}
+
+function vkCmdCopyImage(VkCommandBuffer $commandBuffer, VkImage $srcImage, int $srcImageLayout, VkImage $dstImage, int $dstImageLayout, int $regionCount, array $pRegions): void {}
 
 function vkCmdBlitImage(VkCommandBuffer $commandBuffer, VkImage $srcImage, int $srcImageLayout, VkImage $dstImage, int $dstImageLayout, int $regionCount, array $pRegions, int $filter): void {}
 

@@ -43,6 +43,16 @@ ZEND_METHOD(VkHostImageLayoutTransitionInfo, __construct)
 	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "subresourceRange", vulkan_ce_VkImageSubresourceRange);
 }
 
+ZEND_METHOD(VkImageCopy, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "srcSubresource", vulkan_ce_VkImageSubresourceLayers);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "srcOffset", vulkan_ce_VkOffset3D);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "dstSubresource", vulkan_ce_VkImageSubresourceLayers);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "dstOffset", vulkan_ce_VkOffset3D);
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "extent", vulkan_ce_VkExtent3D);
+}
+
 ZEND_METHOD(VkImageBlit, __construct)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
@@ -85,7 +95,7 @@ void vulkan_register_command(int module_number)
 	S(VkCommandPoolCreateInfo); S(VkCommandBufferAllocateInfo); S(VkCommandBufferInheritanceInfo);
 	S(VkCommandBufferBeginInfo); S(VkClearColorValue); S(VkClearDepthStencilValue); S(VkClearValue);
 	S(VkRenderPassBeginInfo); S(VkOffset3D); S(VkImageSubresourceLayers); S(VkBufferImageCopy);
-	S(VkImageBlit); S(VkMemoryBarrier); S(VkBufferMemoryBarrier); S(VkImageMemoryBarrier); S(VkSubmitInfo);
+	S(VkImageCopy); S(VkImageBlit); S(VkMemoryBarrier); S(VkBufferMemoryBarrier); S(VkImageMemoryBarrier); S(VkSubmitInfo);
 	S(VkFenceCreateInfo); S(VkSemaphoreCreateInfo); S(VkClearAttachment); S(VkClearRect);
 	S(VkMemoryToImageCopy); S(VkImageToMemoryCopy); S(VkCopyMemoryToImageInfo); S(VkCopyImageToMemoryInfo); S(VkHostImageLayoutTransitionInfo); S(VkPhysicalDeviceHostImageCopyFeatures);
 #undef H
@@ -348,6 +358,14 @@ ZEND_FUNCTION(vkCmdDraw)
 	vkCmdDraw((VkCommandBuffer) (uintptr_t) value, (uint32_t) a, (uint32_t) b, (uint32_t) c, (uint32_t) d);
 }
 
+ZEND_FUNCTION(vkCmdDispatch)
+{
+	zval *command; zend_long x, y, z; uint64_t value;
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(command) Z_PARAM_LONG(x) Z_PARAM_LONG(y) Z_PARAM_LONG(z) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_cmd(command, &value)) RETURN_THROWS();
+	vkCmdDispatch((VkCommandBuffer) (uintptr_t) value, (uint32_t) x, (uint32_t) y, (uint32_t) z);
+}
+
 ZEND_FUNCTION(vkCmdDrawIndexed)
 {
 	zval *command; zend_long a, b, c, d, e; uint64_t value;
@@ -459,6 +477,20 @@ ZEND_FUNCTION(vkTransitionImageLayout)
 	result = vkTransitionImageLayout((VkDevice) (uintptr_t) device_value, (uint32_t) count, items);
 	vulkan_scratch_free(&scratch);
 	RETURN_LONG((zend_long) result);
+}
+
+ZEND_FUNCTION(vkCmdCopyImage)
+{
+	zval *command, *src, *dst, *regions; zend_long src_layout, dst_layout, count;
+	uint64_t command_value, src_value, dst_value; void *items; vulkan_scratch scratch;
+	ZEND_PARSE_PARAMETERS_START(7, 7)
+		Z_PARAM_OBJECT(command) Z_PARAM_OBJECT(src) Z_PARAM_LONG(src_layout) Z_PARAM_OBJECT(dst) Z_PARAM_LONG(dst_layout) Z_PARAM_LONG(count) Z_PARAM_ZVAL(regions)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_cmd(command, &command_value) || !vulkan_handle_value(src, vulkan_ce_VkImage, 2, &src_value) || !vulkan_handle_value(dst, vulkan_ce_VkImage, 4, &dst_value)) RETURN_THROWS();
+	vulkan_scratch_init(&scratch);
+	if (!vulkan_arg_structs(regions, count, 6, 7, vulkan_ce_VkImageCopy, sizeof(VkImageCopy), vk_VkImageCopy_from, &items, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
+	vkCmdCopyImage((VkCommandBuffer) (uintptr_t) command_value, (VkImage) (uintptr_t) src_value, (VkImageLayout) src_layout, (VkImage) (uintptr_t) dst_value, (VkImageLayout) dst_layout, (uint32_t) count, items);
+	vulkan_scratch_free(&scratch);
 }
 
 ZEND_FUNCTION(vkCmdBlitImage)

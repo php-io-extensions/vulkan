@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: cf3afe292feaf3352f402c01415898e7f9d916bf */
+ * Stub hash: 57fe11652b09b2ccd0772dc8c12b4c1987fbf8d9 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateCommandPool, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -144,6 +144,13 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdDraw, 0, 5, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, firstInstance, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdDispatch, 0, 4, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, groupCountX, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, groupCountY, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, groupCountZ, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdDrawIndexed, 0, 6, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_TYPE_INFO(0, indexCount, IS_LONG, 0)
@@ -175,6 +182,16 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdCopyImageToBuffer, 0, 6, IS
 	ZEND_ARG_OBJ_INFO(0, srcImage, VkImage, 0)
 	ZEND_ARG_TYPE_INFO(0, srcImageLayout, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, dstBuffer, VkBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, regionCount, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, pRegions, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdCopyImage, 0, 7, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
+	ZEND_ARG_OBJ_INFO(0, srcImage, VkImage, 0)
+	ZEND_ARG_TYPE_INFO(0, srcImageLayout, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, dstImage, VkImage, 0)
+	ZEND_ARG_TYPE_INFO(0, dstImageLayout, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, regionCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pRegions, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
@@ -297,6 +314,8 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_VkHostImageLayoutTransitionInfo___construct arginfo_class_VkCommandPool___construct
 
+#define arginfo_class_VkImageCopy___construct arginfo_class_VkCommandPool___construct
+
 #define arginfo_class_VkImageBlit___construct arginfo_class_VkCommandPool___construct
 
 #define arginfo_class_VkImageMemoryBarrier___construct arginfo_class_VkCommandPool___construct
@@ -327,10 +346,12 @@ ZEND_FUNCTION(vkCopyImageToMemory);
 ZEND_FUNCTION(vkTransitionImageLayout);
 ZEND_FUNCTION(vkCmdPushConstants);
 ZEND_FUNCTION(vkCmdDraw);
+ZEND_FUNCTION(vkCmdDispatch);
 ZEND_FUNCTION(vkCmdDrawIndexed);
 ZEND_FUNCTION(vkCmdClearAttachments);
 ZEND_FUNCTION(vkCmdCopyBufferToImage);
 ZEND_FUNCTION(vkCmdCopyImageToBuffer);
+ZEND_FUNCTION(vkCmdCopyImage);
 ZEND_FUNCTION(vkCmdBlitImage);
 ZEND_FUNCTION(vkCmdPipelineBarrier);
 ZEND_FUNCTION(vkQueueSubmit);
@@ -359,6 +380,7 @@ ZEND_METHOD(VkBufferImageCopy, __construct);
 ZEND_METHOD(VkMemoryToImageCopy, __construct);
 ZEND_METHOD(VkImageToMemoryCopy, __construct);
 ZEND_METHOD(VkHostImageLayoutTransitionInfo, __construct);
+ZEND_METHOD(VkImageCopy, __construct);
 ZEND_METHOD(VkImageBlit, __construct);
 ZEND_METHOD(VkImageMemoryBarrier, __construct);
 ZEND_METHOD(VkClearAttachment, __construct);
@@ -387,10 +409,12 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkTransitionImageLayout, arginfo_vkTransitionImageLayout)
 	ZEND_FE(vkCmdPushConstants, arginfo_vkCmdPushConstants)
 	ZEND_FE(vkCmdDraw, arginfo_vkCmdDraw)
+	ZEND_FE(vkCmdDispatch, arginfo_vkCmdDispatch)
 	ZEND_FE(vkCmdDrawIndexed, arginfo_vkCmdDrawIndexed)
 	ZEND_FE(vkCmdClearAttachments, arginfo_vkCmdClearAttachments)
 	ZEND_FE(vkCmdCopyBufferToImage, arginfo_vkCmdCopyBufferToImage)
 	ZEND_FE(vkCmdCopyImageToBuffer, arginfo_vkCmdCopyImageToBuffer)
+	ZEND_FE(vkCmdCopyImage, arginfo_vkCmdCopyImage)
 	ZEND_FE(vkCmdBlitImage, arginfo_vkCmdBlitImage)
 	ZEND_FE(vkCmdPipelineBarrier, arginfo_vkCmdPipelineBarrier)
 	ZEND_FE(vkQueueSubmit, arginfo_vkQueueSubmit)
@@ -455,6 +479,11 @@ static const zend_function_entry class_VkImageToMemoryCopy_methods[] = {
 
 static const zend_function_entry class_VkHostImageLayoutTransitionInfo_methods[] = {
 	ZEND_ME(VkHostImageLayoutTransitionInfo, __construct, arginfo_class_VkHostImageLayoutTransitionInfo___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_VkImageCopy_methods[] = {
+	ZEND_ME(VkImageCopy, __construct, arginfo_class_VkImageCopy___construct, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -1150,6 +1179,51 @@ static zend_class_entry *register_class_VkPhysicalDeviceHostImageCopyFeatures(vo
 	zend_string *property_hostImageCopy_name = zend_string_init("hostImageCopy", sizeof("hostImageCopy") - 1, 1);
 	zend_declare_typed_property(class_entry, property_hostImageCopy_name, &property_hostImageCopy_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
 	zend_string_release(property_hostImageCopy_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkImageCopy(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkImageCopy", class_VkImageCopy_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_srcSubresource_default_value;
+	ZVAL_UNDEF(&property_srcSubresource_default_value);
+	zend_string *property_srcSubresource_name = zend_string_init("srcSubresource", sizeof("srcSubresource") - 1, 1);
+	zend_string *property_srcSubresource_class_VkImageSubresourceLayers = zend_string_init("VkImageSubresourceLayers", sizeof("VkImageSubresourceLayers")-1, 1);
+	zend_declare_typed_property(class_entry, property_srcSubresource_name, &property_srcSubresource_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_srcSubresource_class_VkImageSubresourceLayers, 0, 0));
+	zend_string_release(property_srcSubresource_name);
+
+	zval property_srcOffset_default_value;
+	ZVAL_UNDEF(&property_srcOffset_default_value);
+	zend_string *property_srcOffset_name = zend_string_init("srcOffset", sizeof("srcOffset") - 1, 1);
+	zend_string *property_srcOffset_class_VkOffset3D = zend_string_init("VkOffset3D", sizeof("VkOffset3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_srcOffset_name, &property_srcOffset_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_srcOffset_class_VkOffset3D, 0, 0));
+	zend_string_release(property_srcOffset_name);
+
+	zval property_dstSubresource_default_value;
+	ZVAL_UNDEF(&property_dstSubresource_default_value);
+	zend_string *property_dstSubresource_name = zend_string_init("dstSubresource", sizeof("dstSubresource") - 1, 1);
+	zend_string *property_dstSubresource_class_VkImageSubresourceLayers = zend_string_init("VkImageSubresourceLayers", sizeof("VkImageSubresourceLayers")-1, 1);
+	zend_declare_typed_property(class_entry, property_dstSubresource_name, &property_dstSubresource_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_dstSubresource_class_VkImageSubresourceLayers, 0, 0));
+	zend_string_release(property_dstSubresource_name);
+
+	zval property_dstOffset_default_value;
+	ZVAL_UNDEF(&property_dstOffset_default_value);
+	zend_string *property_dstOffset_name = zend_string_init("dstOffset", sizeof("dstOffset") - 1, 1);
+	zend_string *property_dstOffset_class_VkOffset3D = zend_string_init("VkOffset3D", sizeof("VkOffset3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_dstOffset_name, &property_dstOffset_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_dstOffset_class_VkOffset3D, 0, 0));
+	zend_string_release(property_dstOffset_name);
+
+	zval property_extent_default_value;
+	ZVAL_UNDEF(&property_extent_default_value);
+	zend_string *property_extent_name = zend_string_init("extent", sizeof("extent") - 1, 1);
+	zend_string *property_extent_class_VkExtent3D = zend_string_init("VkExtent3D", sizeof("VkExtent3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_extent_name, &property_extent_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_extent_class_VkExtent3D, 0, 0));
+	zend_string_release(property_extent_name);
 
 	return class_entry;
 }

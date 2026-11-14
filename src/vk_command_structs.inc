@@ -167,12 +167,6 @@ bool vk_VkBufferImageCopy_from(zend_object *obj, void *raw, vulkan_scratch *scra
 }
 void vk_VkBufferImageCopy_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkBufferImageCopy); }
 
-/* A by-value struct member, from the object property of that name. */
-static bool vulkan_nested(zend_object *obj, const char *name, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch)
-{
-	return vulkan_arg_struct(zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL), ce, from, dst, scratch);
-}
-
 bool vk_VkMemoryToImageCopy_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkMemoryToImageCopy *dst = raw;
@@ -191,6 +185,19 @@ bool vk_VkMemoryToImageCopy_from(zend_object *obj, void *raw, vulkan_scratch *sc
 	/* at least one byte a texel: the bytes Vulkan reads are never fewer than the texels of the region */
 	return vulkan_bytes_length(Z_STRLEN_P(held), (size_t) dst->imageExtent.width * dst->imageExtent.height * dst->imageExtent.depth, 0, "VkMemoryToImageCopy::$pHostPointer");
 }
+bool vk_VkImageCopy_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkImageCopy *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	if (!vulkan_enter(obj, visited)) return false;
+	return vulkan_nested(obj, "srcSubresource", vulkan_ce_VkImageSubresourceLayers, vk_VkImageSubresourceLayers_from, &dst->srcSubresource, scratch)
+		&& vulkan_nested(obj, "srcOffset", vulkan_ce_VkOffset3D, vk_VkOffset3D_from, &dst->srcOffset, scratch)
+		&& vulkan_nested(obj, "dstSubresource", vulkan_ce_VkImageSubresourceLayers, vk_VkImageSubresourceLayers_from, &dst->dstSubresource, scratch)
+		&& vulkan_nested(obj, "dstOffset", vulkan_ce_VkOffset3D, vk_VkOffset3D_from, &dst->dstOffset, scratch)
+		&& vulkan_nested(obj, "extent", vulkan_ce_VkExtent3D, vk_VkExtent3D_from, &dst->extent, scratch);
+}
+void vk_VkImageCopy_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkImageCopy); }
+
 void vk_VkMemoryToImageCopy_to(const void *raw, zval *rv) { (void) raw; object_init_ex(rv, vulkan_ce_VkMemoryToImageCopy); }
 
 /* The region's bytes are filled by Vulkan: a copy of the caller's string (its length is the size to read) in scratch; vkCopyImageToMemory() puts them back in the property. */

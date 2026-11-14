@@ -59,12 +59,14 @@ zend_class_entry *vulkan_ce_VkPipelineColorBlendStateCreateInfo;
 zend_class_entry *vulkan_ce_VkPipelineDynamicStateCreateInfo;
 zend_class_entry *vulkan_ce_VkPipelineTessellationStateCreateInfo;
 zend_class_entry *vulkan_ce_VkGraphicsPipelineCreateInfo;
+zend_class_entry *vulkan_ce_VkComputePipelineCreateInfo;
 zend_class_entry *vulkan_ce_VkDescriptorSetLayoutBinding;
 zend_class_entry *vulkan_ce_VkDescriptorSetLayoutCreateInfo;
 zend_class_entry *vulkan_ce_VkDescriptorPoolSize;
 zend_class_entry *vulkan_ce_VkDescriptorPoolCreateInfo;
 zend_class_entry *vulkan_ce_VkDescriptorSetAllocateInfo;
 zend_class_entry *vulkan_ce_VkDescriptorImageInfo;
+zend_class_entry *vulkan_ce_VkDescriptorBufferInfo;
 zend_class_entry *vulkan_ce_VkWriteDescriptorSet;
 zend_class_entry *vulkan_ce_VkCopyDescriptorSet;
 zend_class_entry *vulkan_ce_VkViewport;
@@ -96,6 +98,7 @@ zend_class_entry *vulkan_ce_VkCopyMemoryToImageInfo;
 zend_class_entry *vulkan_ce_VkCopyImageToMemoryInfo;
 zend_class_entry *vulkan_ce_VkHostImageLayoutTransitionInfo;
 zend_class_entry *vulkan_ce_VkPhysicalDeviceHostImageCopyFeatures;
+zend_class_entry *vulkan_ce_VkImageCopy;
 zend_class_entry *vulkan_ce_VkImageBlit;
 zend_class_entry *vulkan_ce_VkMemoryBarrier;
 zend_class_entry *vulkan_ce_VkBufferMemoryBarrier;
@@ -394,12 +397,14 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkPipelineDynamicStateCreateInfo, sizeof(VkPipelineDynamicStateCreateInfo), vk_VkPipelineDynamicStateCreateInfo_from },
 	{ &vulkan_ce_VkPipelineTessellationStateCreateInfo, sizeof(VkPipelineTessellationStateCreateInfo), vk_VkPipelineTessellationStateCreateInfo_from },
 	{ &vulkan_ce_VkGraphicsPipelineCreateInfo, sizeof(VkGraphicsPipelineCreateInfo), vk_VkGraphicsPipelineCreateInfo_from },
+	{ &vulkan_ce_VkComputePipelineCreateInfo, sizeof(VkComputePipelineCreateInfo), vk_VkComputePipelineCreateInfo_from },
 	{ &vulkan_ce_VkDescriptorSetLayoutBinding, sizeof(VkDescriptorSetLayoutBinding), vk_VkDescriptorSetLayoutBinding_from },
 	{ &vulkan_ce_VkDescriptorSetLayoutCreateInfo, sizeof(VkDescriptorSetLayoutCreateInfo), vk_VkDescriptorSetLayoutCreateInfo_from },
 	{ &vulkan_ce_VkDescriptorPoolSize, sizeof(VkDescriptorPoolSize), vk_VkDescriptorPoolSize_from },
 	{ &vulkan_ce_VkDescriptorPoolCreateInfo, sizeof(VkDescriptorPoolCreateInfo), vk_VkDescriptorPoolCreateInfo_from },
 	{ &vulkan_ce_VkDescriptorSetAllocateInfo, sizeof(VkDescriptorSetAllocateInfo), vk_VkDescriptorSetAllocateInfo_from },
 	{ &vulkan_ce_VkDescriptorImageInfo, sizeof(VkDescriptorImageInfo), vk_VkDescriptorImageInfo_from },
+	{ &vulkan_ce_VkDescriptorBufferInfo, sizeof(VkDescriptorBufferInfo), vk_VkDescriptorBufferInfo_from },
 	{ &vulkan_ce_VkWriteDescriptorSet, sizeof(VkWriteDescriptorSet), vk_VkWriteDescriptorSet_from },
 	{ &vulkan_ce_VkCopyDescriptorSet, sizeof(VkCopyDescriptorSet), vk_VkCopyDescriptorSet_from },
 	{ &vulkan_ce_VkCommandPoolCreateInfo, sizeof(VkCommandPoolCreateInfo), vk_VkCommandPoolCreateInfo_from },
@@ -419,6 +424,7 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkCopyImageToMemoryInfo, sizeof(VkCopyImageToMemoryInfo), vk_VkCopyImageToMemoryInfo_from },
 	{ &vulkan_ce_VkHostImageLayoutTransitionInfo, sizeof(VkHostImageLayoutTransitionInfo), vk_VkHostImageLayoutTransitionInfo_from },
 	{ &vulkan_ce_VkPhysicalDeviceHostImageCopyFeatures, sizeof(VkPhysicalDeviceHostImageCopyFeatures), vk_VkPhysicalDeviceHostImageCopyFeatures_from },
+	{ &vulkan_ce_VkImageCopy, sizeof(VkImageCopy), vk_VkImageCopy_from },
 	{ &vulkan_ce_VkImageBlit, sizeof(VkImageBlit), vk_VkImageBlit_from },
 	{ &vulkan_ce_VkMemoryBarrier, sizeof(VkMemoryBarrier), vk_VkMemoryBarrier_from },
 	{ &vulkan_ce_VkBufferMemoryBarrier, sizeof(VkBufferMemoryBarrier), vk_VkBufferMemoryBarrier_from },
@@ -1784,6 +1790,12 @@ void vk_VkExtensionProperties_to(const void *raw, zval *rv)
 		vulkan_set_string(obj, "extensionName", src->extensionName);
 		vulkan_set_long(obj, "specVersion", (zend_long) src->specVersion);
 	}
+}
+
+/* A by-value struct member, from the object property of that name. */
+static bool vulkan_nested(zend_object *obj, const char *name, zend_class_entry *ce, vulkan_from_fn from, void *dst, vulkan_scratch *scratch)
+{
+	return vulkan_arg_struct(zend_read_property(obj->ce, obj, name, strlen(name), 0, NULL), ce, from, dst, scratch);
 }
 
 #include "vk_memory_structs.inc"

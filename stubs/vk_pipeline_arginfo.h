@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: b2a0ab8bbfa08a9431a465bdff8880e68694117e */
+ * Stub hash: 8eb4e13590285c3b8b3499f8808364c635daf4de */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateRenderPass, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -61,6 +61,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateGraphicsPipelines, 0, 6,
 	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(1, pPipelines, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
+
+#define arginfo_vkCreateComputePipelines arginfo_vkCreateGraphicsPipelines
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDestroyPipeline, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -164,6 +166,8 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_VkPipelineColorBlendStateCreateInfo___construct arginfo_class_VkRenderPass___construct
 
+#define arginfo_class_VkComputePipelineCreateInfo___construct arginfo_class_VkRenderPass___construct
+
 #define arginfo_class_VkRect2D___construct arginfo_class_VkRenderPass___construct
 
 ZEND_FUNCTION(vkCreateRenderPass);
@@ -175,6 +179,7 @@ ZEND_FUNCTION(vkDestroyShaderModule);
 ZEND_FUNCTION(vkCreatePipelineLayout);
 ZEND_FUNCTION(vkDestroyPipelineLayout);
 ZEND_FUNCTION(vkCreateGraphicsPipelines);
+ZEND_FUNCTION(vkCreateComputePipelines);
 ZEND_FUNCTION(vkDestroyPipeline);
 ZEND_FUNCTION(vkCreateDescriptorSetLayout);
 ZEND_FUNCTION(vkDestroyDescriptorSetLayout);
@@ -208,6 +213,7 @@ ZEND_METHOD(VkDescriptorSet, pointer);
 ZEND_METHOD(VkDescriptorSet, fromPointer);
 ZEND_METHOD(VkPipelineDepthStencilStateCreateInfo, __construct);
 ZEND_METHOD(VkPipelineColorBlendStateCreateInfo, __construct);
+ZEND_METHOD(VkComputePipelineCreateInfo, __construct);
 ZEND_METHOD(VkRect2D, __construct);
 
 static const zend_function_entry ext_functions[] = {
@@ -220,6 +226,7 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkCreatePipelineLayout, arginfo_vkCreatePipelineLayout)
 	ZEND_FE(vkDestroyPipelineLayout, arginfo_vkDestroyPipelineLayout)
 	ZEND_FE(vkCreateGraphicsPipelines, arginfo_vkCreateGraphicsPipelines)
+	ZEND_FE(vkCreateComputePipelines, arginfo_vkCreateComputePipelines)
 	ZEND_FE(vkDestroyPipeline, arginfo_vkDestroyPipeline)
 	ZEND_FE(vkCreateDescriptorSetLayout, arginfo_vkCreateDescriptorSetLayout)
 	ZEND_FE(vkDestroyDescriptorSetLayout, arginfo_vkDestroyDescriptorSetLayout)
@@ -293,6 +300,11 @@ static const zend_function_entry class_VkPipelineDepthStencilStateCreateInfo_met
 
 static const zend_function_entry class_VkPipelineColorBlendStateCreateInfo_methods[] = {
 	ZEND_ME(VkPipelineColorBlendStateCreateInfo, __construct, arginfo_class_VkPipelineColorBlendStateCreateInfo___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_VkComputePipelineCreateInfo_methods[] = {
+	ZEND_ME(VkComputePipelineCreateInfo, __construct, arginfo_class_VkComputePipelineCreateInfo___construct, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -1616,6 +1628,55 @@ static zend_class_entry *register_class_VkGraphicsPipelineCreateInfo(void)
 	return class_entry;
 }
 
+static zend_class_entry *register_class_VkComputePipelineCreateInfo(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkComputePipelineCreateInfo", class_VkComputePipelineCreateInfo_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_flags_default_value;
+	ZVAL_LONG(&property_flags_default_value, 0);
+	zend_string *property_flags_name = zend_string_init("flags", sizeof("flags") - 1, 1);
+	zend_declare_typed_property(class_entry, property_flags_name, &property_flags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_flags_name);
+
+	zval property_stage_default_value;
+	ZVAL_UNDEF(&property_stage_default_value);
+	zend_string *property_stage_name = zend_string_init("stage", sizeof("stage") - 1, 1);
+	zend_string *property_stage_class_VkPipelineShaderStageCreateInfo = zend_string_init("VkPipelineShaderStageCreateInfo", sizeof("VkPipelineShaderStageCreateInfo")-1, 1);
+	zend_declare_typed_property(class_entry, property_stage_name, &property_stage_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_stage_class_VkPipelineShaderStageCreateInfo, 0, 0));
+	zend_string_release(property_stage_name);
+
+	zval property_layout_default_value;
+	ZVAL_NULL(&property_layout_default_value);
+	zend_string *property_layout_name = zend_string_init("layout", sizeof("layout") - 1, 1);
+	zend_string *property_layout_class_VkPipelineLayout = zend_string_init("VkPipelineLayout", sizeof("VkPipelineLayout")-1, 1);
+	zend_declare_typed_property(class_entry, property_layout_name, &property_layout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_layout_class_VkPipelineLayout, 0, MAY_BE_NULL));
+	zend_string_release(property_layout_name);
+
+	zval property_basePipelineHandle_default_value;
+	ZVAL_NULL(&property_basePipelineHandle_default_value);
+	zend_string *property_basePipelineHandle_name = zend_string_init("basePipelineHandle", sizeof("basePipelineHandle") - 1, 1);
+	zend_string *property_basePipelineHandle_class_VkPipeline = zend_string_init("VkPipeline", sizeof("VkPipeline")-1, 1);
+	zend_declare_typed_property(class_entry, property_basePipelineHandle_name, &property_basePipelineHandle_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_basePipelineHandle_class_VkPipeline, 0, MAY_BE_NULL));
+	zend_string_release(property_basePipelineHandle_name);
+
+	zval property_basePipelineIndex_default_value;
+	ZVAL_LONG(&property_basePipelineIndex_default_value, 0);
+	zend_string *property_basePipelineIndex_name = zend_string_init("basePipelineIndex", sizeof("basePipelineIndex") - 1, 1);
+	zend_declare_typed_property(class_entry, property_basePipelineIndex_name, &property_basePipelineIndex_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_basePipelineIndex_name);
+
+	return class_entry;
+}
+
 static zend_class_entry *register_class_VkDescriptorSetLayoutBinding(void)
 {
 	zend_class_entry ce, *class_entry;
@@ -1817,6 +1878,35 @@ static zend_class_entry *register_class_VkDescriptorImageInfo(void)
 	return class_entry;
 }
 
+static zend_class_entry *register_class_VkDescriptorBufferInfo(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkDescriptorBufferInfo", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_buffer_default_value;
+	ZVAL_NULL(&property_buffer_default_value);
+	zend_string *property_buffer_name = zend_string_init("buffer", sizeof("buffer") - 1, 1);
+	zend_string *property_buffer_class_VkBuffer = zend_string_init("VkBuffer", sizeof("VkBuffer")-1, 1);
+	zend_declare_typed_property(class_entry, property_buffer_name, &property_buffer_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_buffer_class_VkBuffer, 0, MAY_BE_NULL));
+	zend_string_release(property_buffer_name);
+
+	zval property_offset_default_value;
+	ZVAL_LONG(&property_offset_default_value, 0);
+	zend_string *property_offset_name = zend_string_init("offset", sizeof("offset") - 1, 1);
+	zend_declare_typed_property(class_entry, property_offset_name, &property_offset_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_offset_name);
+
+	zval property_range_default_value;
+	ZVAL_LONG(&property_range_default_value, 0);
+	zend_string *property_range_name = zend_string_init("range", sizeof("range") - 1, 1);
+	zend_declare_typed_property(class_entry, property_range_name, &property_range_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_range_name);
+
+	return class_entry;
+}
+
 static zend_class_entry *register_class_VkWriteDescriptorSet(void)
 {
 	zend_class_entry ce, *class_entry;
@@ -1866,6 +1956,12 @@ static zend_class_entry *register_class_VkWriteDescriptorSet(void)
 	zend_string *property_pImageInfo_name = zend_string_init("pImageInfo", sizeof("pImageInfo") - 1, 1);
 	zend_declare_typed_property(class_entry, property_pImageInfo_name, &property_pImageInfo_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY|MAY_BE_NULL));
 	zend_string_release(property_pImageInfo_name);
+
+	zval property_pBufferInfo_default_value;
+	ZVAL_NULL(&property_pBufferInfo_default_value);
+	zend_string *property_pBufferInfo_name = zend_string_init("pBufferInfo", sizeof("pBufferInfo") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pBufferInfo_name, &property_pBufferInfo_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY|MAY_BE_NULL));
+	zend_string_release(property_pBufferInfo_name);
 
 	return class_entry;
 }

@@ -1,5 +1,13 @@
 # Log
 
+## 2026-11-14
+
+* **VkDescriptorBufferInfo**: bound 1:1 (`?VkBuffer $buffer`, `int $offset`, `int $range`), and `VkWriteDescriptorSet::$pBufferInfo` (`?array`, read against `descriptorCount` like `pImageInfo`). A shader can now read a uniform or storage buffer through a descriptor set. Test in `tests/PipelineTest.php`: a storage-buffer write, and a list shorter than its count refused with a `ValueError`; it fails without the C change. Suite on Homebrew 8.4 NTS and ZTS, installed build: 40 passed, 14 skipped, exit 0. 
+
+* **vkCmdCopyImage**: bound 1:1 with `VkImageCopy` (zero-init constructor builds its five nested structs; `glue` and `typemap` entries added by Angel). The nested structs are read with `vulkan_nested`, as `VkMemoryToImageCopy` reads its own. Test in `tests/HostCopyTest.php`: a 3×2 region copied between two 8×8 images lands byte-exact at its offset with the rest untouched, and a count past the region list is refused. Homebrew 8.4 NTS and ZTS, installed build: 41 passed, 14 skipped, exit 0.
+
+* **Compute**: `vkCreateComputePipelines` and `vkCmdDispatch` bound 1:1, with `VkComputePipelineCreateInfo` (zero-init constructor builds its `stage`; `glue` and `typemap` entries, and `vulkan_i32` in `helpers.marshal`, added by Angel). `vulkan_nested` moved from `vk_command_structs.inc` into `structs.c`, ahead of the includes, so the pipeline structs read their nested `stage` with it. Test in `tests/HostCopyTest.php`: a compute shader (`tests/Fixtures/fill.comp`) dispatched as four groups of four writes 3i+1 into a storage buffer, which reaches the host byte-exact through an image; a count past the create-info list is refused. The `vkCmdCopyImage` test no longer ends its command buffer twice. `SUPPORT.md` regenerated: it also marks the host copies, `vkCmdUpdateBuffer` and `vkGetInstanceProcAddr`, which were bound but unmarked. Homebrew 8.4 NTS and ZTS, installed build: 42 passed, 14 skipped.
+
 ## 2026-11-08
 
 * **vkGetInstanceProcAddr**: bound 1:1, `vkGetInstanceProcAddr(?VkInstance $instance, string $pName): int` (`PFN_vkVoidFunction` is the int address by typemap, `0` is `NULL`; a released instance is refused like any dispatchable handle). It replaces the `vkGetLoaderPath()` idea: `vkGetInstanceProcAddr(null, 'vkGetInstanceProcAddr')` is the loader's address, which another library's `dlsym()` (ext-posi) compares to tell whether two sides use one loader. Two tests in `tests/InstanceTest.php`. Suite from its own repo setup on MoltenVK, ZTS scratch build: 37 passed, 15 skipped (Linux, ext-sdl3 and probe tests), 1 risky, exit 0.

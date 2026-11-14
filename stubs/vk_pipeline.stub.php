@@ -575,6 +575,26 @@ final class VkGraphicsPipelineCreateInfo
 /**
  * @not-serializable
  */
+final class VkComputePipelineCreateInfo
+{
+    public ?object $pNext = null;
+
+    public int $flags = 0;
+
+    public VkPipelineShaderStageCreateInfo $stage;
+
+    public ?VkPipelineLayout $layout = null;
+
+    public ?VkPipeline $basePipelineHandle = null;
+
+    public int $basePipelineIndex = 0;
+
+    public function __construct() {}
+}
+
+/**
+ * @not-serializable
+ */
 final class VkDescriptorSetLayoutBinding
 {
     public int $binding = 0;
@@ -657,6 +677,18 @@ final class VkDescriptorImageInfo
 /**
  * @not-serializable
  */
+final class VkDescriptorBufferInfo
+{
+    public ?VkBuffer $buffer = null;
+
+    public int $offset = 0;
+
+    public int $range = 0;
+}
+
+/**
+ * @not-serializable
+ */
 final class VkWriteDescriptorSet
 {
     public ?object $pNext = null;
@@ -672,6 +704,8 @@ final class VkWriteDescriptorSet
     public int $descriptorCount = 0;
 
     public ?array $pImageInfo = null;
+
+    public ?array $pBufferInfo = null;
 }
 
 /**
@@ -761,6 +795,8 @@ function vkCreatePipelineLayout(VkDevice $device, VkPipelineLayoutCreateInfo $pC
 function vkDestroyPipelineLayout(VkDevice $device, ?VkPipelineLayout $pipelineLayout, int $pAllocator): void {}
 
 function vkCreateGraphicsPipelines(VkDevice $device, int $pipelineCache, int $createInfoCount, array $pCreateInfos, int $pAllocator, ?array &$pPipelines): int {}
+
+function vkCreateComputePipelines(VkDevice $device, int $pipelineCache, int $createInfoCount, array $pCreateInfos, int $pAllocator, ?array &$pPipelines): int {}
 
 function vkDestroyPipeline(VkDevice $device, ?VkPipeline $pipeline, int $pAllocator): void {}
 

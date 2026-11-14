@@ -592,6 +592,30 @@ void vk_VkGraphicsPipelineCreateInfo_to(const void *raw, zval *rv)
 	object_init_ex(rv, vulkan_ce_VkGraphicsPipelineCreateInfo);
 }
 
+bool vk_VkComputePipelineCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkComputePipelineCreateInfo *dst = raw;
+	uint64_t handle_tmp;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_nested(obj, "stage", vulkan_ce_VkPipelineShaderStageCreateInfo, vk_VkPipelineShaderStageCreateInfo_from, &dst->stage, scratch)) return false;
+	if (!vulkan_handle_prop(obj, "layout", vulkan_ce_VkPipelineLayout, &handle_tmp)) return false;
+	dst->layout = (VkPipelineLayout) (uintptr_t) handle_tmp;
+	if (!vulkan_handle_prop(obj, "basePipelineHandle", vulkan_ce_VkPipeline, &handle_tmp)) return false;
+	dst->basePipelineHandle = (VkPipeline) (uintptr_t) handle_tmp;
+	if (!vulkan_i32(obj, "basePipelineIndex", &dst->basePipelineIndex)) return false;
+	return true;
+}
+
+void vk_VkComputePipelineCreateInfo_to(const void *raw, zval *rv)
+{
+	(void) raw;
+	object_init_ex(rv, vulkan_ce_VkComputePipelineCreateInfo);
+}
+
 bool vk_VkDescriptorSetLayoutBinding_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkDescriptorSetLayoutBinding *dst = raw;
@@ -715,6 +739,26 @@ void vk_VkDescriptorImageInfo_to(const void *raw, zval *rv)
 	object_init_ex(rv, vulkan_ce_VkDescriptorImageInfo);
 }
 
+bool vk_VkDescriptorBufferInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkDescriptorBufferInfo *dst = raw;
+	uint64_t handle_tmp;
+	(void) scratch;
+	memset(dst, 0, sizeof(*dst));
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_handle_prop(obj, "buffer", vulkan_ce_VkBuffer, &handle_tmp)) return false;
+	dst->buffer = (VkBuffer) (uintptr_t) handle_tmp;
+	if (!vulkan_u64(obj, "offset", &dst->offset)) return false;
+	if (!vulkan_u64(obj, "range", &dst->range)) return false;
+	return true;
+}
+
+void vk_VkDescriptorBufferInfo_to(const void *raw, zval *rv)
+{
+	(void) raw;
+	object_init_ex(rv, vulkan_ce_VkDescriptorBufferInfo);
+}
+
 bool vk_VkWriteDescriptorSet_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkWriteDescriptorSet *dst = raw;
@@ -730,6 +774,7 @@ bool vk_VkWriteDescriptorSet_from(zend_object *obj, void *raw, vulkan_scratch *s
 	if (!vulkan_u32(obj, "descriptorType", &dst->descriptorType)) return false;
 	if (!vulkan_u32(obj, "descriptorCount", &dst->descriptorCount)) return false;
 	if (!vulkan_opt_struct_list(obj, "pImageInfo", vulkan_ce_VkDescriptorImageInfo, sizeof(VkDescriptorImageInfo), vk_VkDescriptorImageInfo_from, (void **) &dst->pImageInfo, &dst->descriptorCount, scratch, visited)) return false;
+	if (!vulkan_opt_struct_list(obj, "pBufferInfo", vulkan_ce_VkDescriptorBufferInfo, sizeof(VkDescriptorBufferInfo), vk_VkDescriptorBufferInfo_from, (void **) &dst->pBufferInfo, &dst->descriptorCount, scratch, visited)) return false;
 	return true;
 }
 

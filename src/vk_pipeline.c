@@ -18,6 +18,12 @@ ZEND_METHOD(VkPipelineDepthStencilStateCreateInfo, __construct)
 	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "back", vulkan_ce_VkStencilOpState);
 }
 
+ZEND_METHOD(VkComputePipelineCreateInfo, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	vulkan_init_nested(Z_OBJ_P(ZEND_THIS), "stage", vulkan_ce_VkPipelineShaderStageCreateInfo);
+}
+
 ZEND_METHOD(VkPipelineColorBlendStateCreateInfo, __construct)
 {
 	zval constants, zero;
@@ -120,12 +126,14 @@ void vulkan_register_pipeline(int module_number)
 	SETUP_STRUCT(VkPipelineDynamicStateCreateInfo);
 	SETUP_STRUCT(VkPipelineTessellationStateCreateInfo);
 	SETUP_STRUCT(VkGraphicsPipelineCreateInfo);
+	SETUP_STRUCT(VkComputePipelineCreateInfo);
 	SETUP_STRUCT(VkDescriptorSetLayoutBinding);
 	SETUP_STRUCT(VkDescriptorSetLayoutCreateInfo);
 	SETUP_STRUCT(VkDescriptorPoolSize);
 	SETUP_STRUCT(VkDescriptorPoolCreateInfo);
 	SETUP_STRUCT(VkDescriptorSetAllocateInfo);
 	SETUP_STRUCT(VkDescriptorImageInfo);
+	SETUP_STRUCT(VkDescriptorBufferInfo);
 	SETUP_STRUCT(VkWriteDescriptorSet);
 	SETUP_STRUCT(VkCopyDescriptorSet);
 #undef SETUP_HANDLE
@@ -282,6 +290,51 @@ ZEND_FUNCTION(vkCreateGraphicsPipelines)
 	/* Vulkan writes createInfoCount handles. */
 	pipelines = (uint32_t) count ? safe_emalloc((uint32_t) count, sizeof(*pipelines), 0) : NULL;
 	result = vkCreateGraphicsPipelines((VkDevice) (uintptr_t) device_value, (VkPipelineCache) (uintptr_t) cache, (uint32_t) count, native, ALLOCATOR(allocator), pipelines);
+	vulkan_scratch_free(&scratch);
+	array_init_size(&arr, (uint32_t) count);
+	for (i = 0; i < (uint32_t) count; i++) {
+		vulkan_box(&boxed, (uint64_t) (uintptr_t) pipelines[i], vulkan_ce_VkPipeline, Z_OBJ_P(device));
+		zend_hash_next_index_insert(Z_ARRVAL(arr), &boxed);
+	}
+	if (pipelines != NULL) {
+		efree(pipelines);
+	}
+	vulkan_assign(out, &arr);
+	RETURN_LONG((zend_long) result);
+}
+
+ZEND_FUNCTION(vkCreateComputePipelines)
+{
+	zval *device, *infos, *out;
+	zend_long cache, count, allocator;
+	uint64_t device_value;
+	uint32_t i;
+	void *native;
+	VkPipeline *pipelines = NULL;
+	vulkan_scratch scratch;
+	VkResult result;
+	zval arr, boxed;
+
+	ZEND_PARSE_PARAMETERS_START(6, 6)
+		Z_PARAM_OBJECT(device)
+		Z_PARAM_LONG(cache)
+		Z_PARAM_LONG(count)
+		Z_PARAM_ZVAL(infos)
+		Z_PARAM_LONG(allocator)
+		Z_PARAM_ZVAL(out)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!vulkan_device(device, &device_value)) {
+		RETURN_THROWS();
+	}
+	vulkan_scratch_init(&scratch);
+	if (!vulkan_arg_structs(infos, count, 3, 4, vulkan_ce_VkComputePipelineCreateInfo, sizeof(VkComputePipelineCreateInfo), vk_VkComputePipelineCreateInfo_from, &native, &scratch)) {
+		vulkan_scratch_free(&scratch);
+		RETURN_THROWS();
+	}
+	/* Vulkan writes createInfoCount handles. */
+	pipelines = (uint32_t) count ? safe_emalloc((uint32_t) count, sizeof(*pipelines), 0) : NULL;
+	result = vkCreateComputePipelines((VkDevice) (uintptr_t) device_value, (VkPipelineCache) (uintptr_t) cache, (uint32_t) count, native, ALLOCATOR(allocator), pipelines);
 	vulkan_scratch_free(&scratch);
 	array_init_size(&arr, (uint32_t) count);
 	for (i = 0; i < (uint32_t) count; i++) {

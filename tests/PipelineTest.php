@@ -80,3 +80,53 @@ it('lays out, pools, allocates, writes and copies combined image samplers', func
     vkDestroyImage($device, $image, 0);
     vkFreeMemory($device, $memory, 0);
 });
+
+it('writes storage buffer descriptors through pBufferInfo', function (): void {
+    [, , $device] = gpu();
+    $binding = new VkDescriptorSetLayoutBinding();
+    $binding->descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    $binding->descriptorCount = 1;
+    $binding->stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    $layoutInfo = new VkDescriptorSetLayoutCreateInfo();
+    $layoutInfo->bindingCount = 1;
+    $layoutInfo->pBindings = [$binding];
+    vkCreateDescriptorSetLayout($device, $layoutInfo, 0, $setLayout);
+    $size = new VkDescriptorPoolSize();
+    $size->type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    $size->descriptorCount = 1;
+    $poolInfo = new VkDescriptorPoolCreateInfo();
+    $poolInfo->maxSets = 1;
+    $poolInfo->poolSizeCount = 1;
+    $poolInfo->pPoolSizes = [$size];
+    vkCreateDescriptorPool($device, $poolInfo, 0, $pool);
+    $allocate = new VkDescriptorSetAllocateInfo();
+    $allocate->descriptorPool = $pool;
+    $allocate->descriptorSetCount = 1;
+    $allocate->pSetLayouts = [$setLayout];
+    vkAllocateDescriptorSets($device, $allocate, $sets);
+    [$buffer, $memory] = hostBuffer(256, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+    $info = new VkDescriptorBufferInfo();
+    $info->buffer = $buffer;
+    $info->offset = 0;
+    $info->range = VK_WHOLE_SIZE;
+    $write = new VkWriteDescriptorSet();
+    $write->dstSet = $sets[0];
+    $write->descriptorCount = 1;
+    $write->descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    $write->pBufferInfo = [$info];
+    vkUpdateDescriptorSets($device, 1, [$write], 0, []);
+
+    $short = new VkWriteDescriptorSet();
+    $short->dstSet = $sets[0];
+    $short->descriptorCount = 2;
+    $short->descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    $short->pBufferInfo = [$info];
+    expect(fn () => vkUpdateDescriptorSets($device, 1, [$short], 0, []))
+        ->toThrow(ValueError::class, 'VkWriteDescriptorSet::$pBufferInfo holds 1 values, fewer than its count 2');
+
+    vkDestroyDescriptorPool($device, $pool, 0);
+    vkDestroyDescriptorSetLayout($device, $setLayout, 0);
+    vkDestroyBuffer($device, $buffer, 0);
+    vkFreeMemory($device, $memory, 0);
+});
