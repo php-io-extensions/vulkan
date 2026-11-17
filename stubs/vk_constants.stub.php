@@ -5040,6 +5040,18 @@ const VK_QUEUE_FAMILY_IGNORED = UNKNOWN;
 
 /**
  * @var int
+ * @cvalue VK_QUEUE_FAMILY_EXTERNAL
+ */
+const VK_QUEUE_FAMILY_EXTERNAL = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue VK_QUEUE_FAMILY_FOREIGN_EXT
+ */
+const VK_QUEUE_FAMILY_FOREIGN_EXT = UNKNOWN;
+
+/**
+ * @var int
  * @cvalue VK_SUBPASS_EXTERNAL
  */
 const VK_SUBPASS_EXTERNAL = UNKNOWN;

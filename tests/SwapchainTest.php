@@ -195,7 +195,7 @@ it('refuses HDR metadata on a device without its extension', function (): void {
         test()->markTestSkipped('this Vulkan implementation hands out vkSetHdrMetadataEXT although its extension is not enabled');
     }
 
-    expect($refused)->toBe('vkSetHdrMetadataEXT(): the loader has no vkSetHdrMetadataEXT here: its extension is not enabled')
+    expect($refused)->toBe('vkSetHdrMetadataEXT(): the loader has no vkSetHdrMetadataEXT here: its extension is not enabled, or the device\'s Vulkan version is older')
         ->and(new VkPresentRegionsKHR())->toBeInstanceOf(VkPresentRegionsKHR::class)
         ->and((new VkRectLayerKHR())->extent)->toBeInstanceOf(VkExtent2D::class)
         ->and((new VkHdrMetadataEXT())->whitePoint)->toBeInstanceOf(VkXYColorEXT::class);

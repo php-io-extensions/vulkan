@@ -1,5 +1,9 @@
 # Log
 
+## 2026-11-15
+
+* **Loads on a Vulkan 1.3 loader**: `vkCopyMemoryToImage`, `vkCopyImageToMemory` and `vkTransitionImageLayout` (Vulkan 1.4 core) come from `vkGetDeviceProcAddr` at the call, refused through `vulkan-no-proc` where the device has none, instead of being linked. Linked, they made the extension fail to load on Ubuntu 24.04's loader (1.3.275), which took php down with it. The site's message now names both reasons. Homebrew 8.4: 42 passed, 14 skipped. x86_64 Ubuntu 24.04 on an NVIDIA GPU, on the 1.3.275 loader: every file but `SwapchainTest` passes, host copies included (the implementation hands them out). Pi 5, V3DV (Vulkan 1.3, no host image copy): every file but `SwapchainTest` passes, the host copy tests skip.
+
 ## 2026-11-14
 
 * **VkDescriptorBufferInfo**: bound 1:1 (`?VkBuffer $buffer`, `int $offset`, `int $range`), and `VkWriteDescriptorSet::$pBufferInfo` (`?array`, read against `descriptorCount` like `pImageInfo`). A shader can now read a uniform or storage buffer through a descriptor set. Test in `tests/PipelineTest.php`: a storage-buffer write, and a list shorter than its count refused with a `ValueError`; it fails without the C change. Suite on Homebrew 8.4 NTS and ZTS, installed build: 40 passed, 14 skipped, exit 0. 

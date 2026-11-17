@@ -426,16 +426,19 @@ ZEND_FUNCTION(vkCmdUpdateBuffer)
 	vkCmdUpdateBuffer((VkCommandBuffer) (uintptr_t) command_value, (VkBuffer) (uintptr_t) buffer_value, (VkDeviceSize) offset, (VkDeviceSize) size, ZSTR_VAL(data));
 }
 
+/* The 1.4 host copy commands come from vkGetDeviceProcAddr, so the extension loads on a Vulkan 1.3 loader too. */
 ZEND_FUNCTION(vkCopyMemoryToImage)
 {
-	zval *device, *info; uint64_t device_value; VkCopyMemoryToImageInfo raw; vulkan_scratch scratch; VkResult result;
+	zval *device, *info; uint64_t device_value; VkCopyMemoryToImageInfo raw; vulkan_scratch scratch; VkResult result; PFN_vkCopyMemoryToImage copy;
 	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(info)
 	ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
+	copy = (PFN_vkCopyMemoryToImage) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkCopyMemoryToImage");
+	if (!vulkan_proc((void (*)(void)) copy, "vkCopyMemoryToImage")) RETURN_THROWS();
 	vulkan_scratch_init(&scratch);
 	if (!vulkan_arg_struct(info, vulkan_ce_VkCopyMemoryToImageInfo, vk_VkCopyMemoryToImageInfo_from, &raw, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
-	result = vkCopyMemoryToImage((VkDevice) (uintptr_t) device_value, &raw);
+	result = copy((VkDevice) (uintptr_t) device_value, &raw);
 	vulkan_scratch_free(&scratch);
 	RETURN_LONG((zend_long) result);
 }
@@ -443,14 +446,16 @@ ZEND_FUNCTION(vkCopyMemoryToImage)
 /* Vulkan fills a copy of each region's string; on success the bytes go back into the region objects. */
 ZEND_FUNCTION(vkCopyImageToMemory)
 {
-	zval *device, *info, *regions, *region; uint64_t device_value; VkCopyImageToMemoryInfo raw; vulkan_scratch scratch; VkResult result; uint32_t i = 0;
+	zval *device, *info, *regions, *region; uint64_t device_value; VkCopyImageToMemoryInfo raw; vulkan_scratch scratch; VkResult result; uint32_t i = 0; PFN_vkCopyImageToMemory copy;
 	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_OBJECT(device) Z_PARAM_OBJECT(info)
 	ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
+	copy = (PFN_vkCopyImageToMemory) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkCopyImageToMemory");
+	if (!vulkan_proc((void (*)(void)) copy, "vkCopyImageToMemory")) RETURN_THROWS();
 	vulkan_scratch_init(&scratch);
 	if (!vulkan_arg_struct(info, vulkan_ce_VkCopyImageToMemoryInfo, vk_VkCopyImageToMemoryInfo_from, &raw, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
-	result = vkCopyImageToMemory((VkDevice) (uintptr_t) device_value, &raw);
+	result = copy((VkDevice) (uintptr_t) device_value, &raw);
 	if (result == VK_SUCCESS) {
 		regions = zend_read_property(Z_OBJCE_P(info), Z_OBJ_P(info), "pRegions", sizeof("pRegions") - 1, 0, NULL);
 		ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(regions), region) {
@@ -467,14 +472,16 @@ ZEND_FUNCTION(vkCopyImageToMemory)
 
 ZEND_FUNCTION(vkTransitionImageLayout)
 {
-	zval *device, *transitions; zend_long count; uint64_t device_value; void *items; vulkan_scratch scratch; VkResult result;
+	zval *device, *transitions; zend_long count; uint64_t device_value; void *items; vulkan_scratch scratch; VkResult result; PFN_vkTransitionImageLayout transition;
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJECT(device) Z_PARAM_LONG(count) Z_PARAM_ZVAL(transitions)
 	ZEND_PARSE_PARAMETERS_END();
 	if (!vulkan_handle_value(device, vulkan_ce_VkDevice, 1, &device_value)) RETURN_THROWS();
+	transition = (PFN_vkTransitionImageLayout) vkGetDeviceProcAddr((VkDevice) (uintptr_t) device_value, "vkTransitionImageLayout");
+	if (!vulkan_proc((void (*)(void)) transition, "vkTransitionImageLayout")) RETURN_THROWS();
 	vulkan_scratch_init(&scratch);
 	if (!vulkan_arg_structs(transitions, count, 2, 3, vulkan_ce_VkHostImageLayoutTransitionInfo, sizeof(VkHostImageLayoutTransitionInfo), vk_VkHostImageLayoutTransitionInfo_from, &items, &scratch)) { vulkan_scratch_free(&scratch); RETURN_THROWS(); }
-	result = vkTransitionImageLayout((VkDevice) (uintptr_t) device_value, (uint32_t) count, items);
+	result = transition((VkDevice) (uintptr_t) device_value, (uint32_t) count, items);
 	vulkan_scratch_free(&scratch);
 	RETURN_LONG((zend_long) result);
 }

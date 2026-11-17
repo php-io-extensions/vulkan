@@ -25,7 +25,7 @@ sources:
 
 Every function is a Vulkan entry point; there are no helper functions. There is no FFI: host data moves through `vkCmdUpdateBuffer` (a string, at most 65,536 bytes a call) and the Vulkan 1.4 host image copies `vkCopyMemoryToImage`, `vkCopyImageToMemory` and `vkTransitionImageLayout` (commands group). A `VkMemoryToImageCopy` or `VkImageToMemoryCopy` region carries its bytes as the string `$pHostPointer`; for a read the caller gives a string of the size to read and the call fills it. The bytes must cover the region's texels at least one byte each (site `vulkan-bytes-length`). `VkPhysicalDeviceHostImageCopyFeatures` is the `pNext` node that enables and reports the feature; the images need `VK_IMAGE_USAGE_HOST_TRANSFER_BIT`.
 
-An extension command whose `vkGet*ProcAddr` answer is `NULL` is refused with `Error` (site `vulkan-no-proc`): calling `NULL` kills the process. Some implementations hand out the command although its extension is not enabled; the call then goes through.
+An extension command whose `vkGet*ProcAddr` answer is `NULL` is refused with `Error` (site `vulkan-no-proc`): calling `NULL` kills the process. The Vulkan 1.4 host copy commands (`vkCopyMemoryToImage`, `vkCopyImageToMemory`, `vkTransitionImageLayout`) come from `vkGetDeviceProcAddr` the same way, so the extension loads on a Vulkan 1.3 loader; on a device older than 1.4 they are refused at the call. Some implementations hand out the command although its extension is not enabled; the call then goes through.
 
 # Refusals
 

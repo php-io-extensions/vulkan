@@ -923,9 +923,11 @@ void vulkan_enum_count_out(zval *count, uint32_t written)
 
 bool vulkan_proc(void (*fn)(void), const char *name)
 {
-	/* An extension's command comes from vkGet*ProcAddr: NULL when its extension is not enabled, and calling NULL is a crash. */
+	/* An extension's command, or a core command newer than the loader the extension was linked to, comes from
+	 * vkGet*ProcAddr: NULL when its extension is not enabled or the device's Vulkan version is older, and calling NULL
+	 * is a crash. */
 	if (!VULKAN_PROBE_OFF("vulkan-no-proc") && fn == NULL) {
-		zend_throw_error(NULL, "%s(): the loader has no %s here: its extension is not enabled", name, name); /* binding:vulkan-no-proc */
+		zend_throw_error(NULL, "%s(): the loader has no %s here: its extension is not enabled, or the device's Vulkan version is older", name, name); /* binding:vulkan-no-proc */
 		return false;
 	}
 
