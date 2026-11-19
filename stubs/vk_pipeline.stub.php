@@ -203,6 +203,138 @@ final class VkRenderPassCreateInfo
 /**
  * @not-serializable
  */
+final class VkAttachmentDescription2
+{
+    public ?object $pNext = null;
+
+    public int $flags = 0;
+
+    public int $format = 0;
+
+    public int $samples = 0;
+
+    public int $loadOp = 0;
+
+    public int $storeOp = 0;
+
+    public int $stencilLoadOp = 0;
+
+    public int $stencilStoreOp = 0;
+
+    public int $initialLayout = 0;
+
+    public int $finalLayout = 0;
+}
+
+/**
+ * @not-serializable
+ */
+final class VkAttachmentReference2
+{
+    public ?object $pNext = null;
+
+    public int $attachment = 0;
+
+    public int $layout = 0;
+
+    public int $aspectMask = 0;
+}
+
+/**
+ * @not-serializable
+ */
+final class VkSubpassDescription2
+{
+    public ?object $pNext = null;
+
+    public int $flags = 0;
+
+    public int $pipelineBindPoint = 0;
+
+    public int $viewMask = 0;
+
+    public int $inputAttachmentCount = 0;
+
+    public array $pInputAttachments = [];
+
+    public int $colorAttachmentCount = 0;
+
+    public array $pColorAttachments = [];
+
+    public ?array $pResolveAttachments = null;
+
+    public ?VkAttachmentReference2 $pDepthStencilAttachment = null;
+
+    public int $preserveAttachmentCount = 0;
+
+    public array $pPreserveAttachments = [];
+}
+
+/**
+ * @not-serializable
+ */
+final class VkMultisampledRenderToSingleSampledInfoEXT
+{
+    public ?object $pNext = null;
+
+    public bool $multisampledRenderToSingleSampledEnable = false;
+
+    public int $rasterizationSamples = 0;
+}
+
+/**
+ * @not-serializable
+ */
+final class VkSubpassDependency2
+{
+    public ?object $pNext = null;
+
+    public int $srcSubpass = 0;
+
+    public int $dstSubpass = 0;
+
+    public int $srcStageMask = 0;
+
+    public int $dstStageMask = 0;
+
+    public int $srcAccessMask = 0;
+
+    public int $dstAccessMask = 0;
+
+    public int $dependencyFlags = 0;
+
+    public int $viewOffset = 0;
+}
+
+/**
+ * @not-serializable
+ */
+final class VkRenderPassCreateInfo2
+{
+    public ?object $pNext = null;
+
+    public int $flags = 0;
+
+    public int $attachmentCount = 0;
+
+    public array $pAttachments = [];
+
+    public int $subpassCount = 0;
+
+    public array $pSubpasses = [];
+
+    public int $dependencyCount = 0;
+
+    public array $pDependencies = [];
+
+    public int $correlatedViewMaskCount = 0;
+
+    public array $pCorrelatedViewMasks = [];
+}
+
+/**
+ * @not-serializable
+ */
 final class VkFramebufferCreateInfo
 {
     public ?object $pNext = null;
@@ -779,6 +911,8 @@ final class VkCopyDescriptorSet
 }
 
 function vkCreateRenderPass(VkDevice $device, VkRenderPassCreateInfo $pCreateInfo, int $pAllocator, ?VkRenderPass &$pRenderPass): int {}
+
+function vkCreateRenderPass2(VkDevice $device, VkRenderPassCreateInfo2 $pCreateInfo, int $pAllocator, ?VkRenderPass &$pRenderPass): int {}
 
 function vkDestroyRenderPass(VkDevice $device, ?VkRenderPass $renderPass, int $pAllocator): void {}
 

@@ -469,7 +469,15 @@ function vkCmdDispatch(VkCommandBuffer $commandBuffer, int $groupCountX, int $gr
 
 function vkCmdDrawIndexed(VkCommandBuffer $commandBuffer, int $indexCount, int $instanceCount, int $firstIndex, int $vertexOffset, int $firstInstance): void {}
 
+function vkCmdDrawMeshTasksEXT(VkCommandBuffer $commandBuffer, int $groupCountX, int $groupCountY, int $groupCountZ): void {}
+
+function vkCmdDrawMeshTasksIndirectEXT(VkCommandBuffer $commandBuffer, VkBuffer $buffer, int $offset, int $drawCount, int $stride): void {}
+
+function vkCmdDrawMeshTasksIndirectCountEXT(VkCommandBuffer $commandBuffer, VkBuffer $buffer, int $offset, VkBuffer $countBuffer, int $countBufferOffset, int $maxDrawCount, int $stride): void {}
+
 function vkCmdClearAttachments(VkCommandBuffer $commandBuffer, int $attachmentCount, array $pAttachments, int $rectCount, array $pRects): void {}
+
+function vkCmdClearColorImage(VkCommandBuffer $commandBuffer, VkImage $image, int $imageLayout, VkClearColorValue $pColor, int $rangeCount, array $pRanges): void {}
 
 function vkCmdCopyBufferToImage(VkCommandBuffer $commandBuffer, VkBuffer $srcBuffer, VkImage $dstImage, int $dstImageLayout, int $regionCount, array $pRegions): void {}
 

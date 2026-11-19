@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 57fe11652b09b2ccd0772dc8c12b4c1987fbf8d9 */
+ * Stub hash: f04552470ff7dfc225df004b37b8e8971d6446d3 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateCommandPool, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
@@ -160,12 +160,41 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdDrawIndexed, 0, 6, IS_VOID,
 	ZEND_ARG_TYPE_INFO(0, firstInstance, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
+#define arginfo_vkCmdDrawMeshTasksEXT arginfo_vkCmdDispatch
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdDrawMeshTasksIndirectEXT, 0, 5, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
+	ZEND_ARG_OBJ_INFO(0, buffer, VkBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, offset, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, drawCount, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, stride, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdDrawMeshTasksIndirectCountEXT, 0, 7, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
+	ZEND_ARG_OBJ_INFO(0, buffer, VkBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, offset, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, countBuffer, VkBuffer, 0)
+	ZEND_ARG_TYPE_INFO(0, countBufferOffset, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, maxDrawCount, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, stride, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdClearAttachments, 0, 5, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
 	ZEND_ARG_TYPE_INFO(0, attachmentCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pAttachments, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, rectCount, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pRects, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdClearColorImage, 0, 6, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, commandBuffer, VkCommandBuffer, 0)
+	ZEND_ARG_OBJ_INFO(0, image, VkImage, 0)
+	ZEND_ARG_TYPE_INFO(0, imageLayout, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, pColor, VkClearColorValue, 0)
+	ZEND_ARG_TYPE_INFO(0, rangeCount, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, pRanges, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCmdCopyBufferToImage, 0, 6, IS_VOID, 0)
@@ -348,7 +377,11 @@ ZEND_FUNCTION(vkCmdPushConstants);
 ZEND_FUNCTION(vkCmdDraw);
 ZEND_FUNCTION(vkCmdDispatch);
 ZEND_FUNCTION(vkCmdDrawIndexed);
+ZEND_FUNCTION(vkCmdDrawMeshTasksEXT);
+ZEND_FUNCTION(vkCmdDrawMeshTasksIndirectEXT);
+ZEND_FUNCTION(vkCmdDrawMeshTasksIndirectCountEXT);
 ZEND_FUNCTION(vkCmdClearAttachments);
+ZEND_FUNCTION(vkCmdClearColorImage);
 ZEND_FUNCTION(vkCmdCopyBufferToImage);
 ZEND_FUNCTION(vkCmdCopyImageToBuffer);
 ZEND_FUNCTION(vkCmdCopyImage);
@@ -411,7 +444,11 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkCmdDraw, arginfo_vkCmdDraw)
 	ZEND_FE(vkCmdDispatch, arginfo_vkCmdDispatch)
 	ZEND_FE(vkCmdDrawIndexed, arginfo_vkCmdDrawIndexed)
+	ZEND_FE(vkCmdDrawMeshTasksEXT, arginfo_vkCmdDrawMeshTasksEXT)
+	ZEND_FE(vkCmdDrawMeshTasksIndirectEXT, arginfo_vkCmdDrawMeshTasksIndirectEXT)
+	ZEND_FE(vkCmdDrawMeshTasksIndirectCountEXT, arginfo_vkCmdDrawMeshTasksIndirectCountEXT)
 	ZEND_FE(vkCmdClearAttachments, arginfo_vkCmdClearAttachments)
+	ZEND_FE(vkCmdClearColorImage, arginfo_vkCmdClearColorImage)
 	ZEND_FE(vkCmdCopyBufferToImage, arginfo_vkCmdCopyBufferToImage)
 	ZEND_FE(vkCmdCopyImageToBuffer, arginfo_vkCmdCopyImageToBuffer)
 	ZEND_FE(vkCmdCopyImage, arginfo_vkCmdCopyImage)

@@ -1,9 +1,16 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 8eb4e13590285c3b8b3499f8808364c635daf4de */
+ * Stub hash: 40a98c1825b41a7fb39c3ba485616970f5ff8df3 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateRenderPass, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkRenderPassCreateInfo, 0)
+	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(1, pRenderPass, VkRenderPass, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateRenderPass2, 0, 4, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
+	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkRenderPassCreateInfo2, 0)
 	ZEND_ARG_TYPE_INFO(0, pAllocator, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(1, pRenderPass, VkRenderPass, 1)
 ZEND_END_ARG_INFO()
@@ -171,6 +178,7 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_VkRect2D___construct arginfo_class_VkRenderPass___construct
 
 ZEND_FUNCTION(vkCreateRenderPass);
+ZEND_FUNCTION(vkCreateRenderPass2);
 ZEND_FUNCTION(vkDestroyRenderPass);
 ZEND_FUNCTION(vkCreateFramebuffer);
 ZEND_FUNCTION(vkDestroyFramebuffer);
@@ -218,6 +226,7 @@ ZEND_METHOD(VkRect2D, __construct);
 
 static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkCreateRenderPass, arginfo_vkCreateRenderPass)
+	ZEND_FE(vkCreateRenderPass2, arginfo_vkCreateRenderPass2)
 	ZEND_FE(vkDestroyRenderPass, arginfo_vkDestroyRenderPass)
 	ZEND_FE(vkCreateFramebuffer, arginfo_vkCreateFramebuffer)
 	ZEND_FE(vkDestroyFramebuffer, arginfo_vkDestroyFramebuffer)
@@ -656,6 +665,355 @@ static zend_class_entry *register_class_VkRenderPassCreateInfo(void)
 	zend_string *property_pDependencies_name = zend_string_init("pDependencies", sizeof("pDependencies") - 1, 1);
 	zend_declare_typed_property(class_entry, property_pDependencies_name, &property_pDependencies_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
 	zend_string_release(property_pDependencies_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkAttachmentDescription2(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkAttachmentDescription2", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_flags_default_value;
+	ZVAL_LONG(&property_flags_default_value, 0);
+	zend_string *property_flags_name = zend_string_init("flags", sizeof("flags") - 1, 1);
+	zend_declare_typed_property(class_entry, property_flags_name, &property_flags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_flags_name);
+
+	zval property_format_default_value;
+	ZVAL_LONG(&property_format_default_value, 0);
+	zend_string *property_format_name = zend_string_init("format", sizeof("format") - 1, 1);
+	zend_declare_typed_property(class_entry, property_format_name, &property_format_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_format_name);
+
+	zval property_samples_default_value;
+	ZVAL_LONG(&property_samples_default_value, 0);
+	zend_string *property_samples_name = zend_string_init("samples", sizeof("samples") - 1, 1);
+	zend_declare_typed_property(class_entry, property_samples_name, &property_samples_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_samples_name);
+
+	zval property_loadOp_default_value;
+	ZVAL_LONG(&property_loadOp_default_value, 0);
+	zend_string *property_loadOp_name = zend_string_init("loadOp", sizeof("loadOp") - 1, 1);
+	zend_declare_typed_property(class_entry, property_loadOp_name, &property_loadOp_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_loadOp_name);
+
+	zval property_storeOp_default_value;
+	ZVAL_LONG(&property_storeOp_default_value, 0);
+	zend_string *property_storeOp_name = zend_string_init("storeOp", sizeof("storeOp") - 1, 1);
+	zend_declare_typed_property(class_entry, property_storeOp_name, &property_storeOp_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_storeOp_name);
+
+	zval property_stencilLoadOp_default_value;
+	ZVAL_LONG(&property_stencilLoadOp_default_value, 0);
+	zend_string *property_stencilLoadOp_name = zend_string_init("stencilLoadOp", sizeof("stencilLoadOp") - 1, 1);
+	zend_declare_typed_property(class_entry, property_stencilLoadOp_name, &property_stencilLoadOp_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_stencilLoadOp_name);
+
+	zval property_stencilStoreOp_default_value;
+	ZVAL_LONG(&property_stencilStoreOp_default_value, 0);
+	zend_string *property_stencilStoreOp_name = zend_string_init("stencilStoreOp", sizeof("stencilStoreOp") - 1, 1);
+	zend_declare_typed_property(class_entry, property_stencilStoreOp_name, &property_stencilStoreOp_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_stencilStoreOp_name);
+
+	zval property_initialLayout_default_value;
+	ZVAL_LONG(&property_initialLayout_default_value, 0);
+	zend_string *property_initialLayout_name = zend_string_init("initialLayout", sizeof("initialLayout") - 1, 1);
+	zend_declare_typed_property(class_entry, property_initialLayout_name, &property_initialLayout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_initialLayout_name);
+
+	zval property_finalLayout_default_value;
+	ZVAL_LONG(&property_finalLayout_default_value, 0);
+	zend_string *property_finalLayout_name = zend_string_init("finalLayout", sizeof("finalLayout") - 1, 1);
+	zend_declare_typed_property(class_entry, property_finalLayout_name, &property_finalLayout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_finalLayout_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkAttachmentReference2(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkAttachmentReference2", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_attachment_default_value;
+	ZVAL_LONG(&property_attachment_default_value, 0);
+	zend_string *property_attachment_name = zend_string_init("attachment", sizeof("attachment") - 1, 1);
+	zend_declare_typed_property(class_entry, property_attachment_name, &property_attachment_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_attachment_name);
+
+	zval property_layout_default_value;
+	ZVAL_LONG(&property_layout_default_value, 0);
+	zend_string *property_layout_name = zend_string_init("layout", sizeof("layout") - 1, 1);
+	zend_declare_typed_property(class_entry, property_layout_name, &property_layout_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_layout_name);
+
+	zval property_aspectMask_default_value;
+	ZVAL_LONG(&property_aspectMask_default_value, 0);
+	zend_string *property_aspectMask_name = zend_string_init("aspectMask", sizeof("aspectMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_aspectMask_name, &property_aspectMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_aspectMask_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkSubpassDescription2(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkSubpassDescription2", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_flags_default_value;
+	ZVAL_LONG(&property_flags_default_value, 0);
+	zend_string *property_flags_name = zend_string_init("flags", sizeof("flags") - 1, 1);
+	zend_declare_typed_property(class_entry, property_flags_name, &property_flags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_flags_name);
+
+	zval property_pipelineBindPoint_default_value;
+	ZVAL_LONG(&property_pipelineBindPoint_default_value, 0);
+	zend_string *property_pipelineBindPoint_name = zend_string_init("pipelineBindPoint", sizeof("pipelineBindPoint") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pipelineBindPoint_name, &property_pipelineBindPoint_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_pipelineBindPoint_name);
+
+	zval property_viewMask_default_value;
+	ZVAL_LONG(&property_viewMask_default_value, 0);
+	zend_string *property_viewMask_name = zend_string_init("viewMask", sizeof("viewMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_viewMask_name, &property_viewMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_viewMask_name);
+
+	zval property_inputAttachmentCount_default_value;
+	ZVAL_LONG(&property_inputAttachmentCount_default_value, 0);
+	zend_string *property_inputAttachmentCount_name = zend_string_init("inputAttachmentCount", sizeof("inputAttachmentCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_inputAttachmentCount_name, &property_inputAttachmentCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_inputAttachmentCount_name);
+
+	zval property_pInputAttachments_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pInputAttachments_default_value);
+	zend_string *property_pInputAttachments_name = zend_string_init("pInputAttachments", sizeof("pInputAttachments") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pInputAttachments_name, &property_pInputAttachments_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pInputAttachments_name);
+
+	zval property_colorAttachmentCount_default_value;
+	ZVAL_LONG(&property_colorAttachmentCount_default_value, 0);
+	zend_string *property_colorAttachmentCount_name = zend_string_init("colorAttachmentCount", sizeof("colorAttachmentCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_colorAttachmentCount_name, &property_colorAttachmentCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_colorAttachmentCount_name);
+
+	zval property_pColorAttachments_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pColorAttachments_default_value);
+	zend_string *property_pColorAttachments_name = zend_string_init("pColorAttachments", sizeof("pColorAttachments") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pColorAttachments_name, &property_pColorAttachments_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pColorAttachments_name);
+
+	zval property_pResolveAttachments_default_value;
+	ZVAL_NULL(&property_pResolveAttachments_default_value);
+	zend_string *property_pResolveAttachments_name = zend_string_init("pResolveAttachments", sizeof("pResolveAttachments") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pResolveAttachments_name, &property_pResolveAttachments_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY|MAY_BE_NULL));
+	zend_string_release(property_pResolveAttachments_name);
+
+	zval property_pDepthStencilAttachment_default_value;
+	ZVAL_NULL(&property_pDepthStencilAttachment_default_value);
+	zend_string *property_pDepthStencilAttachment_name = zend_string_init("pDepthStencilAttachment", sizeof("pDepthStencilAttachment") - 1, 1);
+	zend_string *property_pDepthStencilAttachment_class_VkAttachmentReference2 = zend_string_init("VkAttachmentReference2", sizeof("VkAttachmentReference2")-1, 1);
+	zend_declare_typed_property(class_entry, property_pDepthStencilAttachment_name, &property_pDepthStencilAttachment_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_pDepthStencilAttachment_class_VkAttachmentReference2, 0, MAY_BE_NULL));
+	zend_string_release(property_pDepthStencilAttachment_name);
+
+	zval property_preserveAttachmentCount_default_value;
+	ZVAL_LONG(&property_preserveAttachmentCount_default_value, 0);
+	zend_string *property_preserveAttachmentCount_name = zend_string_init("preserveAttachmentCount", sizeof("preserveAttachmentCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_preserveAttachmentCount_name, &property_preserveAttachmentCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_preserveAttachmentCount_name);
+
+	zval property_pPreserveAttachments_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pPreserveAttachments_default_value);
+	zend_string *property_pPreserveAttachments_name = zend_string_init("pPreserveAttachments", sizeof("pPreserveAttachments") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pPreserveAttachments_name, &property_pPreserveAttachments_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pPreserveAttachments_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkMultisampledRenderToSingleSampledInfoEXT(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkMultisampledRenderToSingleSampledInfoEXT", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_multisampledRenderToSingleSampledEnable_default_value;
+	ZVAL_FALSE(&property_multisampledRenderToSingleSampledEnable_default_value);
+	zend_string *property_multisampledRenderToSingleSampledEnable_name = zend_string_init("multisampledRenderToSingleSampledEnable", sizeof("multisampledRenderToSingleSampledEnable") - 1, 1);
+	zend_declare_typed_property(class_entry, property_multisampledRenderToSingleSampledEnable_name, &property_multisampledRenderToSingleSampledEnable_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_multisampledRenderToSingleSampledEnable_name);
+
+	zval property_rasterizationSamples_default_value;
+	ZVAL_LONG(&property_rasterizationSamples_default_value, 0);
+	zend_string *property_rasterizationSamples_name = zend_string_init("rasterizationSamples", sizeof("rasterizationSamples") - 1, 1);
+	zend_declare_typed_property(class_entry, property_rasterizationSamples_name, &property_rasterizationSamples_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_rasterizationSamples_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkSubpassDependency2(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkSubpassDependency2", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_srcSubpass_default_value;
+	ZVAL_LONG(&property_srcSubpass_default_value, 0);
+	zend_string *property_srcSubpass_name = zend_string_init("srcSubpass", sizeof("srcSubpass") - 1, 1);
+	zend_declare_typed_property(class_entry, property_srcSubpass_name, &property_srcSubpass_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_srcSubpass_name);
+
+	zval property_dstSubpass_default_value;
+	ZVAL_LONG(&property_dstSubpass_default_value, 0);
+	zend_string *property_dstSubpass_name = zend_string_init("dstSubpass", sizeof("dstSubpass") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dstSubpass_name, &property_dstSubpass_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dstSubpass_name);
+
+	zval property_srcStageMask_default_value;
+	ZVAL_LONG(&property_srcStageMask_default_value, 0);
+	zend_string *property_srcStageMask_name = zend_string_init("srcStageMask", sizeof("srcStageMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_srcStageMask_name, &property_srcStageMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_srcStageMask_name);
+
+	zval property_dstStageMask_default_value;
+	ZVAL_LONG(&property_dstStageMask_default_value, 0);
+	zend_string *property_dstStageMask_name = zend_string_init("dstStageMask", sizeof("dstStageMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dstStageMask_name, &property_dstStageMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dstStageMask_name);
+
+	zval property_srcAccessMask_default_value;
+	ZVAL_LONG(&property_srcAccessMask_default_value, 0);
+	zend_string *property_srcAccessMask_name = zend_string_init("srcAccessMask", sizeof("srcAccessMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_srcAccessMask_name, &property_srcAccessMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_srcAccessMask_name);
+
+	zval property_dstAccessMask_default_value;
+	ZVAL_LONG(&property_dstAccessMask_default_value, 0);
+	zend_string *property_dstAccessMask_name = zend_string_init("dstAccessMask", sizeof("dstAccessMask") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dstAccessMask_name, &property_dstAccessMask_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dstAccessMask_name);
+
+	zval property_dependencyFlags_default_value;
+	ZVAL_LONG(&property_dependencyFlags_default_value, 0);
+	zend_string *property_dependencyFlags_name = zend_string_init("dependencyFlags", sizeof("dependencyFlags") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dependencyFlags_name, &property_dependencyFlags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dependencyFlags_name);
+
+	zval property_viewOffset_default_value;
+	ZVAL_LONG(&property_viewOffset_default_value, 0);
+	zend_string *property_viewOffset_name = zend_string_init("viewOffset", sizeof("viewOffset") - 1, 1);
+	zend_declare_typed_property(class_entry, property_viewOffset_name, &property_viewOffset_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_viewOffset_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkRenderPassCreateInfo2(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkRenderPassCreateInfo2", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_flags_default_value;
+	ZVAL_LONG(&property_flags_default_value, 0);
+	zend_string *property_flags_name = zend_string_init("flags", sizeof("flags") - 1, 1);
+	zend_declare_typed_property(class_entry, property_flags_name, &property_flags_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_flags_name);
+
+	zval property_attachmentCount_default_value;
+	ZVAL_LONG(&property_attachmentCount_default_value, 0);
+	zend_string *property_attachmentCount_name = zend_string_init("attachmentCount", sizeof("attachmentCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_attachmentCount_name, &property_attachmentCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_attachmentCount_name);
+
+	zval property_pAttachments_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pAttachments_default_value);
+	zend_string *property_pAttachments_name = zend_string_init("pAttachments", sizeof("pAttachments") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pAttachments_name, &property_pAttachments_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pAttachments_name);
+
+	zval property_subpassCount_default_value;
+	ZVAL_LONG(&property_subpassCount_default_value, 0);
+	zend_string *property_subpassCount_name = zend_string_init("subpassCount", sizeof("subpassCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_subpassCount_name, &property_subpassCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_subpassCount_name);
+
+	zval property_pSubpasses_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pSubpasses_default_value);
+	zend_string *property_pSubpasses_name = zend_string_init("pSubpasses", sizeof("pSubpasses") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pSubpasses_name, &property_pSubpasses_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pSubpasses_name);
+
+	zval property_dependencyCount_default_value;
+	ZVAL_LONG(&property_dependencyCount_default_value, 0);
+	zend_string *property_dependencyCount_name = zend_string_init("dependencyCount", sizeof("dependencyCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_dependencyCount_name, &property_dependencyCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_dependencyCount_name);
+
+	zval property_pDependencies_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pDependencies_default_value);
+	zend_string *property_pDependencies_name = zend_string_init("pDependencies", sizeof("pDependencies") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pDependencies_name, &property_pDependencies_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pDependencies_name);
+
+	zval property_correlatedViewMaskCount_default_value;
+	ZVAL_LONG(&property_correlatedViewMaskCount_default_value, 0);
+	zend_string *property_correlatedViewMaskCount_name = zend_string_init("correlatedViewMaskCount", sizeof("correlatedViewMaskCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_correlatedViewMaskCount_name, &property_correlatedViewMaskCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_correlatedViewMaskCount_name);
+
+	zval property_pCorrelatedViewMasks_default_value;
+	ZVAL_EMPTY_ARRAY(&property_pCorrelatedViewMasks_default_value);
+	zend_string *property_pCorrelatedViewMasks_name = zend_string_init("pCorrelatedViewMasks", sizeof("pCorrelatedViewMasks") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pCorrelatedViewMasks_name, &property_pCorrelatedViewMasks_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_pCorrelatedViewMasks_name);
 
 	return class_entry;
 }

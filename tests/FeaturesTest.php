@@ -61,3 +61,26 @@ it('reads the present id and present wait features through the chain', function 
     expect($id->presentId)->toBe(in_array(VK_KHR_PRESENT_ID_EXTENSION_NAME, $names, true))
         ->and($wait->presentWait)->toBe(in_array(VK_KHR_PRESENT_WAIT_EXTENSION_NAME, $names, true));
 });
+
+it('returns the same name, limits and ids from vkGetPhysicalDeviceProperties2 as from vkGetPhysicalDeviceProperties', function (): void {
+    [, $physical] = gpu();
+    vkGetPhysicalDeviceProperties($physical, $one);
+    $two = new VkPhysicalDeviceProperties2();
+
+    vkGetPhysicalDeviceProperties2($physical, $two);
+
+    expect($two->properties)->toBeInstanceOf(VkPhysicalDeviceProperties::class)
+        ->and($two->properties->deviceName)->toBe($one->deviceName)
+        ->and($two->properties->deviceName)->not->toBe('')
+        ->and($two->properties->limits)->toEqual($one->limits)
+        ->and($two->properties->limits->maxImageDimension2D)->toBeGreaterThan(0)
+        ->and($two->properties->vendorID)->toBe($one->vendorID)
+        ->and($two->properties->pipelineCacheUUID)->toBe($one->pipelineCacheUUID)
+        ->and($two->pNext)->toBeNull();
+});
+
+it('refuses vkGetPhysicalDeviceProperties2 with an object of another class', function (): void {
+    [, $physical] = gpu();
+
+    expect(fn () => vkGetPhysicalDeviceProperties2($physical, new VkPhysicalDeviceFeatures2()))->toThrow(TypeError::class);
+});

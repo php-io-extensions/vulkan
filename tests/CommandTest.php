@@ -35,6 +35,29 @@ it('copies bytes through an image and back with barriers between', function (): 
     expect(hostRead($out, 4, 4))->toBe($bytes);
 });
 
+it('clears a color image to the value given, reading rangeCount ranges', function (): void {
+    [$image] = hostImage2D(4, 4, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+    hostWrite($image, 4, 4, str_repeat("\x11\x22\x33\x44", 16));
+    $color = new VkClearColorValue();
+    $color->float32 = [1.0, 0.0, 1.0, 1.0];
+    $range = new VkImageSubresourceRange();
+    $range->aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    $range->levelCount = 1;
+    $range->layerCount = 1;
+
+    $cmd = commands();
+    vkCmdClearColorImage($cmd, $image, VK_IMAGE_LAYOUT_GENERAL, $color, 1, [$range, 'past the count']);
+    submitAndWait($cmd);
+
+    expect(hostRead($image, 4, 4))->toBe(str_repeat("\xFF\x00\xFF\xFF", 16));
+});
+
+it('refuses a clear range list holding something else', function (): void {
+    [$image] = hostImage2D(1, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+    expect(fn () => vkCmdClearColorImage(commands(), $image, VK_IMAGE_LAYOUT_GENERAL, new VkClearColorValue(), 1, [new VkClearRect()]))
+        ->toThrow(TypeError::class);
+});
+
 it('refuses push constants shorter than their size, and a count past its list', function (): void {
     $cmd = commands();
     [$buffer] = hostBuffer(16, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);

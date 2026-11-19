@@ -103,6 +103,12 @@ void vulkan_register_pipeline(int module_number)
 	SETUP_STRUCT(VkSubpassDescription);
 	SETUP_STRUCT(VkSubpassDependency);
 	SETUP_STRUCT(VkRenderPassCreateInfo);
+	SETUP_STRUCT(VkAttachmentDescription2);
+	SETUP_STRUCT(VkAttachmentReference2);
+	SETUP_STRUCT(VkSubpassDescription2);
+	SETUP_STRUCT(VkMultisampledRenderToSingleSampledInfoEXT);
+	SETUP_STRUCT(VkSubpassDependency2);
+	SETUP_STRUCT(VkRenderPassCreateInfo2);
 	SETUP_STRUCT(VkFramebufferCreateInfo);
 	SETUP_STRUCT(VkShaderModuleCreateInfo);
 	SETUP_STRUCT(VkPushConstantRange);
@@ -226,6 +232,33 @@ static VkResult create_pool(VkDevice device, const void *info, const VkAllocatio
 	}
 
 BIND_CREATE(vkCreateRenderPass, vulkan_ce_VkRenderPassCreateInfo, VkRenderPassCreateInfo, vk_VkRenderPassCreateInfo_from, create_render_pass, vulkan_ce_VkRenderPass)
+
+static VkResult create_render_pass2(VkDevice device, const void *info, const VkAllocationCallbacks *allocator, uint64_t *out)
+{
+	VkRenderPass handle = VK_NULL_HANDLE;
+	VkResult result = vkCreateRenderPass2(device, info, allocator, &handle);
+	*out = (uint64_t) (uintptr_t) handle;
+	return result;
+}
+
+ZEND_FUNCTION(vkCreateRenderPass2)
+{
+	zval *device, *info, *out;
+	zend_long allocator;
+	VkResult result = VK_ERROR_UNKNOWN;
+
+	ZEND_PARSE_PARAMETERS_START(4, 4)
+		Z_PARAM_OBJECT(device)
+		Z_PARAM_OBJECT(info)
+		Z_PARAM_LONG(allocator)
+		Z_PARAM_ZVAL(out)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!vulkan_create(device, info, allocator, out, vulkan_ce_VkRenderPassCreateInfo2, vk_VkRenderPassCreateInfo2_from, sizeof(VkRenderPassCreateInfo2), create_render_pass2, vulkan_ce_VkRenderPass, &result)) {
+		RETURN_THROWS();
+	}
+	RETURN_LONG((zend_long) result);
+}
 BIND_CREATE(vkCreateFramebuffer, vulkan_ce_VkFramebufferCreateInfo, VkFramebufferCreateInfo, vk_VkFramebufferCreateInfo_from, create_framebuffer, vulkan_ce_VkFramebuffer)
 BIND_CREATE(vkCreateShaderModule, vulkan_ce_VkShaderModuleCreateInfo, VkShaderModuleCreateInfo, vk_VkShaderModuleCreateInfo_from, create_shader, vulkan_ce_VkShaderModule)
 BIND_CREATE(vkCreatePipelineLayout, vulkan_ce_VkPipelineLayoutCreateInfo, VkPipelineLayoutCreateInfo, vk_VkPipelineLayoutCreateInfo_from, create_pipeline_layout, vulkan_ce_VkPipelineLayout)

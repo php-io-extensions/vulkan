@@ -74,6 +74,14 @@ void vulkan_register_instance(int module_number)
 	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceFeatures);
 	vulkan_ce_VkPhysicalDeviceFeatures2 = register_class_VkPhysicalDeviceFeatures2();
 	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceFeatures2);
+	vulkan_ce_VkPhysicalDeviceMeshShaderFeaturesEXT = register_class_VkPhysicalDeviceMeshShaderFeaturesEXT();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceMeshShaderFeaturesEXT);
+	vulkan_ce_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT = register_class_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT);
+	vulkan_ce_VkPhysicalDeviceMeshShaderPropertiesEXT = register_class_VkPhysicalDeviceMeshShaderPropertiesEXT();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceMeshShaderPropertiesEXT);
+	vulkan_ce_VkPhysicalDeviceProperties2 = register_class_VkPhysicalDeviceProperties2();
+	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceProperties2);
 	vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR = register_class_VkPhysicalDevicePortabilitySubsetFeaturesKHR();
 	vulkan_struct_setup(vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR);
 	vulkan_ce_VkDeviceCreateInfo = register_class_VkDeviceCreateInfo();
@@ -96,6 +104,8 @@ void vulkan_register_instance(int module_number)
 	vulkan_struct_setup(vulkan_ce_VkPhysicalDeviceMemoryProperties);
 	vulkan_ce_VkFormatProperties = register_class_VkFormatProperties();
 	vulkan_struct_setup(vulkan_ce_VkFormatProperties);
+	vulkan_ce_VkImageFormatProperties = register_class_VkImageFormatProperties();
+	vulkan_struct_setup(vulkan_ce_VkImageFormatProperties);
 	vulkan_ce_VkExtensionProperties = register_class_VkExtensionProperties();
 	vulkan_struct_setup(vulkan_ce_VkExtensionProperties);
 }
@@ -239,6 +249,27 @@ ZEND_FUNCTION(vkGetPhysicalDeviceProperties)
 	vulkan_assign(out, &boxed);
 }
 
+ZEND_FUNCTION(vkGetPhysicalDeviceFeatures)
+{
+	zval *physical, *out;
+	uint64_t value;
+	VkPhysicalDeviceFeatures features;
+	zval boxed;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJECT(physical)
+		Z_PARAM_ZVAL(out)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &value)) {
+		RETURN_THROWS();
+	}
+
+	vkGetPhysicalDeviceFeatures((VkPhysicalDevice) (uintptr_t) value, &features);
+	vk_VkPhysicalDeviceFeatures_to(&features, &boxed);
+	vulkan_assign(out, &boxed);
+}
+
 ZEND_FUNCTION(vkGetPhysicalDeviceQueueFamilyProperties)
 {
 	zval *physical, *count, *out;
@@ -310,6 +341,36 @@ ZEND_FUNCTION(vkGetPhysicalDeviceFormatProperties)
 	vkGetPhysicalDeviceFormatProperties((VkPhysicalDevice) (uintptr_t) value, (VkFormat) format, &props);
 	vk_VkFormatProperties_to(&props, &boxed);
 	vulkan_assign(out, &boxed);
+}
+
+ZEND_FUNCTION(vkGetPhysicalDeviceImageFormatProperties)
+{
+	zval *physical, *out;
+	zend_long format, type, tiling, usage, flags;
+	uint64_t value;
+	VkImageFormatProperties props;
+	VkResult result;
+	zval boxed;
+
+	ZEND_PARSE_PARAMETERS_START(7, 7)
+		Z_PARAM_OBJECT(physical)
+		Z_PARAM_LONG(format)
+		Z_PARAM_LONG(type)
+		Z_PARAM_LONG(tiling)
+		Z_PARAM_LONG(usage)
+		Z_PARAM_LONG(flags)
+		Z_PARAM_ZVAL(out)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &value)) {
+		RETURN_THROWS();
+	}
+
+	memset(&props, 0, sizeof(props));
+	result = vkGetPhysicalDeviceImageFormatProperties((VkPhysicalDevice) (uintptr_t) value, (VkFormat) format, (VkImageType) type, (VkImageTiling) tiling, (VkImageUsageFlags) usage, (VkImageCreateFlags) flags, &props);
+	vk_VkImageFormatProperties_to(&props, &boxed);
+	vulkan_assign(out, &boxed);
+	RETURN_LONG((zend_long) result);
 }
 
 ZEND_FUNCTION(vkEnumerateDeviceExtensionProperties)
@@ -473,6 +534,37 @@ ZEND_FUNCTION(vkGetPhysicalDeviceFeatures2)
 
 	vkGetPhysicalDeviceFeatures2((VkPhysicalDevice) (uintptr_t) value, &info);
 	vulkan_store_pnext_chain(Z_OBJ_P(features), &info);
+	vulkan_scratch_free(&scratch);
+}
+
+ZEND_FUNCTION(vkGetPhysicalDeviceProperties2)
+{
+	zval *physical, *properties;
+	uint64_t value;
+	vulkan_scratch scratch;
+	HashTable visited;
+	VkPhysicalDeviceProperties2 info;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJECT(physical)
+		Z_PARAM_OBJECT_OF_CLASS(properties, vulkan_ce_VkPhysicalDeviceProperties2)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!vulkan_handle_value(physical, vulkan_ce_VkPhysicalDevice, 1, &value)) {
+		RETURN_THROWS();
+	}
+
+	vulkan_scratch_init(&scratch);
+	zend_hash_init(&visited, 4, NULL, NULL, 0);
+	if (!vk_VkPhysicalDeviceProperties2_from(Z_OBJ_P(properties), &info, &scratch, &visited)) {
+		zend_hash_destroy(&visited);
+		vulkan_scratch_free(&scratch);
+		RETURN_THROWS();
+	}
+	zend_hash_destroy(&visited);
+
+	vkGetPhysicalDeviceProperties2((VkPhysicalDevice) (uintptr_t) value, &info);
+	vulkan_store_pnext_chain(Z_OBJ_P(properties), &info);
 	vulkan_scratch_free(&scratch);
 }
 

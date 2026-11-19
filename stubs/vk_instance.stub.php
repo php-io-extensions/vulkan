@@ -223,6 +223,104 @@ final class VkPhysicalDeviceFeatures
 /**
  * @not-serializable
  */
+final class VkPhysicalDeviceProperties2
+{
+    public ?object $pNext = null;
+
+    public VkPhysicalDeviceProperties $properties;
+
+    public function __construct() {}
+}
+
+/** @not-serializable */
+final class VkPhysicalDeviceMeshShaderPropertiesEXT
+{
+    public ?object $pNext = null;
+
+    public int $maxTaskWorkGroupTotalCount = 0;
+
+    public array $maxTaskWorkGroupCount = [];
+
+    public int $maxTaskWorkGroupInvocations = 0;
+
+    public array $maxTaskWorkGroupSize = [];
+
+    public int $maxTaskPayloadSize = 0;
+
+    public int $maxTaskSharedMemorySize = 0;
+
+    public int $maxTaskPayloadAndSharedMemorySize = 0;
+
+    public int $maxMeshWorkGroupTotalCount = 0;
+
+    public array $maxMeshWorkGroupCount = [];
+
+    public int $maxMeshWorkGroupInvocations = 0;
+
+    public array $maxMeshWorkGroupSize = [];
+
+    public int $maxMeshSharedMemorySize = 0;
+
+    public int $maxMeshPayloadAndSharedMemorySize = 0;
+
+    public int $maxMeshOutputMemorySize = 0;
+
+    public int $maxMeshPayloadAndOutputMemorySize = 0;
+
+    public int $maxMeshOutputComponents = 0;
+
+    public int $maxMeshOutputVertices = 0;
+
+    public int $maxMeshOutputPrimitives = 0;
+
+    public int $maxMeshOutputLayers = 0;
+
+    public int $maxMeshMultiviewViewCount = 0;
+
+    public int $meshOutputPerVertexGranularity = 0;
+
+    public int $meshOutputPerPrimitiveGranularity = 0;
+
+    public int $maxPreferredTaskWorkGroupInvocations = 0;
+
+    public int $maxPreferredMeshWorkGroupInvocations = 0;
+
+    public bool $prefersLocalInvocationVertexOutput = false;
+
+    public bool $prefersLocalInvocationPrimitiveOutput = false;
+
+    public bool $prefersCompactVertexOutput = false;
+
+    public bool $prefersCompactPrimitiveOutput = false;
+}
+
+/** @not-serializable */
+final class VkPhysicalDeviceMeshShaderFeaturesEXT
+{
+    public ?object $pNext = null;
+
+    public bool $taskShader = false;
+
+    public bool $meshShader = false;
+
+    public bool $multiviewMeshShader = false;
+
+    public bool $primitiveFragmentShadingRateMeshShader = false;
+
+    public bool $meshShaderQueries = false;
+}
+
+/** @not-serializable */
+final class VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT
+{
+    public ?object $pNext = null;
+
+    public bool $multisampledRenderToSingleSampled = false;
+}
+
+/**
+ * @not-serializable
+ */
 final class VkPhysicalDeviceFeatures2
 {
     public ?object $pNext = null;
@@ -631,6 +729,22 @@ final class VkFormatProperties
 /**
  * @not-serializable
  */
+final class VkImageFormatProperties
+{
+    public VkExtent3D $maxExtent;
+
+    public int $maxMipLevels = 0;
+
+    public int $maxArrayLayers = 0;
+
+    public int $sampleCounts = 0;
+
+    public int $maxResourceSize = 0;
+}
+
+/**
+ * @not-serializable
+ */
 final class VkExtensionProperties
 {
     public string $extensionName = '';
@@ -657,6 +771,8 @@ function vkGetPhysicalDeviceMemoryProperties(VkPhysicalDevice $physicalDevice, ?
 
 function vkGetPhysicalDeviceFormatProperties(VkPhysicalDevice $physicalDevice, int $format, ?VkFormatProperties &$pFormatProperties): void {}
 
+function vkGetPhysicalDeviceImageFormatProperties(VkPhysicalDevice $physicalDevice, int $format, int $type, int $tiling, int $usage, int $flags, ?VkImageFormatProperties &$pImageFormatProperties): int {}
+
 /** @prefer-ref $pProperties */
 function vkEnumerateDeviceExtensionProperties(VkPhysicalDevice $physicalDevice, ?string $pLayerName, ?int &$pPropertyCount, ?array &$pProperties): int {}
 
@@ -668,7 +784,10 @@ function vkGetDeviceQueue(VkDevice $device, int $queueFamilyIndex, int $queueInd
 
 function vkDeviceWaitIdle(VkDevice $device): int {}
 
+function vkGetPhysicalDeviceFeatures(VkPhysicalDevice $physicalDevice, ?VkPhysicalDeviceFeatures &$pFeatures): void {}
+
 function vkGetPhysicalDeviceFeatures2(VkPhysicalDevice $physicalDevice, VkPhysicalDeviceFeatures2 $pFeatures): void {}
 
+function vkGetPhysicalDeviceProperties2(VkPhysicalDevice $physicalDevice, VkPhysicalDeviceProperties2 $pProperties): void {}
 function vkGetInstanceProcAddr(?VkInstance $instance, string $pName): int {}
 

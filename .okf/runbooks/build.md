@@ -37,4 +37,8 @@ Pest v4, `composer install`, then `php -d memory_limit=128M vendor/bin/pest`.
 
 On 2026-10-05, after MoltenVK, Homebrew `php@8.4` NTS and ZTS were 22 passed, 2 skipped, 1221 assertions. The skips are the Linux swapchain and dmabuf tests. The Pi was 23 passed, 1 skipped, 1223 assertions, with `WAYLAND_DISPLAY=wayland-0` and `XDG_RUNTIME_DIR=/run/user/$(id -u)`. The skip is the Metal surface test.
 
+`tests/MeshShaderTest.php` is the exception to "device tests skip the CPU device". MoltenVK (Apple M1 Pro) lists neither `VK_EXT_mesh_shader` nor `VK_KHR_draw_indirect_count`; on this Mac the only device that lists `VK_EXT_mesh_shader` is lavapipe (Mesa 26.3 from Homebrew, `llvmpipe (LLVM 23.1.5, 128 bits)`, `VK_PHYSICAL_DEVICE_TYPE_CPU`, ICD `/opt/homebrew/share/vulkan/icd.d/lvp_icd.aarch64.json`, found by the loader with no environment variable). The mesh tests make their own instance and device on the first device that lists the extension, with `meshShader` and `hostImageCopy` on `VkDeviceCreateInfo->pNext`, and skip only where none does. The shaders are `tests/Fixtures/triangle.mesh` and `triangle.frag`, compiled with `glslangValidator -V --target-env vulkan1.3`.
+
+`tests/MultisampledRenderToSingleSampledTest.php` is a second such exception, on the same lavapipe device: it opens the first device that lists `VK_EXT_multisampled_render_to_single_sampled` (MoltenVK does not), enables the feature on `VkDeviceCreateInfo->pNext` with `hostImageCopy`, and skips only where none does. Its vertex shader is `tests/Fixtures/triangle.vert` (fragment: `triangle.frag`), compiled the same way.
+
 The swapchain test opens a window. The gate reads back a stencil-then-cover triangle. On macOS that gate runs through MoltenVK and picks `VK_FORMAT_D32_SFLOAT_S8_UINT`.

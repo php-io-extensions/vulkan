@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: bc25cc0987d2225640be90d70048f8585d5097f5 */
+ * Stub hash: 97848445b54ad7073dcaba723521492b09a4b35f */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkCreateInstance, 0, 3, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, pCreateInfo, VkInstanceCreateInfo, 0)
@@ -46,6 +46,16 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceFormatPropert
 	ZEND_ARG_OBJ_INFO(1, pFormatProperties, VkFormatProperties, 1)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceImageFormatProperties, 0, 7, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
+	ZEND_ARG_TYPE_INFO(0, format, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, tiling, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, usage, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(1, pImageFormatProperties, VkImageFormatProperties, 1)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkEnumerateDeviceExtensionProperties, 0, 4, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
 	ZEND_ARG_TYPE_INFO(0, pLayerName, IS_STRING, 1)
@@ -76,9 +86,19 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkDeviceWaitIdle, 0, 1, IS_LONG,
 	ZEND_ARG_OBJ_INFO(0, device, VkDevice, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceFeatures, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
+	ZEND_ARG_OBJ_INFO(1, pFeatures, VkPhysicalDeviceFeatures, 1)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceFeatures2, 0, 2, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
 	ZEND_ARG_OBJ_INFO(0, pFeatures, VkPhysicalDeviceFeatures2, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetPhysicalDeviceProperties2, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, physicalDevice, VkPhysicalDevice, 0)
+	ZEND_ARG_OBJ_INFO(0, pProperties, VkPhysicalDeviceProperties2, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_vkGetInstanceProcAddr, 0, 2, IS_LONG, 0)
@@ -114,6 +134,8 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_VkQueue_fromPointer arginfo_class_VkInstance_fromPointer
 
+#define arginfo_class_VkPhysicalDeviceProperties2___construct arginfo_class_VkInstance___construct
+
 #define arginfo_class_VkPhysicalDeviceFeatures2___construct arginfo_class_VkInstance___construct
 
 #define arginfo_class_VkPhysicalDeviceProperties___construct arginfo_class_VkInstance___construct
@@ -128,12 +150,15 @@ ZEND_FUNCTION(vkGetPhysicalDeviceProperties);
 ZEND_FUNCTION(vkGetPhysicalDeviceQueueFamilyProperties);
 ZEND_FUNCTION(vkGetPhysicalDeviceMemoryProperties);
 ZEND_FUNCTION(vkGetPhysicalDeviceFormatProperties);
+ZEND_FUNCTION(vkGetPhysicalDeviceImageFormatProperties);
 ZEND_FUNCTION(vkEnumerateDeviceExtensionProperties);
 ZEND_FUNCTION(vkCreateDevice);
 ZEND_FUNCTION(vkDestroyDevice);
 ZEND_FUNCTION(vkGetDeviceQueue);
 ZEND_FUNCTION(vkDeviceWaitIdle);
+ZEND_FUNCTION(vkGetPhysicalDeviceFeatures);
 ZEND_FUNCTION(vkGetPhysicalDeviceFeatures2);
+ZEND_FUNCTION(vkGetPhysicalDeviceProperties2);
 ZEND_FUNCTION(vkGetInstanceProcAddr);
 ZEND_METHOD(VkInstance, __construct);
 ZEND_METHOD(VkInstance, pointer);
@@ -147,6 +172,7 @@ ZEND_METHOD(VkDevice, fromPointer);
 ZEND_METHOD(VkQueue, __construct);
 ZEND_METHOD(VkQueue, pointer);
 ZEND_METHOD(VkQueue, fromPointer);
+ZEND_METHOD(VkPhysicalDeviceProperties2, __construct);
 ZEND_METHOD(VkPhysicalDeviceFeatures2, __construct);
 ZEND_METHOD(VkPhysicalDeviceProperties, __construct);
 ZEND_METHOD(VkQueueFamilyProperties, __construct);
@@ -160,12 +186,15 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(vkGetPhysicalDeviceQueueFamilyProperties, arginfo_vkGetPhysicalDeviceQueueFamilyProperties)
 	ZEND_FE(vkGetPhysicalDeviceMemoryProperties, arginfo_vkGetPhysicalDeviceMemoryProperties)
 	ZEND_FE(vkGetPhysicalDeviceFormatProperties, arginfo_vkGetPhysicalDeviceFormatProperties)
+	ZEND_FE(vkGetPhysicalDeviceImageFormatProperties, arginfo_vkGetPhysicalDeviceImageFormatProperties)
 	ZEND_FE(vkEnumerateDeviceExtensionProperties, arginfo_vkEnumerateDeviceExtensionProperties)
 	ZEND_FE(vkCreateDevice, arginfo_vkCreateDevice)
 	ZEND_FE(vkDestroyDevice, arginfo_vkDestroyDevice)
 	ZEND_FE(vkGetDeviceQueue, arginfo_vkGetDeviceQueue)
 	ZEND_FE(vkDeviceWaitIdle, arginfo_vkDeviceWaitIdle)
+	ZEND_FE(vkGetPhysicalDeviceFeatures, arginfo_vkGetPhysicalDeviceFeatures)
 	ZEND_FE(vkGetPhysicalDeviceFeatures2, arginfo_vkGetPhysicalDeviceFeatures2)
+	ZEND_FE(vkGetPhysicalDeviceProperties2, arginfo_vkGetPhysicalDeviceProperties2)
 	ZEND_FE(vkGetInstanceProcAddr, arginfo_vkGetInstanceProcAddr)
 	ZEND_FE_END
 };
@@ -195,6 +224,11 @@ static const zend_function_entry class_VkQueue_methods[] = {
 	ZEND_ME(VkQueue, __construct, arginfo_class_VkQueue___construct, ZEND_ACC_PRIVATE)
 	ZEND_ME(VkQueue, pointer, arginfo_class_VkQueue_pointer, ZEND_ACC_PUBLIC)
 	ZEND_ME(VkQueue, fromPointer, arginfo_class_VkQueue_fromPointer, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_VkPhysicalDeviceProperties2_methods[] = {
+	ZEND_ME(VkPhysicalDeviceProperties2, __construct, arginfo_class_VkPhysicalDeviceProperties2___construct, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -728,6 +762,281 @@ static zend_class_entry *register_class_VkPhysicalDeviceFeatures(void)
 	zend_string *property_inheritedQueries_name = zend_string_init("inheritedQueries", sizeof("inheritedQueries") - 1, 1);
 	zend_declare_typed_property(class_entry, property_inheritedQueries_name, &property_inheritedQueries_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
 	zend_string_release(property_inheritedQueries_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkPhysicalDeviceProperties2(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkPhysicalDeviceProperties2", class_VkPhysicalDeviceProperties2_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_properties_default_value;
+	ZVAL_UNDEF(&property_properties_default_value);
+	zend_string *property_properties_name = zend_string_init("properties", sizeof("properties") - 1, 1);
+	zend_string *property_properties_class_VkPhysicalDeviceProperties = zend_string_init("VkPhysicalDeviceProperties", sizeof("VkPhysicalDeviceProperties")-1, 1);
+	zend_declare_typed_property(class_entry, property_properties_name, &property_properties_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_properties_class_VkPhysicalDeviceProperties, 0, 0));
+	zend_string_release(property_properties_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkPhysicalDeviceMeshShaderPropertiesEXT(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkPhysicalDeviceMeshShaderPropertiesEXT", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_maxTaskWorkGroupTotalCount_default_value;
+	ZVAL_LONG(&property_maxTaskWorkGroupTotalCount_default_value, 0);
+	zend_string *property_maxTaskWorkGroupTotalCount_name = zend_string_init("maxTaskWorkGroupTotalCount", sizeof("maxTaskWorkGroupTotalCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxTaskWorkGroupTotalCount_name, &property_maxTaskWorkGroupTotalCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxTaskWorkGroupTotalCount_name);
+
+	zval property_maxTaskWorkGroupCount_default_value;
+	ZVAL_EMPTY_ARRAY(&property_maxTaskWorkGroupCount_default_value);
+	zend_string *property_maxTaskWorkGroupCount_name = zend_string_init("maxTaskWorkGroupCount", sizeof("maxTaskWorkGroupCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxTaskWorkGroupCount_name, &property_maxTaskWorkGroupCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_maxTaskWorkGroupCount_name);
+
+	zval property_maxTaskWorkGroupInvocations_default_value;
+	ZVAL_LONG(&property_maxTaskWorkGroupInvocations_default_value, 0);
+	zend_string *property_maxTaskWorkGroupInvocations_name = zend_string_init("maxTaskWorkGroupInvocations", sizeof("maxTaskWorkGroupInvocations") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxTaskWorkGroupInvocations_name, &property_maxTaskWorkGroupInvocations_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxTaskWorkGroupInvocations_name);
+
+	zval property_maxTaskWorkGroupSize_default_value;
+	ZVAL_EMPTY_ARRAY(&property_maxTaskWorkGroupSize_default_value);
+	zend_string *property_maxTaskWorkGroupSize_name = zend_string_init("maxTaskWorkGroupSize", sizeof("maxTaskWorkGroupSize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxTaskWorkGroupSize_name, &property_maxTaskWorkGroupSize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_maxTaskWorkGroupSize_name);
+
+	zval property_maxTaskPayloadSize_default_value;
+	ZVAL_LONG(&property_maxTaskPayloadSize_default_value, 0);
+	zend_string *property_maxTaskPayloadSize_name = zend_string_init("maxTaskPayloadSize", sizeof("maxTaskPayloadSize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxTaskPayloadSize_name, &property_maxTaskPayloadSize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxTaskPayloadSize_name);
+
+	zval property_maxTaskSharedMemorySize_default_value;
+	ZVAL_LONG(&property_maxTaskSharedMemorySize_default_value, 0);
+	zend_string *property_maxTaskSharedMemorySize_name = zend_string_init("maxTaskSharedMemorySize", sizeof("maxTaskSharedMemorySize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxTaskSharedMemorySize_name, &property_maxTaskSharedMemorySize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxTaskSharedMemorySize_name);
+
+	zval property_maxTaskPayloadAndSharedMemorySize_default_value;
+	ZVAL_LONG(&property_maxTaskPayloadAndSharedMemorySize_default_value, 0);
+	zend_string *property_maxTaskPayloadAndSharedMemorySize_name = zend_string_init("maxTaskPayloadAndSharedMemorySize", sizeof("maxTaskPayloadAndSharedMemorySize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxTaskPayloadAndSharedMemorySize_name, &property_maxTaskPayloadAndSharedMemorySize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxTaskPayloadAndSharedMemorySize_name);
+
+	zval property_maxMeshWorkGroupTotalCount_default_value;
+	ZVAL_LONG(&property_maxMeshWorkGroupTotalCount_default_value, 0);
+	zend_string *property_maxMeshWorkGroupTotalCount_name = zend_string_init("maxMeshWorkGroupTotalCount", sizeof("maxMeshWorkGroupTotalCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshWorkGroupTotalCount_name, &property_maxMeshWorkGroupTotalCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshWorkGroupTotalCount_name);
+
+	zval property_maxMeshWorkGroupCount_default_value;
+	ZVAL_EMPTY_ARRAY(&property_maxMeshWorkGroupCount_default_value);
+	zend_string *property_maxMeshWorkGroupCount_name = zend_string_init("maxMeshWorkGroupCount", sizeof("maxMeshWorkGroupCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshWorkGroupCount_name, &property_maxMeshWorkGroupCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_maxMeshWorkGroupCount_name);
+
+	zval property_maxMeshWorkGroupInvocations_default_value;
+	ZVAL_LONG(&property_maxMeshWorkGroupInvocations_default_value, 0);
+	zend_string *property_maxMeshWorkGroupInvocations_name = zend_string_init("maxMeshWorkGroupInvocations", sizeof("maxMeshWorkGroupInvocations") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshWorkGroupInvocations_name, &property_maxMeshWorkGroupInvocations_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshWorkGroupInvocations_name);
+
+	zval property_maxMeshWorkGroupSize_default_value;
+	ZVAL_EMPTY_ARRAY(&property_maxMeshWorkGroupSize_default_value);
+	zend_string *property_maxMeshWorkGroupSize_name = zend_string_init("maxMeshWorkGroupSize", sizeof("maxMeshWorkGroupSize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshWorkGroupSize_name, &property_maxMeshWorkGroupSize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_ARRAY));
+	zend_string_release(property_maxMeshWorkGroupSize_name);
+
+	zval property_maxMeshSharedMemorySize_default_value;
+	ZVAL_LONG(&property_maxMeshSharedMemorySize_default_value, 0);
+	zend_string *property_maxMeshSharedMemorySize_name = zend_string_init("maxMeshSharedMemorySize", sizeof("maxMeshSharedMemorySize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshSharedMemorySize_name, &property_maxMeshSharedMemorySize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshSharedMemorySize_name);
+
+	zval property_maxMeshPayloadAndSharedMemorySize_default_value;
+	ZVAL_LONG(&property_maxMeshPayloadAndSharedMemorySize_default_value, 0);
+	zend_string *property_maxMeshPayloadAndSharedMemorySize_name = zend_string_init("maxMeshPayloadAndSharedMemorySize", sizeof("maxMeshPayloadAndSharedMemorySize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshPayloadAndSharedMemorySize_name, &property_maxMeshPayloadAndSharedMemorySize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshPayloadAndSharedMemorySize_name);
+
+	zval property_maxMeshOutputMemorySize_default_value;
+	ZVAL_LONG(&property_maxMeshOutputMemorySize_default_value, 0);
+	zend_string *property_maxMeshOutputMemorySize_name = zend_string_init("maxMeshOutputMemorySize", sizeof("maxMeshOutputMemorySize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshOutputMemorySize_name, &property_maxMeshOutputMemorySize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshOutputMemorySize_name);
+
+	zval property_maxMeshPayloadAndOutputMemorySize_default_value;
+	ZVAL_LONG(&property_maxMeshPayloadAndOutputMemorySize_default_value, 0);
+	zend_string *property_maxMeshPayloadAndOutputMemorySize_name = zend_string_init("maxMeshPayloadAndOutputMemorySize", sizeof("maxMeshPayloadAndOutputMemorySize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshPayloadAndOutputMemorySize_name, &property_maxMeshPayloadAndOutputMemorySize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshPayloadAndOutputMemorySize_name);
+
+	zval property_maxMeshOutputComponents_default_value;
+	ZVAL_LONG(&property_maxMeshOutputComponents_default_value, 0);
+	zend_string *property_maxMeshOutputComponents_name = zend_string_init("maxMeshOutputComponents", sizeof("maxMeshOutputComponents") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshOutputComponents_name, &property_maxMeshOutputComponents_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshOutputComponents_name);
+
+	zval property_maxMeshOutputVertices_default_value;
+	ZVAL_LONG(&property_maxMeshOutputVertices_default_value, 0);
+	zend_string *property_maxMeshOutputVertices_name = zend_string_init("maxMeshOutputVertices", sizeof("maxMeshOutputVertices") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshOutputVertices_name, &property_maxMeshOutputVertices_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshOutputVertices_name);
+
+	zval property_maxMeshOutputPrimitives_default_value;
+	ZVAL_LONG(&property_maxMeshOutputPrimitives_default_value, 0);
+	zend_string *property_maxMeshOutputPrimitives_name = zend_string_init("maxMeshOutputPrimitives", sizeof("maxMeshOutputPrimitives") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshOutputPrimitives_name, &property_maxMeshOutputPrimitives_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshOutputPrimitives_name);
+
+	zval property_maxMeshOutputLayers_default_value;
+	ZVAL_LONG(&property_maxMeshOutputLayers_default_value, 0);
+	zend_string *property_maxMeshOutputLayers_name = zend_string_init("maxMeshOutputLayers", sizeof("maxMeshOutputLayers") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshOutputLayers_name, &property_maxMeshOutputLayers_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshOutputLayers_name);
+
+	zval property_maxMeshMultiviewViewCount_default_value;
+	ZVAL_LONG(&property_maxMeshMultiviewViewCount_default_value, 0);
+	zend_string *property_maxMeshMultiviewViewCount_name = zend_string_init("maxMeshMultiviewViewCount", sizeof("maxMeshMultiviewViewCount") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMeshMultiviewViewCount_name, &property_maxMeshMultiviewViewCount_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMeshMultiviewViewCount_name);
+
+	zval property_meshOutputPerVertexGranularity_default_value;
+	ZVAL_LONG(&property_meshOutputPerVertexGranularity_default_value, 0);
+	zend_string *property_meshOutputPerVertexGranularity_name = zend_string_init("meshOutputPerVertexGranularity", sizeof("meshOutputPerVertexGranularity") - 1, 1);
+	zend_declare_typed_property(class_entry, property_meshOutputPerVertexGranularity_name, &property_meshOutputPerVertexGranularity_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_meshOutputPerVertexGranularity_name);
+
+	zval property_meshOutputPerPrimitiveGranularity_default_value;
+	ZVAL_LONG(&property_meshOutputPerPrimitiveGranularity_default_value, 0);
+	zend_string *property_meshOutputPerPrimitiveGranularity_name = zend_string_init("meshOutputPerPrimitiveGranularity", sizeof("meshOutputPerPrimitiveGranularity") - 1, 1);
+	zend_declare_typed_property(class_entry, property_meshOutputPerPrimitiveGranularity_name, &property_meshOutputPerPrimitiveGranularity_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_meshOutputPerPrimitiveGranularity_name);
+
+	zval property_maxPreferredTaskWorkGroupInvocations_default_value;
+	ZVAL_LONG(&property_maxPreferredTaskWorkGroupInvocations_default_value, 0);
+	zend_string *property_maxPreferredTaskWorkGroupInvocations_name = zend_string_init("maxPreferredTaskWorkGroupInvocations", sizeof("maxPreferredTaskWorkGroupInvocations") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxPreferredTaskWorkGroupInvocations_name, &property_maxPreferredTaskWorkGroupInvocations_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxPreferredTaskWorkGroupInvocations_name);
+
+	zval property_maxPreferredMeshWorkGroupInvocations_default_value;
+	ZVAL_LONG(&property_maxPreferredMeshWorkGroupInvocations_default_value, 0);
+	zend_string *property_maxPreferredMeshWorkGroupInvocations_name = zend_string_init("maxPreferredMeshWorkGroupInvocations", sizeof("maxPreferredMeshWorkGroupInvocations") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxPreferredMeshWorkGroupInvocations_name, &property_maxPreferredMeshWorkGroupInvocations_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxPreferredMeshWorkGroupInvocations_name);
+
+	zval property_prefersLocalInvocationVertexOutput_default_value;
+	ZVAL_FALSE(&property_prefersLocalInvocationVertexOutput_default_value);
+	zend_string *property_prefersLocalInvocationVertexOutput_name = zend_string_init("prefersLocalInvocationVertexOutput", sizeof("prefersLocalInvocationVertexOutput") - 1, 1);
+	zend_declare_typed_property(class_entry, property_prefersLocalInvocationVertexOutput_name, &property_prefersLocalInvocationVertexOutput_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_prefersLocalInvocationVertexOutput_name);
+
+	zval property_prefersLocalInvocationPrimitiveOutput_default_value;
+	ZVAL_FALSE(&property_prefersLocalInvocationPrimitiveOutput_default_value);
+	zend_string *property_prefersLocalInvocationPrimitiveOutput_name = zend_string_init("prefersLocalInvocationPrimitiveOutput", sizeof("prefersLocalInvocationPrimitiveOutput") - 1, 1);
+	zend_declare_typed_property(class_entry, property_prefersLocalInvocationPrimitiveOutput_name, &property_prefersLocalInvocationPrimitiveOutput_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_prefersLocalInvocationPrimitiveOutput_name);
+
+	zval property_prefersCompactVertexOutput_default_value;
+	ZVAL_FALSE(&property_prefersCompactVertexOutput_default_value);
+	zend_string *property_prefersCompactVertexOutput_name = zend_string_init("prefersCompactVertexOutput", sizeof("prefersCompactVertexOutput") - 1, 1);
+	zend_declare_typed_property(class_entry, property_prefersCompactVertexOutput_name, &property_prefersCompactVertexOutput_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_prefersCompactVertexOutput_name);
+
+	zval property_prefersCompactPrimitiveOutput_default_value;
+	ZVAL_FALSE(&property_prefersCompactPrimitiveOutput_default_value);
+	zend_string *property_prefersCompactPrimitiveOutput_name = zend_string_init("prefersCompactPrimitiveOutput", sizeof("prefersCompactPrimitiveOutput") - 1, 1);
+	zend_declare_typed_property(class_entry, property_prefersCompactPrimitiveOutput_name, &property_prefersCompactPrimitiveOutput_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_prefersCompactPrimitiveOutput_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkPhysicalDeviceMeshShaderFeaturesEXT(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkPhysicalDeviceMeshShaderFeaturesEXT", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_taskShader_default_value;
+	ZVAL_FALSE(&property_taskShader_default_value);
+	zend_string *property_taskShader_name = zend_string_init("taskShader", sizeof("taskShader") - 1, 1);
+	zend_declare_typed_property(class_entry, property_taskShader_name, &property_taskShader_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_taskShader_name);
+
+	zval property_meshShader_default_value;
+	ZVAL_FALSE(&property_meshShader_default_value);
+	zend_string *property_meshShader_name = zend_string_init("meshShader", sizeof("meshShader") - 1, 1);
+	zend_declare_typed_property(class_entry, property_meshShader_name, &property_meshShader_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_meshShader_name);
+
+	zval property_multiviewMeshShader_default_value;
+	ZVAL_FALSE(&property_multiviewMeshShader_default_value);
+	zend_string *property_multiviewMeshShader_name = zend_string_init("multiviewMeshShader", sizeof("multiviewMeshShader") - 1, 1);
+	zend_declare_typed_property(class_entry, property_multiviewMeshShader_name, &property_multiviewMeshShader_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_multiviewMeshShader_name);
+
+	zval property_primitiveFragmentShadingRateMeshShader_default_value;
+	ZVAL_FALSE(&property_primitiveFragmentShadingRateMeshShader_default_value);
+	zend_string *property_primitiveFragmentShadingRateMeshShader_name = zend_string_init("primitiveFragmentShadingRateMeshShader", sizeof("primitiveFragmentShadingRateMeshShader") - 1, 1);
+	zend_declare_typed_property(class_entry, property_primitiveFragmentShadingRateMeshShader_name, &property_primitiveFragmentShadingRateMeshShader_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_primitiveFragmentShadingRateMeshShader_name);
+
+	zval property_meshShaderQueries_default_value;
+	ZVAL_FALSE(&property_meshShaderQueries_default_value);
+	zend_string *property_meshShaderQueries_name = zend_string_init("meshShaderQueries", sizeof("meshShaderQueries") - 1, 1);
+	zend_declare_typed_property(class_entry, property_meshShaderQueries_name, &property_meshShaderQueries_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_meshShaderQueries_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_pNext_default_value;
+	ZVAL_NULL(&property_pNext_default_value);
+	zend_string *property_pNext_name = zend_string_init("pNext", sizeof("pNext") - 1, 1);
+	zend_declare_typed_property(class_entry, property_pNext_name, &property_pNext_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_OBJECT|MAY_BE_NULL));
+	zend_string_release(property_pNext_name);
+
+	zval property_multisampledRenderToSingleSampled_default_value;
+	ZVAL_FALSE(&property_multisampledRenderToSingleSampled_default_value);
+	zend_string *property_multisampledRenderToSingleSampled_name = zend_string_init("multisampledRenderToSingleSampled", sizeof("multisampledRenderToSingleSampled") - 1, 1);
+	zend_declare_typed_property(class_entry, property_multisampledRenderToSingleSampled_name, &property_multisampledRenderToSingleSampled_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_BOOL));
+	zend_string_release(property_multisampledRenderToSingleSampled_name);
 
 	return class_entry;
 }
@@ -1843,6 +2152,47 @@ static zend_class_entry *register_class_VkFormatProperties(void)
 	zend_string *property_bufferFeatures_name = zend_string_init("bufferFeatures", sizeof("bufferFeatures") - 1, 1);
 	zend_declare_typed_property(class_entry, property_bufferFeatures_name, &property_bufferFeatures_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
 	zend_string_release(property_bufferFeatures_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_VkImageFormatProperties(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "VkImageFormatProperties", NULL);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	zval property_maxExtent_default_value;
+	ZVAL_UNDEF(&property_maxExtent_default_value);
+	zend_string *property_maxExtent_name = zend_string_init("maxExtent", sizeof("maxExtent") - 1, 1);
+	zend_string *property_maxExtent_class_VkExtent3D = zend_string_init("VkExtent3D", sizeof("VkExtent3D")-1, 1);
+	zend_declare_typed_property(class_entry, property_maxExtent_name, &property_maxExtent_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_maxExtent_class_VkExtent3D, 0, 0));
+	zend_string_release(property_maxExtent_name);
+
+	zval property_maxMipLevels_default_value;
+	ZVAL_LONG(&property_maxMipLevels_default_value, 0);
+	zend_string *property_maxMipLevels_name = zend_string_init("maxMipLevels", sizeof("maxMipLevels") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxMipLevels_name, &property_maxMipLevels_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxMipLevels_name);
+
+	zval property_maxArrayLayers_default_value;
+	ZVAL_LONG(&property_maxArrayLayers_default_value, 0);
+	zend_string *property_maxArrayLayers_name = zend_string_init("maxArrayLayers", sizeof("maxArrayLayers") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxArrayLayers_name, &property_maxArrayLayers_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxArrayLayers_name);
+
+	zval property_sampleCounts_default_value;
+	ZVAL_LONG(&property_sampleCounts_default_value, 0);
+	zend_string *property_sampleCounts_name = zend_string_init("sampleCounts", sizeof("sampleCounts") - 1, 1);
+	zend_declare_typed_property(class_entry, property_sampleCounts_name, &property_sampleCounts_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_sampleCounts_name);
+
+	zval property_maxResourceSize_default_value;
+	ZVAL_LONG(&property_maxResourceSize_default_value, 0);
+	zend_string *property_maxResourceSize_name = zend_string_init("maxResourceSize", sizeof("maxResourceSize") - 1, 1);
+	zend_declare_typed_property(class_entry, property_maxResourceSize_name, &property_maxResourceSize_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_maxResourceSize_name);
 
 	return class_entry;
 }

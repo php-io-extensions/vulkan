@@ -16,6 +16,7 @@ zend_class_entry *vulkan_ce_VkMemoryType;
 zend_class_entry *vulkan_ce_VkMemoryHeap;
 zend_class_entry *vulkan_ce_VkPhysicalDeviceMemoryProperties;
 zend_class_entry *vulkan_ce_VkFormatProperties;
+zend_class_entry *vulkan_ce_VkImageFormatProperties;
 zend_class_entry *vulkan_ce_VkExtensionProperties;
 zend_class_entry *vulkan_ce_VkInstance;
 zend_class_entry *vulkan_ce_VkPhysicalDevice;
@@ -40,6 +41,11 @@ zend_class_entry *vulkan_ce_VkAttachmentReference;
 zend_class_entry *vulkan_ce_VkSubpassDescription;
 zend_class_entry *vulkan_ce_VkSubpassDependency;
 zend_class_entry *vulkan_ce_VkRenderPassCreateInfo;
+zend_class_entry *vulkan_ce_VkAttachmentDescription2;
+zend_class_entry *vulkan_ce_VkAttachmentReference2;
+zend_class_entry *vulkan_ce_VkSubpassDescription2;
+zend_class_entry *vulkan_ce_VkSubpassDependency2;
+zend_class_entry *vulkan_ce_VkRenderPassCreateInfo2;
 zend_class_entry *vulkan_ce_VkFramebufferCreateInfo;
 zend_class_entry *vulkan_ce_VkShaderModuleCreateInfo;
 zend_class_entry *vulkan_ce_VkPushConstantRange;
@@ -122,6 +128,11 @@ zend_class_entry *vulkan_ce_VkPresentRegionsKHR;
 zend_class_entry *vulkan_ce_VkPresentIdKHR;
 zend_class_entry *vulkan_ce_VkPhysicalDevicePresentIdFeaturesKHR;
 zend_class_entry *vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR;
+zend_class_entry *vulkan_ce_VkPhysicalDeviceMeshShaderFeaturesEXT;
+zend_class_entry *vulkan_ce_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT;
+zend_class_entry *vulkan_ce_VkMultisampledRenderToSingleSampledInfoEXT;
+zend_class_entry *vulkan_ce_VkPhysicalDeviceMeshShaderPropertiesEXT;
+zend_class_entry *vulkan_ce_VkPhysicalDeviceProperties2;
 zend_class_entry *vulkan_ce_VkXYColorEXT;
 zend_class_entry *vulkan_ce_VkHdrMetadataEXT;
 zend_class_entry *vulkan_ce_VkSurfaceKHR;
@@ -321,6 +332,11 @@ bool vk_VkPhysicalDeviceFeatures_from(zend_object *obj, void *raw, vulkan_scratc
 void vk_VkPhysicalDeviceFeatures_to(const void *raw, zval *rv);
 bool vk_VkPhysicalDeviceFeatures2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkPhysicalDeviceFeatures2_to(const void *raw, zval *rv);
+bool vk_VkPhysicalDeviceMeshShaderFeaturesEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+bool vk_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+bool vk_VkMultisampledRenderToSingleSampledInfoEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+bool vk_VkPhysicalDeviceMeshShaderPropertiesEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
+bool vk_VkPhysicalDeviceProperties2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 bool vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
 void vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_to(const void *raw, zval *rv);
 bool vk_VkDeviceCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited);
@@ -352,6 +368,10 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkDeviceQueueCreateInfo, sizeof(VkDeviceQueueCreateInfo), vk_VkDeviceQueueCreateInfo_from },
 	{ &vulkan_ce_VkPhysicalDeviceFeatures, sizeof(VkPhysicalDeviceFeatures), vk_VkPhysicalDeviceFeatures_from },
 	{ &vulkan_ce_VkPhysicalDeviceFeatures2, sizeof(VkPhysicalDeviceFeatures2), vk_VkPhysicalDeviceFeatures2_from },
+	{ &vulkan_ce_VkPhysicalDeviceMeshShaderFeaturesEXT, sizeof(VkPhysicalDeviceMeshShaderFeaturesEXT), vk_VkPhysicalDeviceMeshShaderFeaturesEXT_from },
+	{ &vulkan_ce_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT, sizeof(VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT), vk_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT_from },
+	{ &vulkan_ce_VkMultisampledRenderToSingleSampledInfoEXT, sizeof(VkMultisampledRenderToSingleSampledInfoEXT), vk_VkMultisampledRenderToSingleSampledInfoEXT_from },
+	{ &vulkan_ce_VkPhysicalDeviceMeshShaderPropertiesEXT, sizeof(VkPhysicalDeviceMeshShaderPropertiesEXT), vk_VkPhysicalDeviceMeshShaderPropertiesEXT_from },
 	{ &vulkan_ce_VkPhysicalDevicePortabilitySubsetFeaturesKHR, sizeof(VkPhysicalDevicePortabilitySubsetFeaturesKHR), vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_from },
 	{ &vulkan_ce_VkDeviceCreateInfo, sizeof(VkDeviceCreateInfo), vk_VkDeviceCreateInfo_from },
 	{ &vulkan_ce_VkPhysicalDeviceLimits, sizeof(VkPhysicalDeviceLimits), vk_VkPhysicalDeviceLimits_from },
@@ -363,6 +383,7 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkMemoryHeap, sizeof(VkMemoryHeap), vk_VkMemoryHeap_from },
 	{ &vulkan_ce_VkPhysicalDeviceMemoryProperties, sizeof(VkPhysicalDeviceMemoryProperties), vk_VkPhysicalDeviceMemoryProperties_from },
 	{ &vulkan_ce_VkFormatProperties, sizeof(VkFormatProperties), vk_VkFormatProperties_from },
+	{ &vulkan_ce_VkImageFormatProperties, sizeof(VkImageFormatProperties), vk_VkImageFormatProperties_from },
 	{ &vulkan_ce_VkExtensionProperties, sizeof(VkExtensionProperties), vk_VkExtensionProperties_from },
 	{ &vulkan_ce_VkMemoryAllocateInfo, sizeof(VkMemoryAllocateInfo), vk_VkMemoryAllocateInfo_from },
 	{ &vulkan_ce_VkMappedMemoryRange, sizeof(VkMappedMemoryRange), vk_VkMappedMemoryRange_from },
@@ -378,6 +399,11 @@ static const vulkan_struct_kind vulkan_kinds[] = {
 	{ &vulkan_ce_VkSubpassDescription, sizeof(VkSubpassDescription), vk_VkSubpassDescription_from },
 	{ &vulkan_ce_VkSubpassDependency, sizeof(VkSubpassDependency), vk_VkSubpassDependency_from },
 	{ &vulkan_ce_VkRenderPassCreateInfo, sizeof(VkRenderPassCreateInfo), vk_VkRenderPassCreateInfo_from },
+	{ &vulkan_ce_VkAttachmentDescription2, sizeof(VkAttachmentDescription2), vk_VkAttachmentDescription2_from },
+	{ &vulkan_ce_VkAttachmentReference2, sizeof(VkAttachmentReference2), vk_VkAttachmentReference2_from },
+	{ &vulkan_ce_VkSubpassDescription2, sizeof(VkSubpassDescription2), vk_VkSubpassDescription2_from },
+	{ &vulkan_ce_VkSubpassDependency2, sizeof(VkSubpassDependency2), vk_VkSubpassDependency2_from },
+	{ &vulkan_ce_VkRenderPassCreateInfo2, sizeof(VkRenderPassCreateInfo2), vk_VkRenderPassCreateInfo2_from },
 	{ &vulkan_ce_VkFramebufferCreateInfo, sizeof(VkFramebufferCreateInfo), vk_VkFramebufferCreateInfo_from },
 	{ &vulkan_ce_VkShaderModuleCreateInfo, sizeof(VkShaderModuleCreateInfo), vk_VkShaderModuleCreateInfo_from },
 	{ &vulkan_ce_VkPushConstantRange, sizeof(VkPushConstantRange), vk_VkPushConstantRange_from },
@@ -916,6 +942,47 @@ void vulkan_store_pnext_chain(zend_object *obj, const void *raw)
 		vulkan_set_bool(obj, "presentId", ((const VkPhysicalDevicePresentIdFeaturesKHR *) raw)->presentId == VK_TRUE);
 	} else if (obj->ce == vulkan_ce_VkPhysicalDevicePresentWaitFeaturesKHR) {
 		vulkan_set_bool(obj, "presentWait", ((const VkPhysicalDevicePresentWaitFeaturesKHR *) raw)->presentWait == VK_TRUE);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDeviceMeshShaderFeaturesEXT) {
+		const VkPhysicalDeviceMeshShaderFeaturesEXT *mesh = raw;
+		vulkan_set_bool(obj, "taskShader", mesh->taskShader == VK_TRUE);
+		vulkan_set_bool(obj, "meshShader", mesh->meshShader == VK_TRUE);
+		vulkan_set_bool(obj, "multiviewMeshShader", mesh->multiviewMeshShader == VK_TRUE);
+		vulkan_set_bool(obj, "primitiveFragmentShadingRateMeshShader", mesh->primitiveFragmentShadingRateMeshShader == VK_TRUE);
+		vulkan_set_bool(obj, "meshShaderQueries", mesh->meshShaderQueries == VK_TRUE);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT) {
+		vulkan_set_bool(obj, "multisampledRenderToSingleSampled", ((const VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT *) raw)->multisampledRenderToSingleSampled == VK_TRUE);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDeviceMeshShaderPropertiesEXT) {
+		const VkPhysicalDeviceMeshShaderPropertiesEXT *mesh = raw;
+		vulkan_set_long(obj, "maxTaskWorkGroupTotalCount", (zend_long) mesh->maxTaskWorkGroupTotalCount);
+		vulkan_set_u32_array(obj, "maxTaskWorkGroupCount", mesh->maxTaskWorkGroupCount, 3);
+		vulkan_set_long(obj, "maxTaskWorkGroupInvocations", (zend_long) mesh->maxTaskWorkGroupInvocations);
+		vulkan_set_u32_array(obj, "maxTaskWorkGroupSize", mesh->maxTaskWorkGroupSize, 3);
+		vulkan_set_long(obj, "maxTaskPayloadSize", (zend_long) mesh->maxTaskPayloadSize);
+		vulkan_set_long(obj, "maxTaskSharedMemorySize", (zend_long) mesh->maxTaskSharedMemorySize);
+		vulkan_set_long(obj, "maxTaskPayloadAndSharedMemorySize", (zend_long) mesh->maxTaskPayloadAndSharedMemorySize);
+		vulkan_set_long(obj, "maxMeshWorkGroupTotalCount", (zend_long) mesh->maxMeshWorkGroupTotalCount);
+		vulkan_set_u32_array(obj, "maxMeshWorkGroupCount", mesh->maxMeshWorkGroupCount, 3);
+		vulkan_set_long(obj, "maxMeshWorkGroupInvocations", (zend_long) mesh->maxMeshWorkGroupInvocations);
+		vulkan_set_u32_array(obj, "maxMeshWorkGroupSize", mesh->maxMeshWorkGroupSize, 3);
+		vulkan_set_long(obj, "maxMeshSharedMemorySize", (zend_long) mesh->maxMeshSharedMemorySize);
+		vulkan_set_long(obj, "maxMeshPayloadAndSharedMemorySize", (zend_long) mesh->maxMeshPayloadAndSharedMemorySize);
+		vulkan_set_long(obj, "maxMeshOutputMemorySize", (zend_long) mesh->maxMeshOutputMemorySize);
+		vulkan_set_long(obj, "maxMeshPayloadAndOutputMemorySize", (zend_long) mesh->maxMeshPayloadAndOutputMemorySize);
+		vulkan_set_long(obj, "maxMeshOutputComponents", (zend_long) mesh->maxMeshOutputComponents);
+		vulkan_set_long(obj, "maxMeshOutputVertices", (zend_long) mesh->maxMeshOutputVertices);
+		vulkan_set_long(obj, "maxMeshOutputPrimitives", (zend_long) mesh->maxMeshOutputPrimitives);
+		vulkan_set_long(obj, "maxMeshOutputLayers", (zend_long) mesh->maxMeshOutputLayers);
+		vulkan_set_long(obj, "maxMeshMultiviewViewCount", (zend_long) mesh->maxMeshMultiviewViewCount);
+		vulkan_set_long(obj, "meshOutputPerVertexGranularity", (zend_long) mesh->meshOutputPerVertexGranularity);
+		vulkan_set_long(obj, "meshOutputPerPrimitiveGranularity", (zend_long) mesh->meshOutputPerPrimitiveGranularity);
+		vulkan_set_long(obj, "maxPreferredTaskWorkGroupInvocations", (zend_long) mesh->maxPreferredTaskWorkGroupInvocations);
+		vulkan_set_long(obj, "maxPreferredMeshWorkGroupInvocations", (zend_long) mesh->maxPreferredMeshWorkGroupInvocations);
+		vulkan_set_bool(obj, "prefersLocalInvocationVertexOutput", mesh->prefersLocalInvocationVertexOutput == VK_TRUE);
+		vulkan_set_bool(obj, "prefersLocalInvocationPrimitiveOutput", mesh->prefersLocalInvocationPrimitiveOutput == VK_TRUE);
+		vulkan_set_bool(obj, "prefersCompactVertexOutput", mesh->prefersCompactVertexOutput == VK_TRUE);
+		vulkan_set_bool(obj, "prefersCompactPrimitiveOutput", mesh->prefersCompactPrimitiveOutput == VK_TRUE);
+	} else if (obj->ce == vulkan_ce_VkPhysicalDeviceProperties2) {
+		vulkan_set_struct_value(obj, "properties", &((const VkPhysicalDeviceProperties2 *) raw)->properties, vk_VkPhysicalDeviceProperties_to);
 	} else if (obj->ce == vulkan_ce_VkPhysicalDeviceHostImageCopyFeatures) {
 		vulkan_set_bool(obj, "hostImageCopy", ((const VkPhysicalDeviceHostImageCopyFeatures *) raw)->hostImageCopy == VK_TRUE);
 	}
@@ -949,6 +1016,106 @@ void vk_VkPhysicalDeviceFeatures2_to(const void *raw, zval *rv)
 	vulkan_init_nested(Z_OBJ_P(rv), "features", vulkan_ce_VkPhysicalDeviceFeatures);
 	vulkan_set_null(Z_OBJ_P(rv), "pNext");
 	vulkan_features2_apply(Z_OBJ_P(rv), raw);
+}
+
+bool vk_VkPhysicalDeviceMeshShaderFeaturesEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDeviceMeshShaderFeaturesEXT *dst = raw;
+	const void *next = NULL;
+
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &next, scratch, visited)) return false;
+	dst->pNext = (void *) next;
+	if (!vulkan_bool32(obj, "taskShader", &dst->taskShader)) return false;
+	if (!vulkan_bool32(obj, "meshShader", &dst->meshShader)) return false;
+	if (!vulkan_bool32(obj, "multiviewMeshShader", &dst->multiviewMeshShader)) return false;
+	if (!vulkan_bool32(obj, "primitiveFragmentShadingRateMeshShader", &dst->primitiveFragmentShadingRateMeshShader)) return false;
+	return vulkan_bool32(obj, "meshShaderQueries", &dst->meshShaderQueries);
+}
+
+bool vk_VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDeviceMultisampledRenderToSingleSampledFeaturesEXT *dst = raw;
+	const void *next = NULL;
+
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_FEATURES_EXT;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &next, scratch, visited)) return false;
+	dst->pNext = (void *) next;
+	return vulkan_bool32(obj, "multisampledRenderToSingleSampled", &dst->multisampledRenderToSingleSampled);
+}
+
+bool vk_VkMultisampledRenderToSingleSampledInfoEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkMultisampledRenderToSingleSampledInfoEXT *dst = raw;
+
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_INFO_EXT;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_bool32(obj, "multisampledRenderToSingleSampledEnable", &dst->multisampledRenderToSingleSampledEnable)) return false;
+	return vulkan_u32(obj, "rasterizationSamples", &dst->rasterizationSamples);
+}
+
+bool vk_VkPhysicalDeviceMeshShaderPropertiesEXT_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDeviceMeshShaderPropertiesEXT *dst = raw;
+	const void *next = NULL;
+
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &next, scratch, visited)) return false;
+	dst->pNext = (void *) next;
+	if (!vulkan_u32(obj, "maxTaskWorkGroupTotalCount", &dst->maxTaskWorkGroupTotalCount)) return false;
+	if (!vulkan_fixed_u32s(obj, "maxTaskWorkGroupCount", dst->maxTaskWorkGroupCount, 3)) return false;
+	if (!vulkan_u32(obj, "maxTaskWorkGroupInvocations", &dst->maxTaskWorkGroupInvocations)) return false;
+	if (!vulkan_fixed_u32s(obj, "maxTaskWorkGroupSize", dst->maxTaskWorkGroupSize, 3)) return false;
+	if (!vulkan_u32(obj, "maxTaskPayloadSize", &dst->maxTaskPayloadSize)) return false;
+	if (!vulkan_u32(obj, "maxTaskSharedMemorySize", &dst->maxTaskSharedMemorySize)) return false;
+	if (!vulkan_u32(obj, "maxTaskPayloadAndSharedMemorySize", &dst->maxTaskPayloadAndSharedMemorySize)) return false;
+	if (!vulkan_u32(obj, "maxMeshWorkGroupTotalCount", &dst->maxMeshWorkGroupTotalCount)) return false;
+	if (!vulkan_fixed_u32s(obj, "maxMeshWorkGroupCount", dst->maxMeshWorkGroupCount, 3)) return false;
+	if (!vulkan_u32(obj, "maxMeshWorkGroupInvocations", &dst->maxMeshWorkGroupInvocations)) return false;
+	if (!vulkan_fixed_u32s(obj, "maxMeshWorkGroupSize", dst->maxMeshWorkGroupSize, 3)) return false;
+	if (!vulkan_u32(obj, "maxMeshSharedMemorySize", &dst->maxMeshSharedMemorySize)) return false;
+	if (!vulkan_u32(obj, "maxMeshPayloadAndSharedMemorySize", &dst->maxMeshPayloadAndSharedMemorySize)) return false;
+	if (!vulkan_u32(obj, "maxMeshOutputMemorySize", &dst->maxMeshOutputMemorySize)) return false;
+	if (!vulkan_u32(obj, "maxMeshPayloadAndOutputMemorySize", &dst->maxMeshPayloadAndOutputMemorySize)) return false;
+	if (!vulkan_u32(obj, "maxMeshOutputComponents", &dst->maxMeshOutputComponents)) return false;
+	if (!vulkan_u32(obj, "maxMeshOutputVertices", &dst->maxMeshOutputVertices)) return false;
+	if (!vulkan_u32(obj, "maxMeshOutputPrimitives", &dst->maxMeshOutputPrimitives)) return false;
+	if (!vulkan_u32(obj, "maxMeshOutputLayers", &dst->maxMeshOutputLayers)) return false;
+	if (!vulkan_u32(obj, "maxMeshMultiviewViewCount", &dst->maxMeshMultiviewViewCount)) return false;
+	if (!vulkan_u32(obj, "meshOutputPerVertexGranularity", &dst->meshOutputPerVertexGranularity)) return false;
+	if (!vulkan_u32(obj, "meshOutputPerPrimitiveGranularity", &dst->meshOutputPerPrimitiveGranularity)) return false;
+	if (!vulkan_u32(obj, "maxPreferredTaskWorkGroupInvocations", &dst->maxPreferredTaskWorkGroupInvocations)) return false;
+	if (!vulkan_u32(obj, "maxPreferredMeshWorkGroupInvocations", &dst->maxPreferredMeshWorkGroupInvocations)) return false;
+	if (!vulkan_bool32(obj, "prefersLocalInvocationVertexOutput", &dst->prefersLocalInvocationVertexOutput)) return false;
+	if (!vulkan_bool32(obj, "prefersLocalInvocationPrimitiveOutput", &dst->prefersLocalInvocationPrimitiveOutput)) return false;
+	if (!vulkan_bool32(obj, "prefersCompactVertexOutput", &dst->prefersCompactVertexOutput)) return false;
+	return vulkan_bool32(obj, "prefersCompactPrimitiveOutput", &dst->prefersCompactPrimitiveOutput);
+}
+
+bool vk_VkPhysicalDeviceProperties2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkPhysicalDeviceProperties2 *dst = raw;
+	const void *next = NULL;
+
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+	if (!vulkan_enter(obj, visited)) {
+		return false;
+	}
+	if (!vulkan_pnext(obj, &next, scratch, visited)) {
+		return false;
+	}
+	dst->pNext = (void *) next;
+	/* properties is output only: the device writes all of it, so the nested object is not read (a zero-init one holds '' for pipelineCacheUUID, which is not 16 bytes). */
+	return true;
 }
 
 bool vk_VkPhysicalDevicePortabilitySubsetFeaturesKHR_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
@@ -1762,6 +1929,36 @@ void vk_VkFormatProperties_to(const void *raw, zval *rv)
 	vulkan_set_long(obj, "linearTilingFeatures", (zend_long) src->linearTilingFeatures);
 	vulkan_set_long(obj, "optimalTilingFeatures", (zend_long) src->optimalTilingFeatures);
 	vulkan_set_long(obj, "bufferFeatures", (zend_long) src->bufferFeatures);
+	}
+}
+
+bool vk_VkImageFormatProperties_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkImageFormatProperties *dst = raw;
+	zval *extent;
+
+	memset(dst, 0, sizeof(*dst));
+	if (!vulkan_enter(obj, visited)) return false;
+	extent = zend_read_property(obj->ce, obj, "maxExtent", sizeof("maxExtent") - 1, 0, NULL);
+	if (extent == NULL || EG(exception) != NULL) return false;
+	if (!vulkan_arg_struct(extent, vulkan_ce_VkExtent3D, vk_VkExtent3D_from, &dst->maxExtent, scratch)) return false;
+	if (!vulkan_u32(obj, "maxMipLevels", &dst->maxMipLevels)) return false;
+	if (!vulkan_u32(obj, "maxArrayLayers", &dst->maxArrayLayers)) return false;
+	if (!vulkan_u32(obj, "sampleCounts", &dst->sampleCounts)) return false;
+	return vulkan_u64(obj, "maxResourceSize", &dst->maxResourceSize);
+}
+
+void vk_VkImageFormatProperties_to(const void *raw, zval *rv)
+{
+	const VkImageFormatProperties *src = raw;
+	object_init_ex(rv, vulkan_ce_VkImageFormatProperties);
+	{
+		zend_object *obj = Z_OBJ_P(rv);
+		vulkan_set_struct_value(obj, "maxExtent", &src->maxExtent, vk_VkExtent3D_to);
+		vulkan_set_long(obj, "maxMipLevels", (zend_long) src->maxMipLevels);
+		vulkan_set_long(obj, "maxArrayLayers", (zend_long) src->maxArrayLayers);
+		vulkan_set_long(obj, "sampleCounts", (zend_long) src->sampleCounts);
+		vulkan_set_long(obj, "maxResourceSize", (zend_long) src->maxResourceSize);
 	}
 }
 

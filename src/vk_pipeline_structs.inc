@@ -165,6 +165,109 @@ void vk_VkRenderPassCreateInfo_to(const void *raw, zval *rv)
 	object_init_ex(rv, vulkan_ce_VkRenderPassCreateInfo);
 }
 
+bool vk_VkAttachmentDescription2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkAttachmentDescription2 *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "format", &dst->format)) return false;
+	if (!vulkan_u32(obj, "samples", &dst->samples)) return false;
+	if (!vulkan_u32(obj, "loadOp", &dst->loadOp)) return false;
+	if (!vulkan_u32(obj, "storeOp", &dst->storeOp)) return false;
+	if (!vulkan_u32(obj, "stencilLoadOp", &dst->stencilLoadOp)) return false;
+	if (!vulkan_u32(obj, "stencilStoreOp", &dst->stencilStoreOp)) return false;
+	if (!vulkan_u32(obj, "initialLayout", &dst->initialLayout)) return false;
+	if (!vulkan_u32(obj, "finalLayout", &dst->finalLayout)) return false;
+	return true;
+}
+
+bool vk_VkAttachmentReference2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkAttachmentReference2 *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_2;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "attachment", &dst->attachment)) return false;
+	if (!vulkan_u32(obj, "layout", &dst->layout)) return false;
+	if (!vulkan_u32(obj, "aspectMask", &dst->aspectMask)) return false;
+	return true;
+}
+
+bool vk_VkSubpassDescription2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkSubpassDescription2 *dst = raw;
+	const uint32_t *u32s = NULL;
+	uint32_t resolve_count;
+	zval *depth;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "pipelineBindPoint", &dst->pipelineBindPoint)) return false;
+	if (!vulkan_u32(obj, "viewMask", &dst->viewMask)) return false;
+	if (!vulkan_u32(obj, "inputAttachmentCount", &dst->inputAttachmentCount)) return false;
+	if (!vulkan_struct_list(obj, "pInputAttachments", vulkan_ce_VkAttachmentReference2, sizeof(VkAttachmentReference2), vk_VkAttachmentReference2_from, (void **) &dst->pInputAttachments, &dst->inputAttachmentCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "colorAttachmentCount", &dst->colorAttachmentCount)) return false;
+	if (!vulkan_struct_list(obj, "pColorAttachments", vulkan_ce_VkAttachmentReference2, sizeof(VkAttachmentReference2), vk_VkAttachmentReference2_from, (void **) &dst->pColorAttachments, &dst->colorAttachmentCount, scratch, visited)) return false;
+	resolve_count = dst->colorAttachmentCount;
+	if (!vulkan_opt_struct_list(obj, "pResolveAttachments", vulkan_ce_VkAttachmentReference2, sizeof(VkAttachmentReference2), vk_VkAttachmentReference2_from, (void **) &dst->pResolveAttachments, &resolve_count, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "preserveAttachmentCount", &dst->preserveAttachmentCount)) return false;
+	depth = zend_read_property(obj->ce, obj, "pDepthStencilAttachment", sizeof("pDepthStencilAttachment") - 1, 0, NULL);
+	if (depth == NULL || EG(exception) != NULL) return false;
+	if (Z_TYPE_P(depth) != IS_NULL) {
+		VkAttachmentReference2 *reference = vulkan_scratch_alloc(scratch, sizeof(*reference));
+		if (!vulkan_arg_struct(depth, vulkan_ce_VkAttachmentReference2, vk_VkAttachmentReference2_from, reference, scratch)) return false;
+		dst->pDepthStencilAttachment = reference;
+	}
+	if (!vulkan_u32_list(obj, "pPreserveAttachments", &u32s, &dst->preserveAttachmentCount, scratch)) return false;
+	dst->pPreserveAttachments = (const uint32_t *) u32s;
+	return true;
+}
+
+bool vk_VkSubpassDependency2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkSubpassDependency2 *dst = raw;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "srcSubpass", &dst->srcSubpass)) return false;
+	if (!vulkan_u32(obj, "dstSubpass", &dst->dstSubpass)) return false;
+	if (!vulkan_u32(obj, "srcStageMask", &dst->srcStageMask)) return false;
+	if (!vulkan_u32(obj, "dstStageMask", &dst->dstStageMask)) return false;
+	if (!vulkan_u32(obj, "srcAccessMask", &dst->srcAccessMask)) return false;
+	if (!vulkan_u32(obj, "dstAccessMask", &dst->dstAccessMask)) return false;
+	if (!vulkan_u32(obj, "dependencyFlags", &dst->dependencyFlags)) return false;
+	if (!vulkan_i32(obj, "viewOffset", &dst->viewOffset)) return false;
+	return true;
+}
+
+bool vk_VkRenderPassCreateInfo2_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
+{
+	VkRenderPassCreateInfo2 *dst = raw;
+	const uint32_t *u32s = NULL;
+	memset(dst, 0, sizeof(*dst));
+	dst->sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2;
+	if (!vulkan_enter(obj, visited)) return false;
+	if (!vulkan_pnext(obj, &dst->pNext, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "flags", &dst->flags)) return false;
+	if (!vulkan_u32(obj, "attachmentCount", &dst->attachmentCount)) return false;
+	if (!vulkan_struct_list(obj, "pAttachments", vulkan_ce_VkAttachmentDescription2, sizeof(VkAttachmentDescription2), vk_VkAttachmentDescription2_from, (void **) &dst->pAttachments, &dst->attachmentCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "subpassCount", &dst->subpassCount)) return false;
+	if (!vulkan_struct_list(obj, "pSubpasses", vulkan_ce_VkSubpassDescription2, sizeof(VkSubpassDescription2), vk_VkSubpassDescription2_from, (void **) &dst->pSubpasses, &dst->subpassCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "dependencyCount", &dst->dependencyCount)) return false;
+	if (!vulkan_struct_list(obj, "pDependencies", vulkan_ce_VkSubpassDependency2, sizeof(VkSubpassDependency2), vk_VkSubpassDependency2_from, (void **) &dst->pDependencies, &dst->dependencyCount, scratch, visited)) return false;
+	if (!vulkan_u32(obj, "correlatedViewMaskCount", &dst->correlatedViewMaskCount)) return false;
+	if (!vulkan_u32_list(obj, "pCorrelatedViewMasks", &u32s, &dst->correlatedViewMaskCount, scratch)) return false;
+	dst->pCorrelatedViewMasks = (const uint32_t *) u32s;
+	return true;
+}
+
 bool vk_VkFramebufferCreateInfo_from(zend_object *obj, void *raw, vulkan_scratch *scratch, HashTable *visited)
 {
 	VkFramebufferCreateInfo *dst = raw;

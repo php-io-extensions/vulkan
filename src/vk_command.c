@@ -366,6 +366,57 @@ ZEND_FUNCTION(vkCmdDispatch)
 	vkCmdDispatch((VkCommandBuffer) (uintptr_t) value, (uint32_t) x, (uint32_t) y, (uint32_t) z);
 }
 
+/* The extension commands take a VkCommandBuffer, not a VkDevice: the device is the end of its parent chain (command buffer -> pool -> device).
+ * A chain with no device (a handle from fromPointer) has no proc to load; it goes through the same vulkan_proc refusal as a device without the command. */
+static PFN_vkVoidFunction vulkan_cmd_proc(zval *command, const char *name)
+{
+	zend_object *walk = Z_OBJ_P(command);
+	zval device;
+	uint64_t value = 0;
+	int guard = 0;
+	PFN_vkVoidFunction fn = NULL;
+
+	while (walk != NULL && walk->ce != vulkan_ce_VkDevice && guard++ < 8) {
+		walk = vulkan_handle_from(walk)->parent;
+	}
+	if (walk != NULL && walk->ce == vulkan_ce_VkDevice) {
+		ZVAL_OBJ(&device, walk);
+		if (!vulkan_handle_value(&device, vulkan_ce_VkDevice, 0, &value)) return NULL;
+		fn = vkGetDeviceProcAddr((VkDevice) (uintptr_t) value, name);
+	}
+	return vulkan_proc((void (*)(void)) fn, name) ? fn : NULL;
+}
+
+ZEND_FUNCTION(vkCmdDrawMeshTasksEXT)
+{
+	zval *command; zend_long x, y, z; uint64_t value; PFN_vkCmdDrawMeshTasksEXT draw;
+	ZEND_PARSE_PARAMETERS_START(4, 4) Z_PARAM_OBJECT(command) Z_PARAM_LONG(x) Z_PARAM_LONG(y) Z_PARAM_LONG(z) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_cmd(command, &value)) RETURN_THROWS();
+	draw = (PFN_vkCmdDrawMeshTasksEXT) vulkan_cmd_proc(command, "vkCmdDrawMeshTasksEXT");
+	if (draw == NULL) RETURN_THROWS();
+	draw((VkCommandBuffer) (uintptr_t) value, (uint32_t) x, (uint32_t) y, (uint32_t) z);
+}
+
+ZEND_FUNCTION(vkCmdDrawMeshTasksIndirectEXT)
+{
+	zval *command, *buffer; zend_long offset, count, stride; uint64_t value, buffer_value; PFN_vkCmdDrawMeshTasksIndirectEXT draw;
+	ZEND_PARSE_PARAMETERS_START(5, 5) Z_PARAM_OBJECT(command) Z_PARAM_OBJECT(buffer) Z_PARAM_LONG(offset) Z_PARAM_LONG(count) Z_PARAM_LONG(stride) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_cmd(command, &value) || !vulkan_handle_value(buffer, vulkan_ce_VkBuffer, 2, &buffer_value)) RETURN_THROWS();
+	draw = (PFN_vkCmdDrawMeshTasksIndirectEXT) vulkan_cmd_proc(command, "vkCmdDrawMeshTasksIndirectEXT");
+	if (draw == NULL) RETURN_THROWS();
+	draw((VkCommandBuffer) (uintptr_t) value, (VkBuffer) (uintptr_t) buffer_value, (VkDeviceSize) offset, (uint32_t) count, (uint32_t) stride);
+}
+
+ZEND_FUNCTION(vkCmdDrawMeshTasksIndirectCountEXT)
+{
+	zval *command, *buffer, *count_buffer; zend_long offset, count_offset, max_count, stride; uint64_t value, buffer_value, count_value; PFN_vkCmdDrawMeshTasksIndirectCountEXT draw;
+	ZEND_PARSE_PARAMETERS_START(7, 7) Z_PARAM_OBJECT(command) Z_PARAM_OBJECT(buffer) Z_PARAM_LONG(offset) Z_PARAM_OBJECT(count_buffer) Z_PARAM_LONG(count_offset) Z_PARAM_LONG(max_count) Z_PARAM_LONG(stride) ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_cmd(command, &value) || !vulkan_handle_value(buffer, vulkan_ce_VkBuffer, 2, &buffer_value) || !vulkan_handle_value(count_buffer, vulkan_ce_VkBuffer, 4, &count_value)) RETURN_THROWS();
+	draw = (PFN_vkCmdDrawMeshTasksIndirectCountEXT) vulkan_cmd_proc(command, "vkCmdDrawMeshTasksIndirectCountEXT");
+	if (draw == NULL) RETURN_THROWS();
+	draw((VkCommandBuffer) (uintptr_t) value, (VkBuffer) (uintptr_t) buffer_value, (VkDeviceSize) offset, (VkBuffer) (uintptr_t) count_value, (VkDeviceSize) count_offset, (uint32_t) max_count, (uint32_t) stride);
+}
+
 ZEND_FUNCTION(vkCmdDrawIndexed)
 {
 	zval *command; zend_long a, b, c, d, e; uint64_t value;
@@ -385,6 +436,22 @@ ZEND_FUNCTION(vkCmdClearAttachments)
 		vulkan_scratch_free(&scratch); RETURN_THROWS();
 	}
 	vkCmdClearAttachments((VkCommandBuffer) (uintptr_t) value, (uint32_t) ac, a, (uint32_t) rc, r);
+	vulkan_scratch_free(&scratch);
+}
+
+ZEND_FUNCTION(vkCmdClearColorImage)
+{
+	zval *command, *image, *color, *ranges; zend_long layout, count; uint64_t command_value, image_value; VkClearColorValue clear; void *items; vulkan_scratch scratch;
+	ZEND_PARSE_PARAMETERS_START(6, 6)
+		Z_PARAM_OBJECT(command) Z_PARAM_OBJECT(image) Z_PARAM_LONG(layout) Z_PARAM_OBJECT(color) Z_PARAM_LONG(count) Z_PARAM_ZVAL(ranges)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!vulkan_cmd(command, &command_value) || !vulkan_handle_value(image, vulkan_ce_VkImage, 2, &image_value)) RETURN_THROWS();
+	vulkan_scratch_init(&scratch);
+	if (!vulkan_arg_struct(color, vulkan_ce_VkClearColorValue, vk_VkClearColorValue_from, &clear, &scratch)
+		|| !vulkan_arg_structs(ranges, count, 5, 6, vulkan_ce_VkImageSubresourceRange, sizeof(VkImageSubresourceRange), vk_VkImageSubresourceRange_from, &items, &scratch)) {
+		vulkan_scratch_free(&scratch); RETURN_THROWS();
+	}
+	vkCmdClearColorImage((VkCommandBuffer) (uintptr_t) command_value, (VkImage) (uintptr_t) image_value, (VkImageLayout) layout, &clear, (uint32_t) count, items);
 	vulkan_scratch_free(&scratch);
 }
 
